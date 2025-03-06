@@ -1,0 +1,38 @@
+<div class="container mt-4">
+  <h2>Register</h2>
+  <form (ngSubmit)="register()">
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" id="email" [(ngModel)]="email" name="email" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" id="password" [(ngModel)]="password" name="password" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label for="confirmPassword" class="form-label">Confirm Password</label>
+      <input type="password" id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label for="fullName" class="form-label">Full Name</label>
+      <input type="text" id="fullName" [(ngModel)]="fullName" name="fullName" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label for="dateOfBirth" class="form-label">Date of Birth</label>
+      <input type="date" id="dateOfBirth" [(ngModel)]="dateOfBirth" name="dateOfBirth" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label for="gender" class="form-label">Gender</label>
+      <select id="gender" [(ngModel)]="gender" name="gender" class="form-select" required>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="image" class="form-label">Profile Image</label>
+      <input type="file" id="image" (change)="onImageChange($event)" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+    <p class="text-danger mt-2">{{ errorMessage }}</p>
+  </form>
+</div>

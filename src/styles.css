@@ -1,1 +1,24 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+    --main: hsl(210, 67%, 51%);
+    --main_light: hsl(210, 67%, 60%);
+    --main_dark: hsl(210, 67%, 40%);
+    --grey: hsl(0, 0%, 80%);
+}
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    text-align: center;
+}
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+div:first-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}

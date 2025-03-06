@@ -1,0 +1,28 @@
+.container {
+    max-width: 500px;
+}
+h2 {
+    margin-bottom: 30px;
+}
+a {
+    color: var(--main) !important;
+    cursor: pointer;
+}
+a:hover {
+    color: var(--main_dark) !important;
+}
+button {
+    color: white;
+    background: var(--main);
+    border: 2px var(--main_dark) solid;
+}
+button:hover {
+    color: white;
+    border: 2px var(--main) solid;
+    background: var(--main_light);
+}
+button:active {
+    color: white !important;
+    border: 2px var(--main_dark) solid !important;
+    background: var(--main_dark) !important;
+}

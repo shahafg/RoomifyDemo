@@ -1,0 +1,15 @@
+.container {
+    max-width: 500px;
+}
+h2 {
+    margin-bottom: 30px;
+}
+button {
+    color: white;
+    background: rgb(183, 10, 10);
+    border: 2px rgb(183, 10, 10) solid;
+}
+button:hover {
+    border: 2px rgb(183, 10, 10) solid;
+    background: rgb(255, 0, 0);
+}
