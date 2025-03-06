@@ -18,39 +18,28 @@ export class UsersService {
   }
 
   registerUser(email: string, password: string, fullName: string, dateOfBirth: Date, gender: 'male' | 'female', image: File | null, role: Role): boolean {
-    const userExists = this.users.some(user => user.email === email);
-    if (userExists) {
-      return false;
-    }
+    const userExists = this.users.some(user => user.getEmail() === email);
+    if (userExists) return false;
 
     let imagePath = '';
     const src = 'assets/images/profile/';
     if (image) {
       imagePath = URL.createObjectURL(image);
     } else {
-      imagePath = gender == 'male' ? src + 'male.jpg' : src + 'female.jpg';
+      imagePath = gender === 'male' ? src + 'male.jpg' : src + 'female.jpg';
     }
 
-    const newUser: User = {
-      email,
-      password,
-      fullName,
-      dateOfBirth,
-      gender,
-      image: imagePath,
-      role,
-    };
-
+    const newUser = new User(email, password, fullName, dateOfBirth, gender, imagePath, role);
     this.users.push(newUser);
     return true;
   }
 
   login(email: string, password: string): Observable<User | null> {
-    const user = this.users.find((user) => user.email === email && user.password === password);
+    const user = this.users.find((user) => user.getEmail() === email && user.getPassword() === password);
     return of(user || null);
   }
   getUserByEmail(email: string): Observable<User | null> {
-    const user = this.users.find((user) => user.email === email);
+    const user = this.users.find((user) => user.getEmail() === email);
     return of(user || null);
   }
   getAllUsers(): Observable<User[]> {

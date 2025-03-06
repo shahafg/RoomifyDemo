@@ -1,0 +1,2 @@
+1. Fix date of birth able to be chosen a date from the last 5 years - Register.ts
+2. change forms from ngModel to form builder

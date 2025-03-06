@@ -1,5 +1,5 @@
 :root {
-    --main: hsl(210, 67%, 51%);
+    --main: hsl(210, 67%, 50%);
     --main_light: hsl(210, 67%, 60%);
     --main_dark: hsl(210, 67%, 40%);
     --grey: hsl(0, 0%, 80%);
@@ -9,8 +9,11 @@ html, body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Roboto', sans-serif;
     text-align: center;
+  }
+h1, h2 {
+  font-family: 'Montserrat', sans-serif;
 }
 app-root {
   display: flex;

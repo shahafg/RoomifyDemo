@@ -29,8 +29,46 @@ export class RegisterComponent {
   }
 
   register(): void {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(this.email)) {
+      this.errorMessage = 'Please enter a valid email address!';
+      return;
+    }
+
     if (this.password !== this.confirmPassword) {
       this.errorMessage = 'Passwords do not match!';
+      return;
+    }
+
+    // At least 8 characters, 1 letter, and 1 number
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (!passwordRegex.test(this.password)) {
+      this.errorMessage = 'Password must be at least 8 characters long and contain at least one number.';
+      return;
+    }
+
+    if (!this.fullName || this.fullName.trim().length === 0) {
+      this.errorMessage = 'Full name cannot be empty!';
+      return;
+    }
+
+    const currentDate = new Date();
+    const enteredDate = new Date(this.dateOfBirth);
+    
+    // Check if the date is valid, within the last 5 years, and not in the future
+    if (!this.dateOfBirth || isNaN(enteredDate.getTime()) || enteredDate > currentDate || enteredDate < new Date(currentDate.setFullYear(currentDate.getFullYear() - 5))) {
+      this.errorMessage = 'Please enter a valid date of birth!';
+      return;
+    }
+
+    if (!this.gender) {
+      this.errorMessage = 'Please select a gender!';
+      return;
+    }
+
+    // Check if an image file is provided (optional)
+    if (this.imageFile && !(this.imageFile instanceof File)) {
+      this.errorMessage = 'Please upload a valid image file!';
       return;
     }
 
@@ -44,10 +82,11 @@ export class RegisterComponent {
       this.role
     );
 
-    if (isRegistered)
-      this.router.navigate(['/profile/login']);
-    else
+    if (isRegistered) {
+      this.router.navigateByUrl('/profile/login');
+    } else {
       this.errorMessage = 'User already exists!';
+    }
   }
 
   onImageChange(event: any): void {

@@ -4,22 +4,22 @@
     <div *ngIf="user">
         <div class="mb-3">
             <label for="email" class="form-label">Email:</label>
-            <p>{{ user.email }}</p>
+            <p>{{ user.getEmail() }}</p>
         </div>
         <div class="mb-3">
             <label for="fullName" class="form-label">Full Name:</label>
-            <p>{{ user.fullName }}</p>
+            <p>{{ user.getFullName() }}</p>
         </div>
         <div class="mb-3">
             <label for="dateOfBirth" class="form-label">Date of Birth:</label>
-            <p>{{ user.dateOfBirth | date }}</p>
+            <p>{{ user.getDateOfBirth() | date }}</p>
         </div>
         <div class="mb-3">
             <label for="gender" class="form-label">Gender:</label>
             <p>{{ showGender() }}</p>
         </div>
         <div class="mb-3">
-            <img [src]="user.image" alt="" class="img-fluid" style="width: 150px; height: 150px; border-radius: 50%;" />
+            <img [src]="user.getImage()" class="img-fluid" style="width: 150px; height: 150px; border-radius: 50%;" />
         </div>
     </div>
 </div>

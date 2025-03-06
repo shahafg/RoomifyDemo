@@ -6,10 +6,16 @@ h2 {
 }
 button {
     color: white;
-    background: rgb(183, 10, 10);
-    border: 2px rgb(183, 10, 10) solid;
+    background: var(--main);
+    border: 2px var(--main_dark) solid;
 }
 button:hover {
-    border: 2px rgb(183, 10, 10) solid;
-    background: rgb(255, 0, 0);
+    color: white;
+    border: 2px var(--main) solid;
+    background: var(--main_light);
+}
+button:active {
+    color: white !important;
+    border: 2px var(--main_dark) solid !important;
+    background: var(--main_dark) !important;
 }

@@ -15,13 +15,23 @@ export class UserDetailsComponent {
 
   constructor(private router: Router) {
     const userData = sessionStorage.getItem('loggedInUser');
-    if (userData)
-      this.user = JSON.parse(userData);
-    else
-      this.router.navigate(['/profile/login']);
-
+    if (userData) {
+      const parsedUser = JSON.parse(userData);
+      this.user = new User(
+        parsedUser.email,
+        parsedUser.password,
+        parsedUser.fullName,
+        new Date(parsedUser.dateOfBirth),
+        parsedUser.gender,
+        parsedUser.image,
+        parsedUser.role
+      );
+    } else {
+      this.router.navigateByUrl('/profile/login');
+    }
   }
+  
   showGender(): string {
-    return this.user?.gender == "male" ? "Male" : "Female";
+    return this.user?.getGender() == "male" ? "Male" : "Female";
   }
 }

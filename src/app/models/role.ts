@@ -3,5 +3,6 @@ export enum Role {
     representative,
     maintenancePerson,
     teacher,
-    admin
+    admin,
+    notLoggedIn = 10
 }

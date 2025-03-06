@@ -1,6 +1,7 @@
 .navbar {
   border-bottom: 1px solid var(--grey);
-  font-size: 1rem;
+  padding: 10px 20px;
+  background-color: #f8f9fa;
 }
 h1 {
   margin: 0 30px;
@@ -8,20 +9,34 @@ h1 {
   border-left: 1px solid var(--grey);
   border-right: 1px solid var(--grey);
   color: var(--main);
+  font-size: 1.8rem;
+  font-weight: bold;
+  transition: color 0.3s ease-in-out;
 }
-h1:hover, .nav-item:active, .nav-item:hover {
+h1:hover, .nav-item:hover {
   color: var(--main_dark);
   cursor: pointer;
 }
 .nav-item {
   margin-left: 1.1rem;
+  font-weight: 500;
+  transition: color 0.3s ease-in-out;
 }
 .navbar-toggler {
   margin-right: 20px;
+  border: none;
+  outline: none;
+}
+.navbar-toggler:focus {
+  box-shadow: none;
 }
 .dropdown-toggle {
   display: flex;
   align-items: center;
+  background-color: transparent;
+  border: none;
+  font-weight: bold;
+  transition: color 0.3s ease-in-out;
 }
 .dropdown-toggle:hover {
   color: var(--main_dark);
@@ -29,37 +44,56 @@ h1:hover, .nav-item:active, .nav-item:hover {
 .dropdown-menu {
   right: 0 !important;
   left: auto !important;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 .dropdown-item {
-  margin: 0;
-  padding: 0;
-  text-align: center;
-  font-size: 1rem;
-}
-.dropdown-item:active {
-  background: var(--main);
-  color: white;
+  padding: 10px;
+  text-align: left;
+  transition: background-color 0.3s ease-in-out;
 }
 .dropdown-item:hover {
-  color: var(--main_dark);
+  background-color: var(--main);
+  color: white;
+}
+.dropdown-item:active {
+  background-color: var(--main_dark);
+  color: white;
 }
 .rounded-circle {
   object-fit: cover;
   border: 2px solid #ddd;
+  transition: border-color 0.3s ease-in-out;
+}
+.rounded-circle:hover {
+  border-color: var(--main);
 }
 .ms-auto {
-  flex-direction: row;
+  display: flex;
+  align-items: center;
   margin-right: 20px;
 }
 
-@media only screen and (max-width: 998px) {
+@media (max-width: 998px) {
   .ms-auto {
     flex-direction: column;
-    margin-right: 0px;
+    align-items: flex-start;
+    margin-right: 0;
   }
-  a {
-    font-size: 1rem;
-    margin: 0 30px;
-    padding: 10px 20px;
+  .navbar-nav {
+    flex-direction: column;
+    width: 100%;
+  }
+  .nav-item {
+    padding: 10px 15px;
+    width: 100%;
+    text-align: center;
+    margin-left: 0;
+  }
+  h1 {
+    font-size: 1.5rem;
+  }
+  .dropdown-menu {
+    width: 100%;
   }
 }

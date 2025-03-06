@@ -1,3 +1,6 @@
 <div class="container">
-    <p>home works!</p>
+    <div>
+        <a *ngIf="isLoggedIn" class="nav-item nav-link active"  routerLink="/messages">Send Message</a>
+        <a *ngIf="!isStudent" class="nav-item nav-link active"  routerLink="/view-rooms">View Rooms</a>
+    </div>
 </div>

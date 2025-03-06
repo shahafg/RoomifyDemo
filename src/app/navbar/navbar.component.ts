@@ -37,6 +37,6 @@ export class NavbarComponent {
     sessionStorage.removeItem('loggedInUser');
     this.isAdmin = false;
     this.isLoggedIn = false;
-    this.router.navigate(['/profile/login']);
+    this.router.navigateByUrl('/profile/login');
   }
 }
