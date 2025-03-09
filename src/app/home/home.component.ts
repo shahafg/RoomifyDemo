@@ -31,11 +31,26 @@ export class HomeComponent {
       this.userRole = user.role;
       this.isLoggedIn = true;
 
-      this.isStudent = (this.userRole == 0) ? true : false;
-      this.isRepresentative = (this.userRole == 1) ? true : false;
-      this.isMaintenancePerson = (this.userRole == 2) ? true : false;
-      this.isTeacher = (this.userRole == 3) ? true : false;
-      this.isAdmin = (this.userRole == 4) ? true : false;
+      if (this.userRole == 0) {
+        this.isStudent = true;
+        return;
+      }
+      else if (this.userRole == 1) {
+        this.isRepresentative = true;
+        return;
+      }
+      else if (this.userRole == 2) {
+        this.isMaintenancePerson = true;
+        return;
+      }
+      else if (this.userRole == 3) {
+        this.isTeacher = true;
+        return;
+      }
+      else if (this.userRole == 4) {
+        this.isAdmin = true;
+        return;
+      }
     } else {
       this.userRole = 10;
       this.isLoggedIn = false;
