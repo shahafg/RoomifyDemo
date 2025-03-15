@@ -13,6 +13,9 @@ export class UsersService {
   constructor() {
     this.users = [
       new User('john.doe@example.com', '53SDrdDSA123', 'John Doe', new Date('1990-01-01'), 'male', undefined, 4),
+      new User('david.wilson@example.com', 'LO98QwER789', 'David Wilson', new Date('1988-11-30'), 'male', undefined, 3),
+      new User('mike.smith@example.com', 'SD43FgTR123', 'Mike Smith', new Date('1985-03-12'), 'male', undefined, 2),
+      new User('emily.jones@example.com', 'HG76DdRR456', 'Emily Jones', new Date('1995-07-22'), 'female', undefined, 1),
       new User('jane.doe@example.com', 'SDrdDSAS123', 'Jane Doe', new Date('1992-05-15'), 'female', undefined, 0),
     ];
   }

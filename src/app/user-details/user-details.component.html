@@ -11,6 +11,10 @@
             <p>{{ user.getFullName() }}</p>
         </div>
         <div class="mb-3">
+            <label for="role" class="form-label">Role:</label>
+            <p>{{ userRole }}</p>
+        </div>
+        <div class="mb-3">
             <label for="dateOfBirth" class="form-label">Date of Birth:</label>
             <p>{{ user.getDateOfBirth() | date }}</p>
         </div>
