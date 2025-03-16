@@ -1,0 +1,65 @@
+/* Style for the container */
+div {
+    margin: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Style for the table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  /* Style for table headers */
+  table th {
+    background-color: var(--main);
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+  }
+  
+  /* Style for table rows */
+  table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  table tr:hover {
+    background-color: #ddd;
+  }
+  
+  table td {
+    padding: 12px;
+    text-align: left;
+  }
+  
+  /* Responsive table */
+  @media (max-width: 768px) {
+    table {
+      font-size: 14px;
+    }
+    table th, table td {
+      padding: 8px;
+    }
+  }
+  
+  /* Style for the title */
+  h1 {
+    font-size: 2rem;
+    color: #333;
+    text-align: center;
+  }
+  
+  /* Add some spacing and style the table container */
+  table {
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Style the table cells */
+  table td, table th {
+    border: 1px solid #ddd;
+  }
+  
+  

@@ -1,0 +1,5 @@
+1. Add room function
+2. remove room function
+3. ui for admin to manage rooms (view, add, remove)
+4. view rooms
+
