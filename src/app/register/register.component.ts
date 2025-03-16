@@ -20,12 +20,12 @@ export class RegisterComponent {
   gender: 'male' | 'female' = 'male';
   errorMessage = '';
   imageFile: File | null = null;
-  role: Role = 0;
+  role: Role = 10;
 
   constructor(private usersService: UsersService, private router: Router) {
-    const loggedInUser = sessionStorage.getItem('loggedInUser');
-    if (loggedInUser)
-      this.router.navigateByUrl("/home");
+    //const loggedInUser = sessionStorage.getItem('loggedInUser');
+    // if (loggedInUser)
+    //   this.router.navigateByUrl("/home");
   }
 
   register(): void {
