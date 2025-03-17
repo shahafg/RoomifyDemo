@@ -17,46 +17,47 @@ export class Room {
         this.accessible = accessible;
     }
 
-        public getId(): number {
-            return this.id;
-        }
-        public setId(id: number): void {
-            this.id = id;
-        }
-        public getName(): string {
-            return this.name;
-        }
-        public setName(name: string): void {
-            this.name = name;
-        }
-        public getBuilding(): string {
-            return this.building;
-        }
-        public setBuilding(building: string): void {
-            this.building = building;
-        }
-        public getFloor(): number {
-            return this.floor;
-        }
-        public setFloor(floor: number): void {
-            this.floor = floor;
-        }
-        public getCapacity(): number {
-            return this.capacity;
-        }
-        public setCapacity(capacity: number): void {
-            this.capacity = capacity;
-        }
-            public getStatus(): number {
-            return this.status;
-        }
-        public setStatus(status: number): void {
-            this.status = status;
-        }
-        public isAccessible(): boolean {
-            return this.accessible;
-        }
-        public setAccessible(accessible: boolean): void {
-            this.accessible = accessible;
-        }
+    public getId(): number {
+        return this.id;
+    }
+    public getName(): string {
+        return this.name;
+    }
+    public getBuilding(): string {
+        return this.building;
+    }
+    public getFloor(): number {
+        return this.floor;
+    }
+    public getCapacity(): number {
+        return this.capacity;
+    }
+    public getStatus(): number {
+        return this.status;
+    }
+    public isAccessible(): boolean {
+        return this.accessible;
+    }
+
+    public setId(id: number): void {
+        this.id = id;
+    }
+    public setName(name: string): void {
+        this.name = name;
+    }
+    public setBuilding(building: string): void {
+        this.building = building;
+    }
+    public setFloor(floor: number): void {
+        this.floor = floor;
+    }
+    public setCapacity(capacity: number): void {
+        this.capacity = capacity;
+    }
+    public setStatus(status: number): void {
+        this.status = status;
+    }
+    public setAccessible(accessible: boolean): void {
+        this.accessible = accessible;
+    }
 }

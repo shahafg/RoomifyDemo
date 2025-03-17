@@ -11,8 +11,8 @@ export class RoomsService {
   constructor() {
     this.rooms = [
       new Room(1, "100", "D", 1, 50, 0, true),
-      new Room(2, "Meeting Room B", "Building 2", 2, 20, 1, false),
-      new Room(3, "Break Room C", "Building 1", 1, 10, 0, true),
+      new Room(2, "200", "D", 2, 40, 1, false),
+      new Room(3, "100", "B", 1, 50, 0, true),
     ];
   }
 
@@ -21,6 +21,6 @@ export class RoomsService {
   }
 
   removeRoom() {
-
+    
   }
 }
