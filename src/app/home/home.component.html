@@ -3,7 +3,7 @@
         <a *ngIf="isLoggedIn" class="nav-item nav-link active" routerLink="/messages">Send Message</a>
     </div><br><br>
     <div *ngIf="isLoggedIn && !isStudent">
-        <a class="nav-item nav-link active" routerLink="/view-rooms">View Rooms</a>
+        <a class="nav-item nav-link active" routerLink="/view-rooms">Order Room</a>
         <a *ngIf="isTeacher || isAdmin" class="nav-item nav-link active" routerLink="/room-search">Room Search</a>
     </div><br><br>
     <div *ngIf="isAdmin">
