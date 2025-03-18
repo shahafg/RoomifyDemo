@@ -3,3 +3,5 @@
 3. ui for admin to manage rooms (view, add, remove)
 4. view rooms
 
+
+need to add a function for the user to add buildings

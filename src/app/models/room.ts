@@ -1,15 +1,19 @@
+import { RoomType } from "./room-type";
+
 export class Room {
     private id: number;
     private name: string;
+    private type: RoomType;
     private building: string;
     private floor: number;
     private capacity: number;
     private status: number;
     private accessible: boolean;
 
-    constructor(id: number, name: string, building: string, floor: number, capacity: number, status: number, accessible: boolean) {
+    constructor(id: number, name: string, type: RoomType, building: string, floor: number, capacity: number, status: number, accessible: boolean) {
         this.id = id;
         this.name = name;
+        this.type = type;
         this.building = building;
         this.floor = floor;
         this.capacity = capacity;
@@ -22,6 +26,9 @@ export class Room {
     }
     public getName(): string {
         return this.name;
+    }
+    public getType(): RoomType {
+        return this.type;
     }
     public getBuilding(): string {
         return this.building;
@@ -44,6 +51,9 @@ export class Room {
     }
     public setName(name: string): void {
         this.name = name;
+    }
+    public setType(type: RoomType): void {
+        this.type = type;
     }
     public setBuilding(building: string): void {
         this.building = building;
