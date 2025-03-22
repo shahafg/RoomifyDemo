@@ -13,6 +13,7 @@ import { TicketsComponent } from './tickets/tickets.component';
 import { RoomManagementComponent } from './room-management/room-management.component';
 import { AuditoriumScheduleComponent } from './auditorium-schedule/auditorium-schedule.component';
 import { ClassroomExchangeComponent } from './classroom-exchange/classroom-exchange.component';
+import { AboutComponent } from './about/about.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -26,6 +27,7 @@ export const routes: Routes = [
     { path: 'classroom-exchange', component: ClassroomExchangeComponent },
     { path: 'tickets', component: TicketsComponent },
     { path: 'messages', component: MessagesComponent },
+    { path: 'about', component: AboutComponent },
     { path: 'profile', children: [
         { path: '', redirectTo: 'login', pathMatch: 'full' }, 
         { path: 'login', component: LoginComponent },
