@@ -14,7 +14,7 @@ h1 {
   transition: color 0.3s ease-in-out;
 }
 h1:hover, .nav-item:hover {
-  color: var(--main_dark);
+  color: var(--main);
   cursor: pointer;
 }
 .nav-item {
@@ -72,6 +72,11 @@ h1:hover, .nav-item:hover {
   display: flex;
   align-items: center;
   margin-right: 20px;
+}
+a > img {
+  height: 150px;
+  width: auto;
+  border: 2px solid black;
 }
 
 @media (max-width: 998px) {

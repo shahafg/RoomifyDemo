@@ -1,7 +1,7 @@
 :root {
-    --main: hsl(210, 67%, 50%);
-    --main_light: hsl(210, 67%, 60%);
-    --main_dark: hsl(210, 67%, 40%);
+    --main: hsl(352, 85%, 50%);
+    --main_light: hsl(352, 85%, 60%);
+    --main_dark: hsl(352, 85%, 40%);
     --grey: hsl(0, 0%, 80%);
 }
 html, body {

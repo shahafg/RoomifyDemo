@@ -1,1 +1,29 @@
-<p>view-rooms works!</p>
+<div class="container">
+    <h1>Rooms</h1>
+    <table class="rooms-table" border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Building</th>
+                <th>Floor</th>
+                <th>Capacity</th>
+                <th>Status</th>
+                <th>Accessible</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let room of rooms">
+                <td>{{ room.getId() }}</td>
+                <td>{{ room.getName() }}</td>
+                <td>{{ getRoomType(room) }}</td>
+                <td>{{ room.getBuilding() }}</td>
+                <td>{{ room.getFloor() }}</td>
+                <td>{{ room.getCapacity() }}</td>
+                <td>{{ room.getStatus() === 1 ? 'Active' : 'Inactive' }}</td>
+                <td>{{ room.isAccessible() ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
