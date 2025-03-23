@@ -1,1 +1,111 @@
-<p>time-schedule works!</p>
+<div class="container mt-4">
+    <div class="schedule-header d-flex justify-content-between align-items-center mb-4">
+      <h1 class="schedule-title">School Daily Schedule</h1>
+      <div>
+        <button class="btn btn-primary me-2" (click)="saveSchedule()">
+          <i class="bi bi-save me-2"></i>Save Schedule
+        </button>
+        <button class="btn btn-outline-secondary" (click)="resetSchedule()">
+          <i class="bi bi-arrow-counterclockwise me-2"></i>Reset
+        </button>
+      </div>
+    </div>
+  
+    <div class="card schedule-card mb-4">
+      <div class="card-body">
+        <p class="edit-instructions">
+          <i class="bi bi-info-circle me-2"></i>
+          Click on any time to edit the schedule. All changes will be saved when you click "Save Schedule".
+        </p>
+  
+        <div class="table-responsive">
+          <table class="table schedule-table">
+            <thead>
+              <tr>
+                <th class="period-header">Class Period</th>
+                <th class="time-header">Time</th>
+                <th class="subject-header">Subject</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let period of schedulePeriods; let i = index" [ngClass]="'period-' + (i + 1)">
+                <td class="period-cell">
+                  {{ period.periodName }}
+                </td>
+                <td class="time-cell">
+                  <div class="d-flex align-items-center time-edit-container">
+                    <input type="time" class="form-control time-input" 
+                           [(ngModel)]="period.startTime" 
+                           (focus)="onTimeFocus(period)"
+                           (blur)="validateTimeRange(period)">
+                    <span class="mx-2">-</span>
+                    <input type="time" class="form-control time-input" 
+                           [(ngModel)]="period.endTime"
+                           (focus)="onTimeFocus(period)"
+                           (blur)="validateTimeRange(period)">
+                    <button class="btn btn-sm btn-edit ms-2" (click)="editPeriod(period)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                  </div>
+                </td>
+                <td class="subject-cell">
+                  <input type="text" class="form-control subject-input" 
+                         [(ngModel)]="period.subject" 
+                         placeholder="Enter subject">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Time Conflict Warning -->
+    <div *ngIf="hasTimeConflict" class="alert alert-warning">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      <strong>Warning:</strong> There are time conflicts in your schedule. Please ensure periods don't overlap.
+    </div>
+  
+    <!-- Add Period Button -->
+    <div class="d-flex justify-content-center mb-4">
+      <button class="btn btn-success" (click)="addPeriod()">
+        <i class="bi bi-plus-circle me-2"></i>Add Period
+      </button>
+    </div>
+  
+    <!-- Period Edit Modal -->
+    <div class="modal-overlay" *ngIf="showModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Period</h5>
+            <button type="button" class="close-button" (click)="closeModal()">&times;</button>
+          </div>
+          <div class="modal-body" *ngIf="currentEditPeriod">
+            <div class="mb-3">
+              <label for="periodName" class="form-label">Period Name</label>
+              <input type="text" class="form-control" id="periodName" [(ngModel)]="currentEditPeriod.periodName">
+            </div>
+            <div class="row mb-3">
+              <div class="col">
+                <label for="startTime" class="form-label">Start Time</label>
+                <input type="time" class="form-control" id="startTime" [(ngModel)]="currentEditPeriod.startTime">
+              </div>
+              <div class="col">
+                <label for="endTime" class="form-label">End Time</label>
+                <input type="time" class="form-control" id="endTime" [(ngModel)]="currentEditPeriod.endTime">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="subject" class="form-label">Subject</label>
+              <input type="text" class="form-control" id="subject" [(ngModel)]="currentEditPeriod.subject">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+            <button type="button" class="btn btn-primary" (click)="savePeriodEdit()">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
