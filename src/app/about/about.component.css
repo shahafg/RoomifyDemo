@@ -1,0 +1,18 @@
+.container {
+    direction: rtl;
+    display: flex;
+    align-items: center;
+}
+.title {
+    margin-top: 20px;
+}
+.about-text {
+    max-width: 800px;
+    text-align: right;
+    margin-bottom: 20px;
+}
+.logo-section > img {
+    height: 250px;
+    width: auto;
+    margin: 20px 0;
+}
