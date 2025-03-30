@@ -1,27 +1,48 @@
 :root {
-    --main: hsl(352, 85%, 50%);
-    --main_light: hsl(352, 85%, 60%);
-    --main_dark: hsl(352, 85%, 40%);
-    --grey: hsl(0, 0%, 80%);
+  --main: hsl(352, 85%, 50%);
+  --main_light: hsl(352, 85%, 60%);
+  --main_dark: hsl(352, 85%, 40%);
+  --grey: hsl(0, 0%, 80%);
 }
 html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
-    text-align: center;
-  }
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+}
 h1, h2 {
   font-family: 'Montserrat', sans-serif;
 }
+
 app-root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
-div:first-child {
-  flex: 1;
+app-root > div {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+app-root > div > div:first-child {
+  flex: 1 0 auto;
   display: flex;
   flex-direction: column;
 }
+router-outlet {
+  flex: 1 0 auto;
+}
+router-outlet + * {
+  flex: 1 0 auto;
+}
+app-footer {
+  flex-shrink: 0;
+}
+
+/* .container :first-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+} */
