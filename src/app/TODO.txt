@@ -1,6 +1,10 @@
 1. Add room function
 2. remove room function
 3. ui for admin to manage rooms (view, add, remove)
-
+4. Message Center
+5. Ticket Management
+6. Time Schedule - לוח צלצולים
 
 need to add a function for the user to add buildings
+
+remove catalog and manage-products from navbar

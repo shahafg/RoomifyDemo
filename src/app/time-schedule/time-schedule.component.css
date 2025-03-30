@@ -1,262 +1,268 @@
-/* Time Schedule Component Styles */
-
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.buttons {
+  display: flex;
+}
 .schedule-title {
-    color: #333;
-    font-weight: 700;
-    margin-bottom: 0;
-    font-size: 2rem;
+  color: #333;
+  font-weight: 700;
+  margin-bottom: 0;
+  font-size: 2rem;
+  margin: 10px 0;
+}
+.schedule-card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+.edit-instructions {
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.schedule-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.schedule-table th,
+.schedule-table td {
+  padding: 12px 16px;
+  vertical-align: middle;
+}
+.schedule-table thead {
+  background-color: #6c757d;
+  color: white;
+}
+.period-header {
+  width: 120px;
+  text-align: center;
+  background-color: #d85073;
+}
+.time-header {
+  width: 280px;
+  text-align: center;
+  background-color: #8fd9d2;
+}
+.subject-header {
+  background-color: #8fd9d2;
+}
+
+.period-1 .period-cell { background-color: #f4a7b9; }
+.period-2 .period-cell { background-color: #f4a261; }
+.period-3 .period-cell { background-color: #ffcc3c; }
+.period-4 .period-cell { background-color: #a8df8e; }
+.period-5 .period-cell { background-color: #cddc39; }
+.period-6 .period-cell { background-color: #a0ded0; }
+.period-7 .period-cell { background-color: #90e0ef; }
+.period-8 .period-cell { background-color: #a683e3; }
+.period-9 .period-cell { background-color: #fb6f92; }
+
+.period-cell {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.time-cell {
+  background-color: #f8f9fa;
+  padding: 8px 12px;
+}
+
+.subject-cell {
+  background-color: #fff;
+}
+
+/* Form input styling */
+.time-input {
+  width: 100px;
+  text-align: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  font-size: 0.95rem;
+}
+
+.subject-input {
+  border: 1px solid transparent;
+  background-color: transparent;
+  padding: 4px 8px;
+  width: 100%;
+  font-size: 1rem;
+  color: #333;
+}
+
+.subject-input:focus {
+  border-color: #86b7fe;
+  background-color: #fff;
+}
+
+.time-edit-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Edit button */
+.btn-edit {
+  color: #6c757d;
+  background-color: transparent;
+  border: none;
+}
+
+.btn-edit:hover {
+  color: #0d6efd;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-dialog {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: modal-fade-in 0.3s ease-out;
+}
+
+.modal-content {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 16px 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  font-weight: 700;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0;
+  margin: -8px -8px -8px 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.close-button:hover {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #343a40;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  padding: 16px 20px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
   }
-  
-  .schedule-card {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .edit-instructions {
-    padding: 12px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-size: 0.95rem;
-    color: #555;
-  }
-  
-  /* Table Styles */
-  .schedule-table {
-    border-collapse: separate;
-    border-spacing: 0;
-    width: 100%;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  
-  .schedule-table th, .schedule-table td {
-    padding: 12px 16px;
-    vertical-align: middle;
-  }
-  
-  .schedule-table thead {
-    background-color: #6c757d;
-    color: white;
-  }
-  
-  .period-header {
-    width: 120px;
-    text-align: center;
-    background-color: #d85073;
-  }
-  
-  .time-header {
-    width: 280px;
-    text-align: center;
-    background-color: #8fd9d2;
-  }
-  
-  .subject-header {
-    background-color: #8fd9d2;
-  }
-  
-  /* Period row styling with different colors */
-  .period-1 .period-cell { background-color: #f4a7b9; }
-  .period-2 .period-cell { background-color: #f4a261; }
-  .period-3 .period-cell { background-color: #ffcc3c; }
-  .period-4 .period-cell { background-color: #a8df8e; }
-  .period-5 .period-cell { background-color: #cddc39; }
-  .period-6 .period-cell { background-color: #a0ded0; }
-  .period-7 .period-cell { background-color: #90e0ef; }
-  .period-8 .period-cell { background-color: #a683e3; }
-  .period-9 .period-cell { background-color: #fb6f92; }
-  
-  /* Cell styling */
-  .period-cell {
-    text-align: center;
-    font-weight: bold;
-    font-size: 1.2rem;
-    color: #333;
-  }
-  
-  .time-cell {
-    background-color: #f8f9fa;
-    padding: 8px 12px;
-  }
-  
-  .subject-cell {
-    background-color: #fff;
-  }
-  
-  /* Form input styling */
-  .time-input {
-    width: 100px;
-    text-align: center;
-    padding: 4px 8px;
-    border-radius: 4px;
-    border: 1px solid #ced4da;
-    font-size: 0.95rem;
-  }
-  
-  .subject-input {
-    border: 1px solid transparent;
-    background-color: transparent;
-    padding: 4px 8px;
-    width: 100%;
-    font-size: 1rem;
-    color: #333;
-  }
-  
-  .subject-input:focus {
-    border-color: #86b7fe;
-    background-color: #fff;
-  }
-  
-  .time-edit-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  /* Edit button */
-  .btn-edit {
-    color: #6c757d;
-    background-color: transparent;
-    border: none;
-  }
-  
-  .btn-edit:hover {
-    color: #0d6efd;
-  }
-  
-  /* Modal Styles */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .modal-dialog {
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    animation: modal-fade-in 0.3s ease-out;
-  }
-  
-  .modal-content {
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  
-  .modal-header {
-    padding: 16px 20px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .modal-title {
-    font-weight: 600;
-    color: #333;
-    margin: 0;
-  }
-  
-  .close-button {
-    background: none;
-    border: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .schedule-title {
     font-size: 1.5rem;
-    line-height: 1;
-    font-weight: 700;
-    color: #6c757d;
-    cursor: pointer;
-    padding: 0;
-    margin: -8px -8px -8px 0;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s, color 0.2s;
   }
-  
-  .close-button:hover {
-    background-color: rgba(108, 117, 125, 0.1);
-    color: #343a40;
+
+  .period-cell,
+  .time-cell,
+  .subject-cell {
+    padding: 8px;
   }
-  
-  .modal-body {
-    padding: 20px;
+
+  .time-input {
+    width: 85px;
+    font-size: 0.85rem;
   }
-  
-  .modal-footer {
-    padding: 16px 20px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
+
+  .time-edit-container {
+    flex-direction: column;
+    align-items: stretch;
   }
-  
-  @keyframes modal-fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+
+  .time-edit-container .mx-2 {
+    margin: 4px 0;
+    text-align: center;
   }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .schedule-title {
-      font-size: 1.5rem;
-    }
-    
-    .period-cell, .time-cell, .subject-cell {
-      padding: 8px;
-    }
-    
-    .time-input {
-      width: 85px;
-      font-size: 0.85rem;
-    }
-    
-    .time-edit-container {
-      flex-direction: column;
-      align-items: stretch;
-    }
-    
-    .time-edit-container .mx-2 {
-      margin: 4px 0;
-      text-align: center;
-    }
-    
-    .modal-dialog {
-      max-width: 95%;
-      margin: 10px;
-    }
+
+  .modal-dialog {
+    max-width: 95%;
+    margin: 10px;
   }
-  
-  /* Animation for new periods */
-  @keyframes highlight-row {
-    0% { background-color: rgba(255, 255, 0, 0.3); }
-    100% { background-color: transparent; }
+}
+
+/* Animation for new periods */
+@keyframes highlight-row {
+  0% {
+    background-color: rgba(255, 255, 0, 0.3);
   }
-  
-  .schedule-table tr:last-child td {
-    animation: highlight-row 2s ease-out;
+
+  100% {
+    background-color: transparent;
   }
+}
+
+.schedule-table tr:last-child td {
+  animation: highlight-row 2s ease-out;
+}

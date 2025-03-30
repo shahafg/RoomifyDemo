@@ -2,6 +2,8 @@
     display: flex;
     justify-content: center;
     margin-top: 50px;
+    flex: 1;
+    flex-direction: column;
 }
 .container > div {
     display: flex;
