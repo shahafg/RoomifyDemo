@@ -4,6 +4,7 @@
 4. Message Center
 5. Ticket Management
 6. Time Schedule - לוח צלצולים
+7. Create Compass Database
 
 need to add a function for the user to add buildings
 

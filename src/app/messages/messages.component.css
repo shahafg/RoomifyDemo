@@ -1,0 +1,123 @@
+.form-label {
+  font-weight: 500;
+  color: #444;
+}
+.form-control:focus {
+  border-color: var(--main);
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.btn-primary {
+  background-color: var(--main);
+  border-color: var(--main);
+}
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--main_dark);
+  border-color: var(--main_dark);
+}
+.btn-primary:disabled {
+  background-color: var(--main_light);
+  border-color: var(--main_light);
+}
+.btn-outline-secondary {
+  color: var(--main);
+  border-color: var(--grey);
+}
+.btn-outline-secondary:hover {
+  background-color: var(--grey);
+  color: var(--main_dark);
+  border-color: var(--grey);
+}
+
+.badge {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  background-color: var(--main);
+}
+.badge span {
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 5px;
+}
+.badge span:hover {
+  color: #f8d7da;
+}
+
+.card {
+  border: 1px solid var(--grey);
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+.card:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.card-body {
+  padding: 0.8rem 1rem;
+}
+
+.modal-header {
+  background-color: var(--main);
+  color: white;
+  border-bottom: none;
+}
+.modal-title {
+  font-weight: 600;
+}
+.modal-header .btn-close {
+  color: white;
+  opacity: 0.8;
+}
+.modal-header .btn-close:hover {
+  opacity: 1;
+}
+.list-group-item.active {
+  background-color: var(--main);
+  border-color: var(--main);
+}
+.list-group-item:hover:not(.active) {
+  background-color: #f8f9fa;
+}
+.list-group-item small {
+  color: #777;
+  font-size: 0.85rem;
+}
+.list-group-item.active small {
+  color: rgba(255, 255, 255, 0.8);
+}
+.input-group-text {
+  background-color: white;
+  border-right: none;
+}
+input[type="text"].form-control {
+  border-left: none;
+}
+
+.modal-body h6 {
+  color: var(--main_dark);
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.text-muted {
+  color: #6c757d;
+}
+.badge.bg-secondary {
+  background-color: var(--grey) !important;
+  color: #333;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+    margin: 1rem auto;
+  }
+  
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+}
