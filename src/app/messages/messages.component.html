@@ -1,1 +1,212 @@
-<p>messages works!</p>
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="mb-0">New Message</h2>
+        </div>
+        <div class="card-body">
+            <form [formGroup]="messageForm" (ngSubmit)="onSubmit()">
+                <!-- Destination Field -->
+                <div class="mb-3">
+                    <label for="destination" class="form-label">Destination</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="destination" formControlName="destination"
+                            placeholder="Enter recipient's name or email" [readOnly]="selectedRecipients.length > 0">
+                        <button type="button" class="btn btn-outline-secondary" (click)="openRecipientsModal()">
+                            <i class="bi bi-people"></i> Select Recipients
+                        </button>
+                    </div>
+
+                    <!-- Selected Recipients Display -->
+                    <div class="selected-recipients mt-2" *ngIf="selectedRecipients.length > 0">
+                        <span class="recipient-badge" *ngFor="let recipient of selectedRecipients; let i = index">
+                            {{ recipient.name }}
+                            <button type="button" class="btn-close btn-close-sm ms-1"
+                                (click)="removeRecipient(i)"></button>
+                        </span>
+                    </div>
+
+                    <div class="form-text text-danger"
+                        *ngIf="messageForm.get('destination')?.invalid && messageForm.get('destination')?.touched">
+                        Destination is required
+                    </div>
+                </div>
+
+                <!-- Subject Field -->
+                <div class="mb-3">
+                    <label for="subject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="subject" formControlName="subject"
+                        placeholder="Enter message subject">
+                    <div class="form-text text-danger"
+                        *ngIf="messageForm.get('subject')?.invalid && messageForm.get('subject')?.touched">
+                        Subject is required
+                    </div>
+                </div>
+
+                <!-- Message Content Field -->
+                <div class="mb-3">
+                    <label for="messageContent" class="form-label">Message</label>
+                    <textarea class="form-control" id="messageContent" formControlName="messageContent" rows="8"
+                        placeholder="Type your message here..."></textarea>
+                    <div class="form-text text-danger"
+                        *ngIf="messageForm.get('messageContent')?.invalid && messageForm.get('messageContent')?.touched">
+                        Message content is required
+                    </div>
+                </div>
+
+                <!-- Attachments Field -->
+                <div class="mb-3">
+                    <label class="form-label">Attachments</label>
+                    <div class="d-flex align-items-center">
+                        <button type="button" class="btn btn-outline-primary me-2" (click)="fileInput.click()"
+                            [disabled]="attachments.length >= 5">
+                            <i class="bi bi-paperclip"></i> Add Files
+                        </button>
+                        <span class="text-muted" *ngIf="attachments.length < 5">
+                            {{ attachments.length }} of 5 files attached
+                        </span>
+                        <span class="text-danger" *ngIf="attachments.length >= 5">
+                            Maximum 5 files allowed
+                        </span>
+                    </div>
+
+                    <input #fileInput type="file" class="d-none" (change)="onFileSelected($event)" multiple>
+
+                    <!-- Attachment List -->
+                    <div class="attachment-list mt-2" *ngIf="attachments.length > 0">
+                        <div class="card p-2 mb-2" *ngFor="let file of attachments; let i = index">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi" [ngClass]="{
+                        'bi-file-earmark-text': isTextFile(file.name),
+                        'bi-file-earmark-image': isImageFile(file.name),
+                        'bi-file-earmark-pdf': isPdfFile(file.name),
+                        'bi-file-earmark': !isTextFile(file.name) && !isImageFile(file.name) && !isPdfFile(file.name)
+                      }"></i>
+                                    <span class="ms-2">{{ file.name }}</span>
+                                    <small class="text-muted ms-2">{{ formatFileSize(file.size) }}</small>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                    (click)="removeAttachment(i)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-outline-secondary me-2"
+                        (click)="discardMessage()">Discard</button>
+                    <button type="submit" class="btn btn-primary" [disabled]="messageForm.invalid">
+                        <i class="bi bi-send"></i> Send Message
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Recipients Selection Modal -->
+<div class="modal fade" id="recipientsModal" tabindex="-1" aria-labelledby="recipientsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="recipientsModalLabel">Select Recipients</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Search Box -->
+                <div class="input-group mb-3">
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Search users or groups"
+                        [(ngModel)]="searchTerm" (input)="filterUsers()">
+                </div>
+
+                <!-- Tabs for Users and Groups -->
+                <ul class="nav nav-tabs" id="recipientsTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users"
+                            type="button" role="tab" aria-controls="users" aria-selected="true">Users</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="groups-tab" data-bs-toggle="tab" data-bs-target="#groups"
+                            type="button" role="tab" aria-controls="groups" aria-selected="false">Groups</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content p-3 border border-top-0 rounded-bottom" id="recipientsTabContent">
+                    <!-- Users Tab -->
+                    <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
+                        <div class="row">
+                            <div class="col-md-6" *ngFor="let user of filteredUsers">
+                                <div class="form-check user-check mb-2">
+                                    <input class="form-check-input" type="checkbox" [id]="'user-' + user.id"
+                                        [checked]="isSelected(user)" (change)="toggleRecipientSelection(user)">
+                                    <label class="form-check-label d-flex align-items-center" [for]="'user-' + user.id">
+                                        <div class="avatar me-2">
+                                            {{ user.name.charAt(0) }}
+                                        </div>
+                                        <div>
+                                            <div>{{ user.name }}</div>
+                                            <small class="text-muted">{{ user.email }}</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- No Results Message -->
+                        <div *ngIf="filteredUsers.length === 0" class="text-center py-4">
+                            <i class="bi bi-search" style="font-size: 2rem;"></i>
+                            <p class="mt-2">No users found matching your search.</p>
+                        </div>
+                    </div>
+
+                    <!-- Groups Tab -->
+                    <div class="tab-pane fade" id="groups" role="tabpanel" aria-labelledby="groups-tab">
+                        <div class="row">
+                            <div class="col-md-6" *ngFor="let group of filteredGroups">
+                                <div class="form-check group-check mb-2">
+                                    <input class="form-check-input" type="checkbox" [id]="'group-' + group.id"
+                                        [checked]="isSelected(group)" (change)="toggleGroupSelection(group)">
+                                    <label class="form-check-label d-flex align-items-center"
+                                        [for]="'group-' + group.id">
+                                        <div class="group-avatar me-2">
+                                            <i class="bi bi-people-fill"></i>
+                                        </div>
+                                        <div>
+                                            <div>{{ group.name }}</div>
+                                            <small class="text-muted">{{ group.memberCount }} members</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- No Results Message -->
+                        <div *ngIf="filteredGroups.length === 0" class="text-center py-4">
+                            <i class="bi bi-search" style="font-size: 2rem;"></i>
+                            <p class="mt-2">No groups found matching your search.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-between w-100 align-items-center">
+                    <div>
+                        <span class="text-muted">{{ selectedRecipients.length }} recipients selected</span>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-outline-secondary me-2"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" (click)="confirmRecipientSelection()">Add
+                            Recipients</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
