@@ -1,6 +1,7 @@
 <div class="container">
     <div>
         <a *ngIf="isLoggedIn" class="nav-item nav-link active" routerLink="/messages">Send Message</a>
+        <a *ngIf="isLoggedIn && !isStudent" class="nav-item nav-link active" routerLink="/create-ticket">Create a Ticket</a>
     </div><br><br>
     <div *ngIf="isLoggedIn && !isStudent">
         <a class="nav-item nav-link active" routerLink="/view-rooms">Order Room</a>

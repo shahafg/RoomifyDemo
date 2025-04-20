@@ -20,7 +20,8 @@ interface Recipient {
   templateUrl: './messages.component.html',
   styleUrl: './messages.component.css'
 })
-export class MessagesComponent implements OnInit {
+
+export class MessagesComponent {
   messageForm: FormGroup;
   
   @ViewChild('recipientsModal') modalElement!: ElementRef;
@@ -46,9 +47,7 @@ export class MessagesComponent implements OnInit {
       subject: ['', Validators.required],
       messageContent: ['', Validators.required]
     });
-  }
 
-  ngOnInit(): void {
     // Populate users and groups with mock data
     this.loadMockData();
     this.filteredUsers = [...this.users];
@@ -264,14 +263,12 @@ export class MessagesComponent implements OnInit {
     this.resetForm();
   }
 
-  // Discard message and reset form
   discardMessage(): void {
     if (confirm('Are you sure you want to discard this message?')) {
       this.resetForm();
     }
   }
 
-  // Reset form and related data
   resetForm(): void {
     this.messageForm.reset();
     this.selectedRecipients = [];
