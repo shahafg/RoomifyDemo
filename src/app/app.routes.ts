@@ -14,6 +14,7 @@ import { RoomManagementComponent } from './room-management/room-management.compo
 import { AuditoriumScheduleComponent } from './auditorium-schedule/auditorium-schedule.component';
 import { ClassroomExchangeComponent } from './classroom-exchange/classroom-exchange.component';
 import { AboutComponent } from './about/about.component';
+import { CreateTicketComponent } from './create-ticket/create-ticket.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -25,6 +26,7 @@ export const routes: Routes = [
     { path: 'auditorium-schedule', component: AuditoriumScheduleComponent },
     { path: 'time-schedule', component: TimeScheduleComponent },
     { path: 'classroom-exchange', component: ClassroomExchangeComponent },
+    { path: 'create-ticket', component: CreateTicketComponent },
     { path: 'tickets', component: TicketsComponent },
     { path: 'messages', component: MessagesComponent },
     { path: 'about', component: AboutComponent },
