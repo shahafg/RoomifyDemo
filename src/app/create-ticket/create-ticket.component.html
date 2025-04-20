@@ -1,0 +1,202 @@
+<div class="container mt-4">
+    <!-- User's Ticket List -->
+    <div *ngIf="showTicketList">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>My Support Tickets</h2>
+            <button class="btn btn-primary" (click)="showCreateTicket()">
+                <i class="bi bi-plus-circle"></i> Create New Ticket
+            </button>
+        </div>
+
+        <!-- Tickets List -->
+        <div class="ticket-list">
+            <div *ngIf="userTickets.length === 0" class="text-center py-5">
+                <i class="bi bi-ticket-perforated" style="font-size: 3rem;"></i>
+                <p class="mt-3">You don't have any tickets yet. Create a new one to get started.</p>
+            </div>
+
+            <div class="card mb-3 cursor-pointer" *ngFor="let ticket of userTickets" (click)="viewTicket(ticket)">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="mb-1">#{{ticket.getId()}} - {{ticket.getTitle()}}</h5>
+                            <p class="text-muted mb-2">
+                                <small>Created: {{formatDate(ticket.getCreatedAt())}}</small>
+                            </p>
+                            <p class="text-truncate mb-0" style="max-width: 600px;">{{ticket.getDescription()}}</p>
+                        </div>
+                        <div>
+                            <span class="badge" [ngClass]="getStatusClass(ticket.getStatus())">
+                                {{ticket.getStatus() | titlecase}}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <span class="badge bg-secondary me-2">{{ticket.getCategory() | titlecase}}</span>
+                        <i class="bi bi-paperclip me-1" *ngIf="ticket.getAttachments()?.length > 0"></i>
+                        <small *ngIf="ticket.getAttachments()?.length > 0">
+                            {{ticket.getAttachments()?.length}} attachment(s)
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket Creation Form -->
+    <div *ngIf="showCreateForm">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">New Support Ticket</h2>
+            </div>
+            <div class="card-body">
+                <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()">
+                    <!-- Title Field -->
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" formControlName="title"
+                            placeholder="Enter a brief title for your issue">
+                        <div class="form-text text-danger"
+                            *ngIf="ticketForm.get('title')?.invalid && ticketForm.get('title')?.touched">
+                            Title is required
+                        </div>
+                    </div>
+
+                    <!-- Category Field -->
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" formControlName="category">
+                            <option *ngFor="let cat of categoryOptions" [value]="cat.value">{{cat.label}}</option>
+                        </select>
+                    </div>
+
+                    <!-- Description Field -->
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" formControlName="description" rows="8"
+                            placeholder="Please provide details about your issue..."></textarea>
+                        <div class="form-text text-danger"
+                            *ngIf="ticketForm.get('description')?.invalid && ticketForm.get('description')?.touched">
+                            Description is required
+                        </div>
+                    </div>
+
+                    <!-- Attachments Field -->
+                    <div class="mb-3">
+                        <label class="form-label">Attachments</label>
+                        <div class="d-flex align-items-center">
+                            <button type="button" class="btn btn-outline-primary me-2" (click)="fileInput.click()"
+                                [disabled]="attachments.length >= 5">
+                                <i class="bi bi-paperclip"></i> Add Files
+                            </button>
+                            <span class="text-muted" *ngIf="attachments.length < 5">
+                                {{ attachments.length }} of 5 files attached
+                            </span>
+                            <span class="text-danger" *ngIf="attachments.length >= 5">
+                                Maximum 5 files allowed
+                            </span>
+                        </div>
+                        <input #fileInput type="file" class="d-none" (change)="onFileSelected($event)" multiple>
+
+                        <!-- Attachment List -->
+                        <div class="attachment-list mt-2" *ngIf="attachments.length > 0">
+                            <div class="card p-2 mb-2" *ngFor="let file of attachments; let i = index">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="bi" [ngClass]="{
+                                            'bi-file-earmark-text': isTextFile(file.name),
+                                            'bi-file-earmark-image': isImageFile(file.name),
+                                            'bi-file-earmark-pdf': isPdfFile(file.name),
+                                            'bi-file-earmark': !isTextFile(file.name) && !isImageFile(file.name) && !isPdfFile(file.name)
+                                        }"></i>
+                                        <span class="ms-2">{{ file.name }}</span>
+                                        <small class="text-muted ms-2">{{ formatFileSize(file.size) }}</small>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                        (click)="removeAttachment(i)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-outline-secondary me-2"
+                            (click)="cancelTicketCreation()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" [disabled]="ticketForm.invalid">
+                            <i class="bi bi-send"></i> Submit Ticket
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket Detail View -->
+    <div *ngIf="showTicketDetail && selectedTicket">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">Ticket #{{selectedTicket.getId()}}</h2>
+                <button class="btn btn-outline-secondary" (click)="backToList()">
+                    <i class="bi bi-arrow-left"></i> Back to My Tickets
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h3 class="mb-3">{{selectedTicket.getTitle()}}</h3>
+                        <div class="d-flex mb-3">
+                            <span class="badge me-2" [ngClass]="getStatusClass(selectedTicket.getStatus())">
+                                {{selectedTicket.getStatus() | titlecase}}
+                            </span>
+                            <span class="badge bg-secondary">
+                                {{selectedTicket.getCategory() | titlecase}}
+                            </span>
+                        </div>
+
+                        <h6>Description</h6>
+                        <p class="ticket-description mb-4">{{selectedTicket.getDescription()}}</p>
+
+                        <div *ngIf="selectedTicket.getAttachments()?.length > 0">
+                            <h6>Attachments ({{selectedTicket.getAttachments()?.length}})</h6>
+                            <div class="attachment-list">
+                                <div class="card p-2 mb-2" *ngFor="let file of selectedTicket.getAttachments()">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi" [ngClass]="{
+                                            'bi-file-earmark-text': isTextFile(file.name),
+                                            'bi-file-earmark-image': isImageFile(file.name),
+                                            'bi-file-earmark-pdf': isPdfFile(file.name),
+                                            'bi-file-earmark': !isTextFile(file.name) && !isImageFile(file.name) && !isPdfFile(file.name)
+                                        }"></i>
+                                        <span class="ms-2">{{ file.name }}</span>
+                                        <small class="text-muted ms-2">{{ formatFileSize(file.size) }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                Ticket Information
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Created on:</strong> {{formatDate(selectedTicket.getCreatedAt())}}</p>
+                                <p *ngIf="selectedTicket.getUpdatedAt()">
+                                    <strong>Last updated:</strong> {{formatDate(selectedTicket.getUpdatedAt())}}
+                                </p>
+                                <div *ngIf="selectedTicket.getAssignedTo()">
+                                    <p><strong>Assigned to:</strong> {{selectedTicket.getAssignedTo()?.getFullName()}}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

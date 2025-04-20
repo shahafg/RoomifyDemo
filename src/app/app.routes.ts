@@ -10,6 +10,7 @@ import { RoomSearchComponent } from './room-search/room-search.component';
 import { RegisterUsersComponent } from './register-users/register-users.component';
 import { TimeScheduleComponent } from './time-schedule/time-schedule.component';
 import { TicketsComponent } from './tickets/tickets.component';
+import { CreateTicketComponent } from './create-ticket/create-ticket.component';
 import { RoomManagementComponent } from './room-management/room-management.component';
 import { AuditoriumScheduleComponent } from './auditorium-schedule/auditorium-schedule.component';
 import { ClassroomExchangeComponent } from './classroom-exchange/classroom-exchange.component';
@@ -26,6 +27,7 @@ export const routes: Routes = [
     { path: 'time-schedule', component: TimeScheduleComponent },
     { path: 'classroom-exchange', component: ClassroomExchangeComponent },
     { path: 'tickets', component: TicketsComponent },
+    { path: 'create-ticket', component: CreateTicketComponent },
     { path: 'messages', component: MessagesComponent },
     { path: 'about', component: AboutComponent },
     { path: 'profile', children: [

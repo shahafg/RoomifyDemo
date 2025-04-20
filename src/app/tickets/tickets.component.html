@@ -1,1 +1,296 @@
-<p>tickets works!</p>
+<div class="container mt-4">
+    <!-- Admin Ticket List View -->
+    <div *ngIf="!selectedTicket">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Ticket Management</h2>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" placeholder="Search tickets..." 
+                                [(ngModel)]="searchTerm" (input)="applyFilters()">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" [(ngModel)]="statusFilter" (change)="applyFilters()">
+                            <option value="all">All Statuses</option>
+                            <option value="new">New</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" [(ngModel)]="priorityFilter" (change)="applyFilters()">
+                            <option value="all">All Priorities</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <button class="btn btn-outline-secondary w-100" (click)="applyFilters()">
+                            <i class="bi bi-funnel"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tickets List -->
+        <div class="ticket-list">
+            <div *ngIf="filteredTickets.length === 0" class="text-center py-5">
+                <i class="bi bi-ticket-perforated" style="font-size: 3rem;"></i>
+                <p class="mt-3">No tickets found matching your criteria.</p>
+            </div>
+
+            <div class="card mb-3 cursor-pointer" *ngFor="let ticket of filteredTickets" (click)="viewTicket(ticket)">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="mb-1">#{{ticket.getId()}} - {{ticket.getTitle()}}</h5>
+                            <p class="text-muted mb-2">
+                                <small>Created: {{formatDate(ticket.getCreatedAt())}} by {{ticket.getCreatedBy().getFullName()}}</small>
+                            </p>
+                            <p class="text-truncate mb-0" style="max-width: 600px;">{{ticket.getDescription()}}</p>
+                        </div>
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="badge mb-2" [ngClass]="getStatusClass(ticket.getStatus())">
+                                {{ticket?.getStatus() | titlecase}}
+                            </span>
+                            <span class="badge" [ngClass]="getPriorityClass(ticket.getPriority())">
+                                {{ticket?.getPriority() | titlecase}}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-2 d-flex justify-content-between">
+                        <div>
+                            <span class="badge bg-secondary me-2">{{ticket.getCategory() | titlecase}}</span>
+                            <i class="bi bi-paperclip me-1" *ngIf="ticket?.getAttachments()?.length > 0"></i>
+                            <small *ngIf="ticket.getAttachments()?.length > 0">
+                                {{ticket.getAttachments()?.length}} attachment(s)
+                            </small>
+                        </div>
+                        <div>
+                            <small class="text-muted" *ngIf="ticket.getAssignedTo()">
+                                Assigned to: {{ticket.getAssignedTo()?.getFullName()}}
+                            </small>
+                            <small class="text-muted" *ngIf="!ticket.getAssignedTo()">
+                                Unassigned
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket Detail View for Admin -->
+    <div *ngIf="selectedTicket">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">Ticket #{{selectedTicket.getId()}}</h2>
+                <button class="btn btn-outline-secondary" (click)="backToList()">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h3 class="mb-3">{{selectedTicket.getTitle()}}</h3>
+                        <div class="d-flex flex-wrap mb-3">
+                            <!-- Status Badge -->
+                            <div class="me-3 mb-2">
+                                <label class="d-block mb-1">Status</label>
+                                <div class="dropdown">
+                                    <button class="btn dropdown-toggle" type="button" 
+                                        [ngClass]="'btn-' + getStatusClass(selectedTicket.getStatus()).replace('bg-', '')"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        {{selectedTicket.getStatus() | titlecase}}
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="javascript:void(0)" 
+                                            (click)="updateStatus(selectedTicket, 'new')">New</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0)" 
+                                            (click)="updateStatus(selectedTicket, 'in-progress')">In Progress</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0)" 
+                                            (click)="updateStatus(selectedTicket, 'resolved')">Resolved</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0)" 
+                                            (click)="updateStatus(selectedTicket, 'closed')">Closed</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Priority Badge -->
+                            <div class="me-3 mb-2">
+                                <label class="d-block mb-1">Priority</label>
+                                <div class="dropdown">
+                                    <button class="btn dropdown-toggle" type="button" 
+                                        [ngClass]="'btn-' + getPriorityClass(selectedTicket.getPriority()).replace('bg-', '')"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        {{selectedTicket.getPriority() | titlecase}}
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="javascript:void(0)" 
+                                            (click)="updatePriority(selectedTicket, 'low')">Low</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0)" 
+                                            (click)="updatePriority(selectedTicket, 'medium')">Medium</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0)" 
+                                            (click)="updatePriority(selectedTicket, 'high')">High</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0)" 
+                                            (click)="updatePriority(selectedTicket, 'critical')">Critical</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Category Badge -->
+                            <div class="mb-2">
+                                <label class="d-block mb-1">Category</label>
+                                <span class="badge bg-secondary">
+                                    {{selectedTicket.getCategory() | titlecase}}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <h6>Description</h6>
+                        <p class="ticket-description mb-4">{{selectedTicket.getDescription()}}</p>
+                        
+                        <div *ngIf="selectedTicket.getAttachments()?.length > 0">
+                            <h6>Attachments ({{selectedTicket.getAttachments().length}})</h6>
+                            <div class="attachment-list">
+                                <div class="card p-2 mb-2" *ngFor="let file of selectedTicket.getAttachments()">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi" [ngClass]="{
+                                            'bi-file-earmark-text': isTextFile(file.name),
+                                            'bi-file-earmark-image': isImageFile(file.name),
+                                            'bi-file-earmark-pdf': isPdfFile(file.name),
+                                            'bi-file-earmark': !isTextFile(file.name) && !isImageFile(file.name) && !isPdfFile(file.name)
+                                        }"></i>
+                                        <span class="ms-2">{{ file.name }}</span>
+                                        <small class="text-muted ms-2">{{ formatFileSize(file.size) }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                Ticket Information
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Created by:</strong> {{selectedTicket.getCreatedBy().getFullName()}}</p>
+                                <p><strong>Creator Email:</strong> {{selectedTicket.getCreatedBy().getEmail()}}</p>
+                                <p><strong>Created on:</strong> {{formatDate(selectedTicket.getCreatedAt())}}</p>
+                                <p *ngIf="selectedTicket.getUpdatedAt()">
+                                    <strong>Last updated:</strong> {{formatDate(selectedTicket.getUpdatedAt())}}
+                                </p>
+                                <div class="mb-3">
+                                    <strong>Assigned to:</strong>
+                                    <div class="d-flex align-items-center mt-1">
+                                        <span *ngIf="selectedTicket.getAssignedTo()">
+                                            {{selectedTicket.getAssignedTo()?.getFullName()}}
+                                        </span>
+                                        <span *ngIf="!selectedTicket.getAssignedTo()" class="text-muted">
+                                            Unassigned
+                                        </span>
+                                        <button class="btn btn-sm btn-outline-primary ms-2" (click)="openAssigneeModal()">
+                                            <i class="bi bi-person-plus"></i> Assign
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions Card -->
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                Quick Actions
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary" 
+                                        *ngIf="selectedTicket.getStatus() === 'new'" 
+                                        (click)="updateStatus(selectedTicket, 'in-progress')">
+                                        <i class="bi bi-play-fill"></i> Start Progress
+                                    </button>
+                                    <button class="btn btn-outline-success" 
+                                        *ngIf="selectedTicket.getStatus() === 'in-progress'" 
+                                        (click)="updateStatus(selectedTicket, 'resolved')">
+                                        <i class="bi bi-check-lg"></i> Mark as Resolved
+                                    </button>
+                                    <button class="btn btn-outline-secondary" 
+                                        *ngIf="selectedTicket.getStatus() === 'resolved'" 
+                                        (click)="updateStatus(selectedTicket, 'closed')">
+                                        <i class="bi bi-x-lg"></i> Close Ticket
+                                    </button>
+                                    <button class="btn btn-outline-info" 
+                                        *ngIf="selectedTicket.getStatus() === 'closed' || selectedTicket.getStatus() === 'resolved'" 
+                                        (click)="updateStatus(selectedTicket, 'in-progress')">
+                                        <i class="bi bi-arrow-clockwise"></i> Reopen Ticket
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assignee Selection Modal -->
+<div class="modal fade" id="assigneeModal" tabindex="-1" aria-labelledby="assigneeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assigneeModalLabel">Assign Ticket</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Search Box -->
+                <div class="input-group mb-3">
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Search support staff"
+                        [(ngModel)]="searchTerm" (input)="filterUsers()">
+                </div>
+                
+                <!-- User List -->
+                <div class="list-group">
+                    <a href="javascript:void(0)" class="list-group-item list-group-item-action"
+                        *ngFor="let user of filteredUsers" (click)="assignTicket(user)">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar me-3" [ngClass]="{'male-avatar': user.getGender() === 'male', 'female-avatar': user.getGender() === 'female'}">
+                                {{ user.getFullName().charAt(0) }}
+                            </div>
+                            <div>
+                                <div>{{ user.getFullName() }}</div>
+                                <small>{{ user.getEmail() }}</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- No Results Message -->
+                <div *ngIf="filteredUsers.length === 0" class="text-center py-4">
+                    <i class="bi bi-search" style="font-size: 2rem;"></i>
+                    <p class="mt-2">No users found matching your search.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
