@@ -1,0 +1,204 @@
+.form-label {
+  font-weight: 500;
+  color: #444;
+}
+.form-control:focus {
+  border-color: var(--main);
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.btn-primary {
+  background-color: var(--main);
+  border-color: var(--main);
+}
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--main_dark);
+  border-color: var(--main_dark);
+}
+.btn-primary:disabled {
+  background-color: var(--main_light);
+  border-color: var(--main_light);
+}
+.btn-outline-secondary {
+  color: var(--main);
+  border-color: var(--grey);
+}
+.btn-outline-secondary:hover {
+  background-color: var(--grey);
+  color: var(--main_dark);
+  border-color: var(--grey);
+}
+
+.badge {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+}
+
+.card {
+  border: 1px solid var(--grey);
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+.card:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.card-body {
+  padding: 0.8rem 1rem;
+}
+
+.modal-header {
+  background-color: var(--main);
+  color: white;
+  border-bottom: none;
+}
+.modal-title {
+  font-weight: 600;
+}
+.modal-header .btn-close {
+  color: white;
+  opacity: 0.8;
+}
+.modal-header .btn-close:hover {
+  opacity: 1;
+}
+.list-group-item.active {
+  background-color: var(--main);
+  border-color: var(--main);
+}
+.list-group-item:hover:not(.active) {
+  background-color: #f8f9fa;
+}
+.list-group-item small {
+  color: #777;
+  font-size: 0.85rem;
+}
+.list-group-item.active small {
+  color: rgba(255, 255, 255, 0.8);
+}
+.input-group-text {
+  background-color: white;
+  border-right: none;
+}
+input[type="text"].form-control {
+  border-left: none;
+}
+
+.modal-body h6 {
+  color: var(--main_dark);
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.text-muted {
+  color: #6c757d;
+}
+.badge.bg-secondary {
+  background-color: var(--grey) !important;
+  color: #333;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.btn-outline-primary {
+  color: var(--main);
+  border-color: var(--main);
+}
+.btn-outline-primary:hover {
+  background-color: var(--main);
+  color: white;
+  border-color: var(--main);
+}
+.btn-outline-primary:focus {
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+.btn-outline-primary:disabled {
+  color: var(--main_light);
+  border-color: var(--main_light);
+}
+
+.ticket-description {
+  white-space: pre-line;
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--main);
+  color: white;
+  font-weight: bold;
+}
+
+.male-avatar {
+  background-color: #0d6efd;
+}
+
+.female-avatar {
+  background-color: #d63384;
+}
+
+/* Status and priority badge and button colors */
+.badge.bg-primary, .btn-primary {
+  background-color: #0d6efd !important;
+  border-color: #0d6efd !important;
+}
+.badge.bg-info, .btn-info {
+  background-color: #0dcaf0 !important;
+  border-color: #0dcaf0 !important;
+  color: #000;
+}
+.btn-info {
+  color: #000 !important;
+}
+.badge.bg-success, .btn-success {
+  background-color: #198754 !important;
+  border-color: #198754 !important;
+}
+.badge.bg-warning, .btn-warning {
+  background-color: #ffc107 !important;
+  border-color: #ffc107 !important;
+  color: #000;
+}
+.btn-warning {
+  color: #000 !important;
+}
+.badge.bg-danger, .btn-danger {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+}
+.badge.bg-secondary, .btn-secondary {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+/* Filter and search styles */
+.form-select:focus {
+  border-color: var(--main);
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+    margin: 1rem auto;
+  }
+
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+  
+  .ticket-description {
+    padding: 0.75rem;
+  }
+}
