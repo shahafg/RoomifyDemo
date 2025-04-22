@@ -33,9 +33,9 @@
                     </div>
                     <div class="mt-2">
                         <span class="badge bg-secondary me-2">{{ticket.getCategory() | titlecase}}</span>
-                        <i class="bi bi-paperclip me-1" *ngIf="ticket.getAttachments()?.length > 0"></i>
-                        <small *ngIf="ticket.getAttachments()?.length > 0">
-                            {{ticket.getAttachments()?.length}} attachment(s)
+                        <i class="bi bi-paperclip me-1" *ngIf="ticket.getAttachments().length > 0"></i>
+                        <small *ngIf="ticket.getAttachments().length > 0">
+                            {{ticket.getAttachments().length}} attachment(s)
                         </small>
                     </div>
                 </div>
@@ -159,8 +159,8 @@
                         <h6>Description</h6>
                         <p class="ticket-description mb-4">{{selectedTicket.getDescription()}}</p>
 
-                        <div *ngIf="selectedTicket.getAttachments()?.length > 0">
-                            <h6>Attachments ({{selectedTicket.getAttachments()?.length}})</h6>
+                        <div *ngIf="selectedTicket.getAttachments().length > 0">
+                            <h6>Attachments ({{selectedTicket.getAttachments().length}})</h6>
                             <div class="attachment-list">
                                 <div class="card p-2 mb-2" *ngFor="let file of selectedTicket.getAttachments()">
                                     <div class="d-flex align-items-center">
