@@ -56,15 +56,12 @@ export class TicketsComponent implements OnInit {
       new Date(1985, 1, 1),
       'female',
       undefined,
-      4 // Assuming Role 20 is admin
+      4
     );
   }
 
   ngOnInit(): void {
-    // Load all tickets
     this.loadAllTickets();
-    
-    // Load support staff users
     this.loadSupportUsers();
   }
   
