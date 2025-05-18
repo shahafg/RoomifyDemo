@@ -29,6 +29,26 @@ app.use((req, res, next) => {
 const users = require("./routes/users.route");
 app.use("/users", users);
 
+//use buildings route
+const buildings = require("./routes/buildings.route");
+app.use("/buildings", buildings);
+
+//use messages route
+const messages = require("./routes/messages.route");
+app.use("/messages", messages);
+
+//use rooms route
+const rooms = require("./routes/rooms.route");
+app.use("/rooms", rooms);
+
+//use schedule periods route
+const schedule = require("./routes/schedule-periods.route");
+app.use("/schedule", schedule);
+
+//use tickets route
+const tickets = require("./routes/tickets.route");
+app.use("/tickets", tickets);
+
 // Start the server
 app.listen(PORT, (err) => {
     if (err) {
