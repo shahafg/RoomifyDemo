@@ -15,15 +15,28 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 
-//enable working with request from client port (5173)
+// //enable working with request from client port (5173)
+// const cors = require("cors");
+// app.use(cors());
+// app.use((req, res, next) => {
+//     res.header("Access-Control-Allow-Origin",  "http://localhost:5173");
+//     res.header("Access-Control-Allow-Headers",  
+//               "Origin,X-Requested-With, Content-Type, Accept");
+//     next();
+// });
 const cors = require("cors");
-app.use(cors());
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin",  "http://localhost:5173");
-    res.header("Access-Control-Allow-Headers",  
-              "Origin,X-Requested-With, Content-Type, Accept");
-    next();
-});
+const allowedOrigins = ["http://localhost:5173", "http://localhost:4200"]; // Compass, Angular
+
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // Allow requests like Postman or server-to-server
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+}));
 
 //use users route
 const users = require("./routes/users.route");

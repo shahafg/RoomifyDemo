@@ -4,7 +4,7 @@ const roomSchema = new mongoose.Schema(
   {
     id: { type: Number, unique: true, required: true },
     name: { type: String, required: true },
-    type: { type: String, required: true }, // Assuming RoomType is an enum represented as string
+    type: { type: String, required: true },
     building: { type: String, required: true },
     floor: { type: Number, required: true },
     capacity: { type: Number, required: true },

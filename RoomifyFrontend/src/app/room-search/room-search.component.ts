@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Room } from '../models/room';
 import { RoomType } from '../models/room-type';
 import { RoomsService } from '../services/rooms.service';
+import { HttpClientModule } from '@angular/common/http';
 
 interface RoomTypeOption {
   value: RoomType;
@@ -13,7 +14,7 @@ interface RoomTypeOption {
 @Component({
   selector: 'app-room-search',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
   templateUrl: './room-search.component.html',
   styleUrls: ['./room-search.component.css']
 })
@@ -49,10 +50,19 @@ export class RoomSearchComponent {
     // Generate room type options
     this.generateRoomTypeOptions();
 
-    // Fetch rooms
+    // Fetch rooms - convert from JSON to Room Object
     this.roomService.getAllRooms().subscribe((rooms: Room[]) => {
-      this.allRooms = rooms;
-      this.filteredRooms = rooms;
+      this.allRooms = rooms.map(r => new Room(
+        r['id'],
+        r['name'],
+        r['type'],
+        r['building'],
+        r['floor'],
+        r['capacity'],
+        r['status'],
+        r['accessible']
+      ));
+      this.filteredRooms = [...this.allRooms];
     });
 
     // Apply filters on form change
