@@ -169,3 +169,13 @@
 #bookingForm.scrolled-to {
   animation: highlight 1.5s ease-out;
 }
+
+.invalid-feedback {
+  display: block;
+  color: #dc3545;
+  margin-top: 0.25rem;
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545 !important;
+}

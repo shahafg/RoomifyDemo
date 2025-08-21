@@ -1,4 +1,7 @@
 <div class="container">
+     <div *ngIf="!isLoggedIn">
+        <h2>Please log in to access the system features.</h2>
+    </div>
     <div>
         <a *ngIf="isLoggedIn" class="nav-item nav-link active" routerLink="/messages">Send Message</a>
         <a *ngIf="isLoggedIn && !isStudent" class="nav-item nav-link active" routerLink="/create-ticket">Create a Ticket</a>

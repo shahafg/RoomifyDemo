@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Room } from '../models/room';
 import { RoomType } from '../models/room-type';
 import { RoomsService } from '../services/rooms.service';
@@ -11,6 +11,55 @@ interface RoomTypeOption {
   value: string;
   label: string;
 }
+
+// Custom validator to check if end time is after start time
+const timeValidator = (control: AbstractControl): ValidationErrors | null => {
+  const formGroup = control as FormGroup;
+  const startTime = formGroup.get('startTime')?.value;
+  const endTime = formGroup.get('endTime')?.value;
+
+  if (startTime && endTime && startTime >= endTime) {
+    return { 'timeInvalid': true };
+  }
+  return null;
+};
+
+// Custom validator to check if start time is not in the past relative to the selected date
+const futureTimeValidator = (control: AbstractControl): ValidationErrors | null => {
+  const formGroup = control.parent as FormGroup;
+  if (!formGroup) return null; // Wait for the parent FormGroup to be available
+
+  const bookingDate = formGroup.get('bookingDate')?.value;
+  const startTime = control.value;
+
+  if (!bookingDate || !startTime) {
+    return null;
+  }
+
+  const now = new Date();
+  const today = new Date().toISOString().split('T')[0];
+  const selectedDateTime = new Date(`${bookingDate}T${startTime}`);
+
+  if (bookingDate === today && selectedDateTime.getTime() <= now.getTime()) {
+    return { 'pastTime': true };
+  }
+
+  return null;
+};
+
+// Custom validator to check if booking date is not in the past
+const pastDateValidator = (control: AbstractControl): ValidationErrors | null => {
+  const bookingDate = control.value;
+  if (!bookingDate) {
+    return null;
+  }
+  const today = new Date().toISOString().split('T')[0];
+  if (bookingDate < today) {
+    return { 'pastDate': true };
+  }
+  return null;
+};
+
 
 @Component({
   selector: 'app-room-search',
@@ -26,15 +75,18 @@ export class RoomSearchComponent implements OnInit {
   RoomType = RoomType;
   roomTypeOptions: RoomTypeOption[] = [];
   
+  todayDate: string; 
+
   filterForm: FormGroup;
   bookingForm: FormGroup;
 
   constructor(
-    private roomService: RoomsService, 
+    private roomService: RoomsService,
     private bookingsService: BookingsService,
     private fb: FormBuilder
   ) {
-    // Initialize filter form
+    this.todayDate = new Date().toISOString().split('T')[0];
+
     this.filterForm = this.fb.group({
       roomType: [''],
       minCapacity: [0],
@@ -42,27 +94,28 @@ export class RoomSearchComponent implements OnInit {
       accessible: ['']
     });
 
-    // Initialize booking form
+    // Re-added the pastDateValidator to the bookingDate control
     this.bookingForm = this.fb.group({
-      bookingDate: [new Date().toISOString().split('T')[0]],
-      startTime: ['09:00'],
-      endTime: ['10:00'],
-      bookingPurpose: [''],
-      attendees: [0],
+      bookingDate: [this.todayDate, [Validators.required, pastDateValidator]],
+      startTime: ['09:00', [Validators.required, futureTimeValidator]],
+      endTime: ['10:00', Validators.required],
+      bookingPurpose: ['', Validators.required],
+      attendees: [0, [Validators.required, Validators.min(1)]],
       additionalNotes: ['']
+    }, { validators: timeValidator });
+
+    this.bookingForm.get('bookingDate')?.valueChanges.subscribe(() => {
+        this.bookingForm.get('startTime')?.updateValueAndValidity();
     });
 
-    // Generate room type options
     this.generateRoomTypeOptions();
   }
 
   ngOnInit(): void {
-    // Fetch rooms - convert from JSON to Room Object
     this.roomService.getAllRooms().subscribe({
       next: (rooms: any[]) => {
         console.log('Fetched rooms:', rooms);
         this.allRooms = rooms.map(r => {
-          // Convert string type to enum value
           const typeEnum = this.convertStringToRoomType(r.type);
           return new Room(
             r.id,
@@ -84,11 +137,9 @@ export class RoomSearchComponent implements OnInit {
       }
     });
 
-    // Apply filters on form change
     this.filterForm.valueChanges.subscribe(() => this.applyFilters());
   }
 
-  // Convert string type from database to RoomType enum
   convertStringToRoomType(typeString: string): RoomType {
     const typeMap: { [key: string]: RoomType } = {
       'Class': RoomType.Class,
@@ -96,11 +147,9 @@ export class RoomSearchComponent implements OnInit {
       'Lab': RoomType.Lab,
       'Auditorium': RoomType.Auditorium
     };
-    
-    return typeMap[typeString] ?? RoomType.Class; // Default to Class if not found
+    return typeMap[typeString] ?? RoomType.Class;
   }
 
-  // Convert RoomType enum to string for display
   convertRoomTypeToString(typeEnum: RoomType): string {
     const typeMap: { [key: number]: string } = {
       [RoomType.Class]: 'Class',
@@ -108,11 +157,9 @@ export class RoomSearchComponent implements OnInit {
       [RoomType.Lab]: 'Lab',
       [RoomType.Auditorium]: 'Auditorium'
     };
-    
     return typeMap[typeEnum] ?? 'Unknown';
   }
 
-  // Generate room type options from enum
   generateRoomTypeOptions(): void {
     this.roomTypeOptions = [
       { value: 'Class', label: 'Class' },
@@ -122,12 +169,9 @@ export class RoomSearchComponent implements OnInit {
     ];
   }
 
-  // Filter rooms based on user input
   applyFilters(): void {
     const { roomType, minCapacity, status, accessible } = this.filterForm.value;
-    
     this.filteredRooms = this.allRooms.filter(room => {
-      // For room type, compare with the string value
       if (roomType !== '') {
         const roomTypeEnum = this.convertStringToRoomType(roomType);
         if (room.getType() !== roomTypeEnum) return false;
@@ -140,7 +184,6 @@ export class RoomSearchComponent implements OnInit {
   }
 
   getRoomType(room: Room): string {
-    // Convert enum numeric value to string representation
     return this.convertRoomTypeToString(room.getType());
   }
 
@@ -160,12 +203,18 @@ export class RoomSearchComponent implements OnInit {
       return;
     }
     this.selectedRoom = room;
-    
-    // Reset booking form with room's capacity as max attendees
+
     this.bookingForm.patchValue({
-      attendees: Math.min(10, room.getCapacity()) // Default to 10 or room capacity, whichever is smaller
+      attendees: Math.min(10, room.getCapacity())
     });
     
+    this.bookingForm.get('attendees')?.setValidators([
+      Validators.required,
+      Validators.min(1),
+      Validators.max(room.getCapacity())
+    ]);
+    this.bookingForm.get('attendees')?.updateValueAndValidity();
+
     this.showBookingForm();
   }
 
@@ -183,7 +232,7 @@ export class RoomSearchComponent implements OnInit {
   cancelBooking(): void {
     this.selectedRoom = null;
     this.bookingForm.reset({
-      bookingDate: new Date().toISOString().split('T')[0],
+      bookingDate: this.todayDate,
       startTime: '09:00',
       endTime: '10:00',
       bookingPurpose: '',
@@ -198,31 +247,15 @@ export class RoomSearchComponent implements OnInit {
       return;
     }
 
-    // Validate booking form
+    this.bookingForm.markAllAsTouched();
+
+    if (this.bookingForm.invalid) {
+      console.log('Form is invalid. Cannot proceed with booking.');
+      return;
+    }
+
     const formValue = this.bookingForm.value;
-    
-    if (!formValue.bookingPurpose || formValue.bookingPurpose.trim() === '') {
-      alert('Please enter the purpose of booking.');
-      return;
-    }
 
-    if (!formValue.attendees || formValue.attendees < 1) {
-      alert('Please enter the number of attendees (minimum 1).');
-      return;
-    }
-
-    if (formValue.attendees > this.selectedRoom.getCapacity()) {
-      alert(`Number of attendees cannot exceed room capacity (${this.selectedRoom.getCapacity()}).`);
-      return;
-    }
-
-    // Validate time
-    if (formValue.startTime >= formValue.endTime) {
-      alert('End time must be after start time.');
-      return;
-    }
-
-    // First check availability
     this.bookingsService.checkAvailability(
       this.selectedRoom.getId(),
       formValue.bookingDate,
@@ -239,7 +272,6 @@ export class RoomSearchComponent implements OnInit {
           return;
         }
 
-        // If available, proceed with booking
         const booking: Booking = {
           roomId: this.selectedRoom!.getId(),
           roomName: this.selectedRoom!.getName(),
@@ -253,31 +285,24 @@ export class RoomSearchComponent implements OnInit {
           additionalNotes: formValue.additionalNotes || ''
         };
 
-        // Save booking to database
         this.bookingsService.createBooking(booking).subscribe({
           next: (response) => {
             console.log('Booking saved:', response);
-            
-            // Check if booking is for today and update room status
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             const bookingDate = new Date(formValue.bookingDate);
             bookingDate.setHours(0, 0, 0, 0);
-            
+
             if (bookingDate.getTime() === today.getTime()) {
               const currentTime = new Date().toTimeString().slice(0, 5);
               if (currentTime >= formValue.startTime && currentTime < formValue.endTime) {
-                // Update room status locally
                 this.selectedRoom!.setStatus(1);
               }
             }
-            
+
             alert(`Room ${this.selectedRoom!.getName()} booked successfully!\n\nBooking ID: ${response.booking.id}\nDate: ${formValue.bookingDate}\nTime: ${formValue.startTime} - ${formValue.endTime}\nPurpose: ${formValue.bookingPurpose}\nAttendees: ${formValue.attendees}`);
 
-            // Reset form and selection
             this.cancelBooking();
-            
-            // Re-apply filters to update the display
             this.applyFilters();
           },
           error: (error) => {

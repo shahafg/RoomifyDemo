@@ -3,11 +3,10 @@
     <h1 class="section-title">Room Management System</h1>
   </div>
 
-  <!-- Search and Filtering Section -->
   <div class="card filter-card mb-4">
     <div class="card-body">
       <h2 class="card-title mb-3">Find the Perfect Room</h2>
-      
+
       <form [formGroup]="filterForm" class="row g-3">
         <div class="col-md-3">
           <label for="roomType" class="form-label">Room Type</label>
@@ -16,12 +15,12 @@
             <option *ngFor="let type of roomTypeOptions" [value]="type.value">{{ type.label }}</option>
           </select>
         </div>
-        
+
         <div class="col-md-3">
           <label for="minCapacity" class="form-label">Minimum Capacity</label>
           <input type="number" class="form-control" id="minCapacity" formControlName="minCapacity" min="0" placeholder="e.g., 20">
         </div>
-        
+
         <div class="col-md-3">
           <label for="status" class="form-label">Room Status</label>
           <select class="form-select" id="status" formControlName="status">
@@ -30,7 +29,7 @@
             <option value="1">Booked</option>
           </select>
         </div>
-        
+
         <div class="col-md-3">
           <label for="accessible" class="form-label">Accessibility</label>
           <select class="form-select" id="accessible" formControlName="accessible">
@@ -39,7 +38,7 @@
             <option value="false">Not Accessible</option>
           </select>
         </div>
-        
+
         <div class="col-12 mt-4">
           <button type="button" class="btn btn-primary me-2" (click)="applyFilters()">
             <i class="bi bi-search me-2"></i> Search Rooms
@@ -52,12 +51,11 @@
     </div>
   </div>
 
-  <!-- Room Results Section -->
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="section-title mb-0">Available Rooms</h2>
     <span class="text-muted">{{ filteredRooms.length }} room(s) found</span>
   </div>
-  
+
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" *ngIf="filteredRooms.length > 0">
     <div class="col" *ngFor="let room of filteredRooms">
       <div class="card room-card h-100">
@@ -68,35 +66,35 @@
               {{ room.getStatus() === 0 ? 'Available' : 'Booked' }}
             </span>
           </div>
-          
+
           <div class="room-detail">
             <i class="bi bi-door-open me-2"></i>
             <span>{{ getRoomType(room) }}</span>
           </div>
-          
+
           <div class="room-detail">
             <i class="bi bi-building me-2"></i>
             <span>{{ room.getBuilding() }}</span>
           </div>
-          
+
           <div class="room-detail">
             <i class="bi bi-layers me-2"></i>
             <span>Floor {{ room.getFloor() }}</span>
           </div>
-          
+
           <div class="room-detail">
             <i class="bi bi-people me-2"></i>
             <span>Capacity: {{ room.getCapacity() }} people</span>
           </div>
-          
+
           <div class="room-detail" *ngIf="room.isAccessible()">
             <i class="bi bi-universal-access me-2"></i>
             <span>Wheelchair Accessible</span>
           </div>
-          
-          <button 
-            class="btn btn-primary mt-3 w-100" 
-            [disabled]="room.getStatus() !== 0" 
+
+          <button
+            class="btn btn-primary mt-3 w-100"
+            [disabled]="room.getStatus() !== 0"
             (click)="selectRoom(room)">
             <i class="bi bi-calendar-plus me-2"></i>
             {{ room.getStatus() === 0 ? 'Book This Room' : 'Not Available' }}
@@ -105,21 +103,20 @@
       </div>
     </div>
   </div>
-  
+
   <div *ngIf="filteredRooms.length === 0" class="alert alert-info mt-3">
     <i class="bi bi-info-circle me-2"></i>
-    <strong>No rooms found.</strong> 
+    <strong>No rooms found.</strong>
     <span *ngIf="allRooms.length === 0">Loading rooms from database...</span>
     <span *ngIf="allRooms.length > 0">Try adjusting your search filters to find available rooms.</span>
   </div>
 
-  <!-- Booking Form Section -->
   <div *ngIf="selectedRoom" id="bookingForm" class="mt-5">
     <div class="card booking-card">
       <div class="card-header">
         <h2 class="mb-0">Complete Your Booking</h2>
       </div>
-      
+
       <div class="card-body">
         <div class="selected-room-info mb-4">
           <h4>Selected Room: {{ selectedRoom.getName() }}</h4>
@@ -129,7 +126,7 @@
                 <i class="bi bi-door-open me-2"></i>
                 <span>{{ getRoomType(selectedRoom) }}</span>
               </div>
-              
+
               <div class="room-detail">
                 <i class="bi bi-building me-2"></i>
                 <span>{{ selectedRoom.getBuilding() }}, Floor {{ selectedRoom.getFloor() }}</span>
@@ -140,7 +137,7 @@
                 <i class="bi bi-people me-2"></i>
                 <span>Maximum Capacity: {{ selectedRoom.getCapacity() }} people</span>
               </div>
-              
+
               <div class="room-detail" *ngIf="selectedRoom.isAccessible()">
                 <i class="bi bi-universal-access me-2"></i>
                 <span>Wheelchair Accessible</span>
@@ -148,74 +145,122 @@
             </div>
           </div>
         </div>
-        
+
         <form [formGroup]="bookingForm" class="row g-3">
           <div class="col-md-4">
             <label for="bookingDate" class="form-label">Date <span class="text-danger">*</span></label>
-            <input 
-              type="date" 
-              class="form-control" 
-              id="bookingDate" 
+            <input
+              type="date"
+              class="form-control"
+              [ngClass]="{'is-invalid': bookingForm.get('bookingDate')?.invalid && (bookingForm.get('bookingDate')?.dirty || bookingForm.get('bookingDate')?.touched)}"
+              id="bookingDate"
               formControlName="bookingDate"
-              [min]="bookingForm.get('bookingDate')?.value"
+              [min]="todayDate"
               required>
+            <div *ngIf="bookingForm.get('bookingDate')?.invalid && (bookingForm.get('bookingDate')?.dirty || bookingForm.get('bookingDate')?.touched)" class="invalid-feedback">
+              <div *ngIf="bookingForm.get('bookingDate')?.errors?.['required']">
+                Date is required.
+              </div>
+              <div *ngIf="bookingForm.get('bookingDate')?.errors?.['pastDate']">
+                Booking date cannot be in the past.
+              </div>
+            </div>
           </div>
-          
+
           <div class="col-md-4">
             <label for="startTime" class="form-label">Start Time <span class="text-danger">*</span></label>
-            <input 
-              type="time" 
-              class="form-control" 
-              id="startTime" 
+            <input
+              type="time"
+              class="form-control"
+              [ngClass]="{'is-invalid': (bookingForm.get('startTime')?.invalid && (bookingForm.get('startTime')?.dirty || bookingForm.get('startTime')?.touched)) || bookingForm.errors?.['timeInvalid']}"
+              id="startTime"
               formControlName="startTime"
               required>
+            <div *ngIf="(bookingForm.get('startTime')?.invalid && (bookingForm.get('startTime')?.dirty || bookingForm.get('startTime')?.touched)) || bookingForm.errors?.['timeInvalid']" class="invalid-feedback">
+              <div *ngIf="bookingForm.get('startTime')?.errors?.['required']">
+                Start time is required.
+              </div>
+              <div *ngIf="bookingForm.get('startTime')?.errors?.['pastTime']">
+                Start time must be in the future.
+              </div>
+              <div *ngIf="bookingForm.errors?.['timeInvalid']">
+                Start time must be before end time.
+              </div>
+            </div>
           </div>
-          
+
           <div class="col-md-4">
             <label for="endTime" class="form-label">End Time <span class="text-danger">*</span></label>
-            <input 
-              type="time" 
-              class="form-control" 
-              id="endTime" 
+            <input
+              type="time"
+              class="form-control"
+              [ngClass]="{'is-invalid': (bookingForm.get('endTime')?.invalid && (bookingForm.get('endTime')?.dirty || bookingForm.get('endTime')?.touched)) || bookingForm.errors?.['timeInvalid']}"
+              id="endTime"
               formControlName="endTime"
               required>
+            <div *ngIf="(bookingForm.get('endTime')?.invalid && (bookingForm.get('endTime')?.dirty || bookingForm.get('endTime')?.touched)) || bookingForm.errors?.['timeInvalid']" class="invalid-feedback">
+              <div *ngIf="bookingForm.get('endTime')?.errors?.['required']">
+                End time is required.
+              </div>
+              <div *ngIf="bookingForm.errors?.['timeInvalid']">
+                End time must be after start time.
+              </div>
+            </div>
           </div>
-          
+
           <div class="col-md-8">
             <label for="bookingPurpose" class="form-label">Purpose <span class="text-danger">*</span></label>
-            <input 
-              type="text" 
-              class="form-control" 
-              id="bookingPurpose" 
-              formControlName="bookingPurpose" 
+            <input
+              type="text"
+              class="form-control"
+              [ngClass]="{'is-invalid': bookingForm.get('bookingPurpose')?.invalid && (bookingForm.get('bookingPurpose')?.dirty || bookingForm.get('bookingPurpose')?.touched)}"
+              id="bookingPurpose"
+              formControlName="bookingPurpose"
               placeholder="e.g., Team Meeting, Training Session, Workshop"
               required>
+            <div *ngIf="bookingForm.get('bookingPurpose')?.invalid && (bookingForm.get('bookingPurpose')?.dirty || bookingForm.get('bookingPurpose')?.touched)" class="invalid-feedback">
+              <div *ngIf="bookingForm.get('bookingPurpose')?.errors?.['required']">
+                Purpose is required.
+              </div>
+            </div>
           </div>
-          
+
           <div class="col-md-4">
             <label for="attendees" class="form-label">Number of Attendees <span class="text-danger">*</span></label>
-            <input 
-              type="number" 
-              class="form-control" 
-              id="attendees" 
-              formControlName="attendees" 
-              min="1" 
+            <input
+              type="number"
+              class="form-control"
+              [ngClass]="{'is-invalid': bookingForm.get('attendees')?.invalid && (bookingForm.get('attendees')?.dirty || bookingForm.get('attendees')?.touched)}"
+              id="attendees"
+              formControlName="attendees"
+              min="1"
               [max]="selectedRoom.getCapacity()"
               placeholder="Max: {{ selectedRoom.getCapacity() }}"
               required>
             <small class="text-muted">Maximum: {{ selectedRoom.getCapacity() }} people</small>
+            <div *ngIf="bookingForm.get('attendees')?.invalid && (bookingForm.get('attendees')?.dirty || bookingForm.get('attendees')?.touched)" class="invalid-feedback">
+              <div *ngIf="bookingForm.get('attendees')?.errors?.['required']">
+                Number of attendees is required.
+              </div>
+              <div *ngIf="bookingForm.get('attendees')?.errors?.['min']">
+                Number of attendees must be at least 1.
+              </div>
+              <div *ngIf="bookingForm.get('attendees')?.errors?.['max']">
+                Number of attendees cannot exceed room capacity ({{ selectedRoom.getCapacity() }}).
+              </div>
+            </div>
           </div>
-          
+
           <div class="col-12">
             <label for="additionalNotes" class="form-label">Additional Notes (Optional)</label>
-            <textarea 
-              class="form-control" 
-              id="additionalNotes" 
-              formControlName="additionalNotes" 
-              rows="3" 
+            <textarea
+              class="form-control"
+              id="additionalNotes"
+              formControlName="additionalNotes"
+              rows="3"
               placeholder="Any special requirements, equipment needs, or other notes..."></textarea>
           </div>
-          
+
           <div class="col-12 mt-4">
             <button type="button" class="btn btn-primary me-2" (click)="bookRoom()">
               <i class="bi bi-check-circle me-2"></i> Confirm Booking
