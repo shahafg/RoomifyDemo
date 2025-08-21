@@ -62,6 +62,9 @@ app.use("/schedule", schedule);
 const tickets = require("./routes/tickets.route");
 app.use("/tickets", tickets);
 
+const bookingsRouter = require('./routes/bookings.route.js');
+app.use('/bookings', bookingsRouter);
+
 // Start the server
 app.listen(PORT, (err) => {
     if (err) {
