@@ -11,7 +11,28 @@ export class BuildingsService {
 
   constructor(private http: HttpClient) {}
 
-  getAllBuildings(): Observable<any> {
+  // Get all buildings
+  getAllBuildings(): Observable<Building[]> {
     return this.http.get<Building[]>(this.buildingsUrl);
+  }
+
+  // Get building by ID
+  getBuildingById(id: number): Observable<Building> {
+    return this.http.get<Building>(`${this.buildingsUrl}/${id}`);
+  }
+
+  // Add new building
+  createBuilding(building: any): Observable<Building> {
+    return this.http.post<Building>(this.buildingsUrl, building);
+  }
+
+  // Update building
+  updateBuilding(id: number, building: any): Observable<Building> {
+    return this.http.put<Building>(`${this.buildingsUrl}/${id}`, building);
+  }
+
+  // Delete building
+  deleteBuilding(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.buildingsUrl}/${id}`);
   }
 }
