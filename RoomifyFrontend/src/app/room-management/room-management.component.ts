@@ -119,6 +119,7 @@ export class RoomManagementComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('RoomManagementComponent initialized');
     this.loadAllData();
     
     // Subscribe to filter changes
@@ -133,16 +134,43 @@ export class RoomManagementComponent implements OnInit {
 
   // Load all data
   loadAllData(): void {
-    this.loadRooms();
+    console.log('Loading all data...');
     this.loadBuildings();
+    this.loadRooms();
     this.loadBookings();
     this.loadUsers();
   }
 
+  // Load buildings
+  loadBuildings(): void {
+    console.log('Loading buildings...');
+    this.buildingsService.getAllBuildings().subscribe({
+      next: (buildings: any[]) => {
+        console.log('Buildings received:', buildings);
+        this.buildings = buildings.map(b => new Building(
+          b.id,
+          b.name,
+          b.description,
+          b.floors
+        ));
+        console.log('Buildings processed:', this.buildings.length);
+        this.updateStatistics();
+      },
+      error: (error) => {
+        console.error('Error loading buildings:', error);
+        // Set empty array to prevent infinite loading
+        this.buildings = [];
+        alert('Failed to load buildings. You can still manage rooms manually.');
+      }
+    });
+  }
+
   // Load rooms
   loadRooms(): void {
+    console.log('Loading rooms...');
     this.roomsService.getAllRooms().subscribe({
       next: (rooms: any[]) => {
+        console.log('Rooms received:', rooms);
         this.rooms = rooms.map(r => new Room(
           r.id,
           r.name,
@@ -153,44 +181,30 @@ export class RoomManagementComponent implements OnInit {
           r.status,
           r.accessible
         ));
+        console.log('Rooms processed:', this.rooms.length);
         this.updateStatistics();
       },
       error: (error) => {
         console.error('Error loading rooms:', error);
+        this.rooms = [];
         alert('Failed to load rooms');
-      }
-    });
-  }
-
-  // Load buildings
-  loadBuildings(): void {
-    this.buildingsService.getAllBuildings().subscribe({
-      next: (buildings: any[]) => {
-        this.buildings = buildings.map(b => new Building(
-          b.id,
-          b.name,
-          b.description,
-          b.floors
-        ));
-        this.updateStatistics();
-      },
-      error: (error) => {
-        console.error('Error loading buildings:', error);
-        alert('Failed to load buildings');
       }
     });
   }
 
   // Load bookings
   loadBookings(): void {
+    console.log('Loading bookings...');
     this.bookingsService.getAllBookings().subscribe({
       next: (bookings: Booking[]) => {
+        console.log('Bookings received:', bookings);
         this.bookings = bookings;
         this.filteredBookings = [...bookings];
         this.updateStatistics();
       },
       error: (error) => {
         console.error('Error loading bookings:', error);
+        this.bookings = [];
         alert('Failed to load bookings');
       }
     });
@@ -198,8 +212,10 @@ export class RoomManagementComponent implements OnInit {
 
   // Load users
   loadUsers(): void {
+    console.log('Loading users...');
     this.usersService.getAllUsers().subscribe({
       next: (users: any[]) => {
+        console.log('Users received:', users);
         this.users = users.map(u => new User(
           u.email,
           u.password,
@@ -214,6 +230,7 @@ export class RoomManagementComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading users:', error);
+        this.users = [];
         alert('Failed to load users');
       }
     });
@@ -313,18 +330,30 @@ export class RoomManagementComponent implements OnInit {
 
   // ROOM MANAGEMENT
   showAddRoomForm(): void {
+    console.log('showAddRoomForm called, buildings count:', this.buildings.length);
+    
     this.editingRoom = null;
+    let defaultBuilding = '';
+    
+    // Set default building based on what's available
+    if (this.buildings.length > 0) {
+      defaultBuilding = this.buildings[0].getName();
+    } else {
+      defaultBuilding = 'D'; // Default fallback option
+    }
+    
     this.roomForm.reset({
       id: this.getNextRoomId(),
       name: '',
       type: 'Class',
-      building: this.buildings[0]?.getName() || '',
+      building: defaultBuilding,
       floor: 1,
       capacity: 20,
       status: 0,
       accessible: false
     });
     this.showRoomForm = true;
+    console.log('Room form should now be visible');
   }
 
   editRoom(room: Room): void {
@@ -344,7 +373,18 @@ export class RoomManagementComponent implements OnInit {
 
   saveRoom(): void {
     if (this.roomForm.invalid) {
-      alert('Please fill all required fields');
+      // Show specific validation errors
+      const errors: string[] = [];
+      const controls = this.roomForm.controls;
+      
+      if (controls['id'].errors) errors.push('ID is required');
+      if (controls['name'].errors) errors.push('Name is required');
+      if (controls['type'].errors) errors.push('Type is required');
+      if (controls['building'].errors) errors.push('Building is required');
+      if (controls['floor'].errors) errors.push('Valid floor number is required');
+      if (controls['capacity'].errors) errors.push('Valid capacity is required');
+      
+      alert('Please fix the following errors:\n' + errors.join('\n'));
       return;
     }
 
@@ -673,6 +713,24 @@ export class RoomManagementComponent implements OnInit {
       // TODO: Implement usersService.deleteUser() method
       this.loadUsers();
     }
+  }
+
+  // Debug and testing methods
+  addSampleBuildings(): void {
+    const sampleBuildings = [
+      { id: 1, name: 'Main Building', description: 'Main academic building', floors: 3 },
+      { id: 2, name: 'Science Building', description: 'Laboratory building', floors: 4 },
+      { id: 3, name: 'Engineering Building', description: 'Engineering departments', floors: 5 }
+    ];
+
+    this.buildings = sampleBuildings.map(b => new Building(b.id, b.name, b.description, b.floors));
+    console.log('Sample buildings added:', this.buildings.length);
+    this.updateStatistics();
+  }
+
+  // Check if a building exists
+  hasBuilding(buildingName: string): boolean {
+    return this.buildings.some(b => b.getName() === buildingName);
   }
 
   // Utility functions
