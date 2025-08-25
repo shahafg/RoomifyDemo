@@ -15,6 +15,8 @@ import { AuditoriumScheduleComponent } from './auditorium-schedule/auditorium-sc
 import { ClassroomExchangeComponent } from './classroom-exchange/classroom-exchange.component';
 import { AboutComponent } from './about/about.component';
 import { CreateTicketComponent } from './create-ticket/create-ticket.component';
+import { MaintenanceManagementComponent } from './maintenance-management/maintenance-management.component';
+
 
 export const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -31,6 +33,7 @@ export const routes: Routes = [
     { path: 'create-ticket', component: CreateTicketComponent },
     { path: 'messages', component: MessagesComponent },
     { path: 'about', component: AboutComponent },
+    { path: 'maintenance', component: MaintenanceManagementComponent },
     { path: 'profile', children: [
         { path: '', redirectTo: 'login', pathMatch: 'full' }, 
         { path: 'login', component: LoginComponent },

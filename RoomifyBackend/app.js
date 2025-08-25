@@ -62,6 +62,10 @@ app.use("/schedule", schedule);
 const tickets = require("./routes/tickets.route");
 app.use("/tickets", tickets);
 
+// use maintenance route
+const maintenanceRouter = require('./routes/maintenance_routes.js');
+app.use("/maintenance", maintenanceRouter); 
+
 const bookingsRouter = require('./routes/bookings-route.js');
 app.use('/bookings', bookingsRouter);
 

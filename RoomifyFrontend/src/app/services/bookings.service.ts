@@ -22,6 +22,8 @@ export interface Booking {
 export interface AvailabilityCheck {
   available: boolean;
   conflicts?: Booking[];
+  maintenanceConflicts?: any[]; // Maintenance periods that conflict
+  reason?: string; // Reason why booking is not available (e.g., maintenance)
 }
 
 @Injectable({
@@ -52,7 +54,7 @@ export class BookingsService {
     return this.http.get<Booking[]>(`${this.bookingsUrl}/date/${date}`);
   }
 
-  // Check if a time slot is available
+  // Check if a time slot is available (now includes maintenance check)
   checkAvailability(roomId: number, bookingDate: string, startTime: string, endTime: string): Observable<AvailabilityCheck> {
     return this.http.post<AvailabilityCheck>(`${this.bookingsUrl}/check-availability`, {
       roomId,

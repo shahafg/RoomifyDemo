@@ -1,0 +1,174 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="section-title">Maintenance Management</h1>
+    <span class="badge bg-secondary">Admin Only</span>
+  </div>
+
+  <!-- Create/Edit Maintenance Period Form -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h3 class="mb-0">{{ isEditing ? 'Edit' : 'Create' }} Maintenance Period</h3>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="maintenanceForm" (ngSubmit)="onSubmit()" class="row g-3">
+        <div class="col-12">
+          <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            [ngClass]="{'is-invalid': maintenanceForm.get('title')?.invalid && (maintenanceForm.get('title')?.dirty || maintenanceForm.get('title')?.touched)}"
+            id="title"
+            formControlName="title"
+            placeholder="e.g., Server Maintenance, Building Renovation">
+          <div *ngIf="maintenanceForm.get('title')?.invalid && (maintenanceForm.get('title')?.dirty || maintenanceForm.get('title')?.touched)" class="invalid-feedback">
+            <div *ngIf="maintenanceForm.get('title')?.errors?.['required']">Title is required.</div>
+            <div *ngIf="maintenanceForm.get('title')?.errors?.['minlength']">Title must be at least 3 characters long.</div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+          <textarea
+            class="form-control"
+            [ngClass]="{'is-invalid': maintenanceForm.get('description')?.invalid && (maintenanceForm.get('description')?.dirty || maintenanceForm.get('description')?.touched)}"
+            id="description"
+            formControlName="description"
+            rows="3"
+            placeholder="Provide details about the maintenance work..."></textarea>
+          <div *ngIf="maintenanceForm.get('description')?.invalid && (maintenanceForm.get('description')?.dirty || maintenanceForm.get('description')?.touched)" class="invalid-feedback">
+            <div *ngIf="maintenanceForm.get('description')?.errors?.['required']">Description is required.</div>
+            <div *ngIf="maintenanceForm.get('description')?.errors?.['minlength']">Description must be at least 10 characters long.</div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <label for="startDate" class="form-label">Start Date & Time <span class="text-danger">*</span></label>
+          <input
+            type="datetime-local"
+            class="form-control"
+            [ngClass]="{'is-invalid': (maintenanceForm.get('startDate')?.invalid && (maintenanceForm.get('startDate')?.dirty || maintenanceForm.get('startDate')?.touched)) || maintenanceForm.errors?.['dateRangeInvalid']}"
+            id="startDate"
+            formControlName="startDate"
+            [min]="todayDateTime">
+          <div *ngIf="(maintenanceForm.get('startDate')?.invalid && (maintenanceForm.get('startDate')?.dirty || maintenanceForm.get('startDate')?.touched)) || maintenanceForm.errors?.['dateRangeInvalid']" class="invalid-feedback">
+            <div *ngIf="maintenanceForm.get('startDate')?.errors?.['required']">Start date is required.</div>
+            <div *ngIf="maintenanceForm.errors?.['dateRangeInvalid']">Start date must be before end date.</div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <label for="endDate" class="form-label">End Date & Time <span class="text-danger">*</span></label>
+          <input
+            type="datetime-local"
+            class="form-control"
+            [ngClass]="{'is-invalid': (maintenanceForm.get('endDate')?.invalid && (maintenanceForm.get('endDate')?.dirty || maintenanceForm.get('endDate')?.touched)) || maintenanceForm.errors?.['dateRangeInvalid']}"
+            id="endDate"
+            formControlName="endDate"
+            [min]="todayDateTime">
+          <div *ngIf="(maintenanceForm.get('endDate')?.invalid && (maintenanceForm.get('endDate')?.dirty || maintenanceForm.get('endDate')?.touched)) || maintenanceForm.errors?.['dateRangeInvalid']" class="invalid-feedback">
+            <div *ngIf="maintenanceForm.get('endDate')?.errors?.['required']">End date is required.</div>
+            <div *ngIf="maintenanceForm.errors?.['dateRangeInvalid']">End date must be after start date.</div>
+          </div>
+        </div>
+
+        <div class="col-12 mt-4">
+          <button type="submit" class="btn btn-primary me-2">
+            <i class="bi bi-check-circle me-2"></i>
+            {{ isEditing ? 'Update' : 'Create' }} Maintenance Period
+          </button>
+          <button type="button" class="btn btn-outline-secondary" (click)="resetForm()" *ngIf="isEditing">
+            <i class="bi bi-x-circle me-2"></i>Cancel Edit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Maintenance Periods List -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="section-title mb-0">Maintenance Periods</h2>
+    <span class="text-muted">{{ maintenancePeriods.length }} period(s) found</span>
+  </div>
+
+  <div *ngIf="maintenancePeriods.length === 0" class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>
+    No maintenance periods have been scheduled.
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-2 g-4" *ngIf="maintenancePeriods.length > 0">
+    <div class="col" *ngFor="let period of maintenancePeriods">
+      <div class="card h-100" [ngClass]="{
+        'border-success': isMaintenanceActive(period),
+        'border-warning': isMaintenanceUpcoming(period),
+        'border-secondary': isMaintenanceCompleted(period) || !period.isActive
+      }">
+        <div class="card-header d-flex justify-content-between align-items-start">
+          <div>
+            <h4 class="card-title mb-1">{{ period.title }}</h4>
+            <span class="badge" [ngClass]="{
+              'bg-success': isMaintenanceActive(period),
+              'bg-warning': isMaintenanceUpcoming(period),
+              'bg-secondary': isMaintenanceCompleted(period) || !period.isActive
+            }">
+              <span *ngIf="isMaintenanceActive(period)">Active Now</span>
+              <span *ngIf="isMaintenanceUpcoming(period)">Upcoming</span>
+              <span *ngIf="isMaintenanceCompleted(period) && period.isActive">Completed</span>
+              <span *ngIf="!period.isActive">Deactivated</span>
+            </span>
+          </div>
+          <small class="text-muted">ID: {{ period.id }}</small>
+        </div>
+
+        <div class="card-body">
+          <p class="card-text">{{ period.description }}</p>
+          
+          <div class="maintenance-details">
+            <div class="detail-item">
+              <i class="bi bi-calendar-event me-2 text-success"></i>
+              <strong>Start:</strong> {{ formatDateTime(period.startDate) }}
+            </div>
+            <div class="detail-item">
+              <i class="bi bi-calendar-x me-2 text-danger"></i>
+              <strong>End:</strong> {{ formatDateTime(period.endDate) }}
+            </div>
+            <div class="detail-item" *ngIf="period.createdBy">
+              <i class="bi bi-person me-2 text-info"></i>
+              <strong>Created by:</strong> {{ period.createdBy }}
+            </div>
+            <div class="detail-item" *ngIf="period.createdAt">
+              <i class="bi bi-clock me-2 text-muted"></i>
+              <strong>Created:</strong> {{ formatDateTime(period.createdAt) }}
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer bg-transparent">
+          <div class="btn-group w-100" role="group">
+            <button 
+              type="button" 
+              class="btn btn-outline-primary btn-sm"
+              (click)="editMaintenancePeriod(period)"
+              [disabled]="!period.isActive">
+              <i class="bi bi-pencil me-1"></i>Edit
+            </button>
+            
+            <button 
+              type="button" 
+              class="btn btn-outline-warning btn-sm"
+              (click)="deactivateMaintenancePeriod(period.id!)"
+              *ngIf="period.isActive">
+              <i class="bi bi-pause me-1"></i>Deactivate
+            </button>
+            
+            <button 
+              type="button" 
+              class="btn btn-outline-danger btn-sm"
+              (click)="deleteMaintenancePeriod(period.id!)">
+              <i class="bi bi-trash me-1"></i>Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

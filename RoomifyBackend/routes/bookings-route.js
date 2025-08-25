@@ -2,6 +2,29 @@ const express = require("express");
 const bookingsRouter = express.Router();
 const bookingSchema = require('../models/BookingSchema.js');
 const roomSchema = require('../models/roomSchema.js');
+const maintenanceSchema = require('../models/maintenance_schema.js'); 
+
+// Helper function to check if booking conflicts with maintenance periods
+const checkMaintenanceConflict = async (bookingDate, startTime, endTime) => {
+    // Create full datetime objects for the booking
+    const bookingStartDateTime = new Date(`${bookingDate}T${startTime}`);
+    const bookingEndDateTime = new Date(`${bookingDate}T${endTime}`);
+    
+    // Check for overlapping active maintenance periods
+    const overlappingMaintenance = await maintenanceSchema.find({
+        isActive: true,
+        $or: [
+            // Booking starts during maintenance
+            { startDate: { $lte: bookingStartDateTime }, endDate: { $gt: bookingStartDateTime } },
+            // Booking ends during maintenance
+            { startDate: { $lt: bookingEndDateTime }, endDate: { $gte: bookingEndDateTime } },
+            // Booking completely encompasses maintenance period
+            { startDate: { $gte: bookingStartDateTime }, endDate: { $lte: bookingEndDateTime } }
+        ]
+    });
+    
+    return overlappingMaintenance;
+};
 
 // GET all bookings
 bookingsRouter.get("/", async (req, res) => {
@@ -73,13 +96,25 @@ bookingsRouter.get("/date/:date", async (req, res) => {
     }
 });
 
-// Check availability for a specific time slot
+// Check availability for a specific time slot (updated with maintenance check)
 bookingsRouter.post("/check-availability", async (req, res) => {
     try {
         const { roomId, bookingDate, startTime, endTime } = req.body;
         
         if (!roomId || !bookingDate || !startTime || !endTime) {
             return res.status(400).send({ message: "Missing required fields" });
+        }
+        
+        // First check for maintenance conflicts
+        const maintenanceConflicts = await checkMaintenanceConflict(bookingDate, startTime, endTime);
+        
+        if (maintenanceConflicts.length > 0) {
+            return res.status(200).send({ 
+                available: false,
+                conflicts: [],
+                maintenanceConflicts: maintenanceConflicts,
+                reason: "System is under maintenance during the requested time period"
+            });
         }
         
         // Convert date string to Date object for comparison
@@ -108,7 +143,8 @@ bookingsRouter.post("/check-availability", async (req, res) => {
         
         res.status(200).send({ 
             available: isAvailable,
-            conflicts: overlappingBookings 
+            conflicts: overlappingBookings,
+            maintenanceConflicts: []
         });
     } catch (error) {
         console.error("Error checking availability:", error);
@@ -116,7 +152,7 @@ bookingsRouter.post("/check-availability", async (req, res) => {
     }
 });
 
-// CREATE new booking
+// CREATE new booking (updated with maintenance check)
 bookingsRouter.post("/", async (req, res) => {
     try {
         const bookingData = req.body;
@@ -125,6 +161,20 @@ bookingsRouter.post("/", async (req, res) => {
         if (!bookingData.roomId || !bookingData.bookingDate || !bookingData.startTime || 
             !bookingData.endTime || !bookingData.purpose || !bookingData.attendees) {
             return res.status(400).send({ message: "Missing required booking information" });
+        }
+        
+        // Check for maintenance conflicts first
+        const maintenanceConflicts = await checkMaintenanceConflict(
+            bookingData.bookingDate, 
+            bookingData.startTime, 
+            bookingData.endTime
+        );
+        
+        if (maintenanceConflicts.length > 0) {
+            return res.status(423).send({ // 423 Locked
+                message: "Cannot create booking during maintenance period",
+                maintenanceConflicts: maintenanceConflicts
+            });
         }
         
         // Check if room exists
@@ -155,7 +205,7 @@ bookingsRouter.post("/", async (req, res) => {
             });
         }
         
-        // Generate new booking ID (you might want to use a better ID generation strategy)
+        // Generate new booking ID
         const lastBooking = await bookingSchema.findOne().sort({ id: -1 });
         const newId = lastBooking ? lastBooking.id + 1 : 1;
         
@@ -172,7 +222,7 @@ bookingsRouter.post("/", async (req, res) => {
             purpose: bookingData.purpose,
             attendees: bookingData.attendees,
             additionalNotes: bookingData.additionalNotes || '',
-            bookedBy: bookingData.bookedBy || 'Anonymous', // In production, get from auth
+            bookedBy: bookingData.bookedBy || 'Anonymous',
             status: 'active'
         });
         
@@ -185,7 +235,6 @@ bookingsRouter.post("/", async (req, res) => {
         bookingDateOnly.setHours(0, 0, 0, 0);
         
         if (bookingDateOnly.getTime() === today.getTime()) {
-            // Check current time and update room status if needed
             const currentTime = new Date().toTimeString().slice(0, 5);
             if (currentTime >= bookingData.startTime && currentTime < bookingData.endTime) {
                 await roomSchema.updateOne({ id: bookingData.roomId }, { $set: { status: 1 } });
@@ -203,8 +252,19 @@ bookingsRouter.post("/", async (req, res) => {
     }
 });
 
-// Internal helper function for checking availability
+// Internal helper function for checking availability (updated with maintenance check)
 bookingsRouter.checkAvailabilityInternal = async function(roomId, bookingDate, startTime, endTime) {
+    // Check for maintenance conflicts first
+    const maintenanceConflicts = await checkMaintenanceConflict(bookingDate, startTime, endTime);
+    
+    if (maintenanceConflicts.length > 0) {
+        return {
+            available: false,
+            conflicts: [],
+            maintenanceConflicts: maintenanceConflicts
+        };
+    }
+    
     const requestedDate = new Date(bookingDate);
     const startOfDay = new Date(requestedDate);
     startOfDay.setHours(0, 0, 0, 0);
@@ -224,11 +284,12 @@ bookingsRouter.checkAvailabilityInternal = async function(roomId, bookingDate, s
     
     return {
         available: overlappingBookings.length === 0,
-        conflicts: overlappingBookings
+        conflicts: overlappingBookings,
+        maintenanceConflicts: []
     };
 };
 
-// UPDATE booking (for admin purposes)
+// UPDATE booking (updated with maintenance check)
 bookingsRouter.put("/:id", async (req, res) => {
     try {
         const bookingId = parseInt(req.params.id);
@@ -244,12 +305,22 @@ bookingsRouter.put("/:id", async (req, res) => {
             return res.status(404).send({ message: `Booking with ID ${bookingId} not found` });
         }
         
-        // If updating time/date, check availability
+        // If updating time/date, check for maintenance conflicts and availability
         if (updateData.bookingDate || updateData.startTime || updateData.endTime) {
-            const checkDate = updateData.bookingDate || existingBooking.bookingDate;
+            const checkDate = updateData.bookingDate || existingBooking.bookingDate.toISOString().split('T')[0];
             const checkStart = updateData.startTime || existingBooking.startTime;
             const checkEnd = updateData.endTime || existingBooking.endTime;
             const checkRoomId = updateData.roomId || existingBooking.roomId;
+            
+            // Check for maintenance conflicts
+            const maintenanceConflicts = await checkMaintenanceConflict(checkDate, checkStart, checkEnd);
+            
+            if (maintenanceConflicts.length > 0) {
+                return res.status(423).send({ 
+                    message: "Cannot update booking to a time during maintenance period",
+                    maintenanceConflicts: maintenanceConflicts
+                });
+            }
             
             const availabilityCheck = await bookingsRouter.checkAvailabilityInternal(
                 checkRoomId, checkDate, checkStart, checkEnd
