@@ -1,8 +1,7 @@
-// src/app/login/login.component.ts
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { UsersService } from '../services/users.service';
-import { AuthService } from '../services/auth.service'; // Add this import
+import { AuthService } from '../services/auth.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -13,6 +12,7 @@ import { CommonModule } from '@angular/common';
   imports: [ReactiveFormsModule, CommonModule],
   styleUrls: ['./login.component.css'],
 })
+
 export class LoginComponent {
   loginForm: FormGroup;
   errorMessage = '';
@@ -20,7 +20,7 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder, 
     private usersService: UsersService, 
-    private authService: AuthService, // Add AuthService
+    private authService: AuthService,
     private router: Router
   ) {
     // Check if already logged in

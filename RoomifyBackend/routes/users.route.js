@@ -31,33 +31,33 @@ usersRouter.get("/:id", async (req, res) => {
 });
 
 // CREATE new user
-usersRouter.post("/", async (req, res) => {
-    try {
-        const userData = req.body;
-        
-        // Check if user with same id or email already exists
-        const existingUser = await usersSchema.findOne({ 
-            $or: [
-                { id: userData.id },
-                { email: userData.email }
-            ]
-        });
-        
-        if (existingUser) {
-            return res.status(409).send({ 
-                message: "User with the same ID or email already exists" 
-            });
-        }
-        
-        // Create new user
-        const newUser = new usersSchema(userData);
-        const savedUser = await newUser.save();
-                const userResponse = await usersSchema.findOne({ id: savedUser.id }, { _id: 0 });
-        res.status(201).send(userResponse);
-    } catch (error) {
-        console.error("Error creating user:", error);
-        res.status(500).send({ message: "Error creating user", error: error.message });
+usersRouter.post("/register", async (req, res) => {
+  try {
+    const userData = req.body;
+    const existingUser = await usersSchema.findOne({ email: userData.email });
+
+    if (existingUser) {
+      return res.status(409).send({
+        message: "User with the same email already exists",
+      });
     }
+
+    // Create new user
+    const newUser = new usersSchema(userData);
+    const savedUser = await newUser.save();
+
+    const userResponse = await usersSchema.findOne(
+      { _id: savedUser._id },
+      { _id: 0, __v: 0 }
+    );
+
+    res.status(201).send(userResponse);
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res
+      .status(500)
+      .send({ message: "Error creating user", error: error.message });
+  }
 });
 
 // UPDATE user

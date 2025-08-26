@@ -5,7 +5,6 @@ import { Room } from '../models/room';
 import { RoomType } from '../models/room-type';
 import { RoomsService } from '../services/rooms.service';
 import { BookingsService, Booking } from '../services/bookings.service';
-// Make sure the file exists at the specified path, or update the path if needed
 import { MaintenanceService, MaintenancePeriod } from '../services/maintenance.service';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -62,7 +61,6 @@ const pastDateValidator = (control: AbstractControl): ValidationErrors | null =>
   return null;
 };
 
-
 @Component({
   selector: 'app-room-search',
   standalone: true,
@@ -70,6 +68,7 @@ const pastDateValidator = (control: AbstractControl): ValidationErrors | null =>
   templateUrl: './room-search.component.html',
   styleUrls: ['./room-search.component.css']
 })
+
 export class RoomSearchComponent implements OnInit {
   allRooms: Room[] = [];
   filteredRooms: Room[] = [];

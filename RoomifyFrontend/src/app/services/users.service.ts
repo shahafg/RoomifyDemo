@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../models/user';
-import { map, Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Role } from '../models/role';
 
 @Injectable({
@@ -52,10 +52,7 @@ export class UsersService {
     gender: 'male' | 'female',
     image: File | null,
     role: Role
-  ): boolean {
-    const userExists = this.users.some(user => user.getEmail() === email);
-    if (userExists) return false;
-
+  ): Observable<User> {
     let imagePath = '';
     const src = 'assets/images/profile/';
     if (image) {
@@ -64,18 +61,17 @@ export class UsersService {
       imagePath = gender === 'male' ? src + 'male.jpg' : src + 'female.jpg';
     }
 
-    const newUser = new User(
+    const newUser = {
       email,
       password,
       fullName,
       dateOfBirth,
       gender,
-      imagePath,
+      image: imagePath,
       role
-    );
+    };
 
-    this.users.push(newUser);
-    return true;
+    return this.http.post<User>(this.apiUrl + "/register", newUser);
   }
 
 }

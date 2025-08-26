@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Room } from '../models/room';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { RoomType } from '../models/room-type';
 
 @Injectable({
   providedIn: 'root'
@@ -9,11 +10,25 @@ import { HttpClient } from '@angular/common/http';
 export class RoomsService {
   private roomsUrl = 'http://localhost:3000/rooms';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Get all rooms
   getAllRooms(): Observable<Room[]> {
-    return this.http.get<Room[]>(this.roomsUrl);
+    return this.http.get<any[]>(this.roomsUrl).pipe(
+      map(rooms =>
+        rooms.map(r => new Room(
+          r.id,
+          r.name,
+          // convert string to enum
+          typeof r.type === 'string' ? RoomType[r.type as keyof typeof RoomType] : r.type,
+          r.building,
+          r.floor,
+          r.capacity,
+          r.status,
+          r.accessible
+        ))
+      )
+    );
   }
 
   // Get room by ID
@@ -54,14 +69,5 @@ export class RoomsService {
   // Delete room
   deleteRoom(id: number): Observable<any> {
     return this.http.delete<any>(`${this.roomsUrl}/${id}`);
-  }
-
-  // Legacy methods for compatibility
-  addRoom(): void {
-    console.log('Use createRoom() method instead');
-  }
-  
-  removeRoom(): void {
-    console.log('Use deleteRoom() method instead');
   }
 }

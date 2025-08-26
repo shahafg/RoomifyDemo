@@ -1,4 +1,4 @@
-// Import Express
+//Import Express
 const express = require("express");
 const app = express();
 const PORT = 3000;
@@ -15,15 +15,6 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 
-// //enable working with request from client port (5173)
-// const cors = require("cors");
-// app.use(cors());
-// app.use((req, res, next) => {
-//     res.header("Access-Control-Allow-Origin",  "http://localhost:5173");
-//     res.header("Access-Control-Allow-Headers",  
-//               "Origin,X-Requested-With, Content-Type, Accept");
-//     next();
-// });
 const cors = require("cors");
 const allowedOrigins = ["http://localhost:5173", "http://localhost:4200"]; // Compass, Angular
 
@@ -62,14 +53,15 @@ app.use("/schedule", schedule);
 const tickets = require("./routes/tickets.route");
 app.use("/tickets", tickets);
 
-// use maintenance route
+//use maintenance route
 const maintenanceRouter = require('./routes/maintenance_routes.js');
 app.use("/maintenance", maintenanceRouter); 
 
+//use bookings route
 const bookingsRouter = require('./routes/bookings-route.js');
 app.use('/bookings', bookingsRouter);
 
-// Start the server
+//Start the server
 app.listen(PORT, (err) => {
     if (err) {
         console.log("Can't connect to the server", err);

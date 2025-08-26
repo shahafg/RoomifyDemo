@@ -1,9 +1,8 @@
-// src/app/register-users/register-users.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Role } from '../models/role';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../services/auth.service'; // Add this import
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-register-users',
@@ -16,7 +15,7 @@ export class RegisterUsersComponent {
   userRole: Role = 10;
   isAdmin: boolean = false;
 
-  constructor(private authService: AuthService) { // Inject AuthService
+  constructor(private authService: AuthService) {
     this.updateUserRole();
     window.addEventListener('update', () => this.updateUserRole());
   }

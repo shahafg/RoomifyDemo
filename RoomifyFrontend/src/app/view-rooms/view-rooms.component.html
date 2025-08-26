@@ -3,7 +3,7 @@
     <table class="rooms-table" border="1">
         <thead>
             <tr>
-                <th>ID</th>
+                <th *ngIf="isAdmin">ID</th>
                 <th>Name</th>
                 <th>Type</th>
                 <th>Building</th>
@@ -15,13 +15,13 @@
         </thead>
         <tbody>
             <tr *ngFor="let room of rooms">
-                <td>{{ room.getId() }}</td>
+                <td *ngIf="isAdmin">{{ room.getId() }}</td>
                 <td>{{ room.getName() }}</td>
                 <td>{{ getRoomType(room) }}</td>
                 <td>{{ room.getBuilding() }}</td>
                 <td>{{ room.getFloor() }}</td>
                 <td>{{ room.getCapacity() }}</td>
-                <td>{{ room.getStatus() === 1 ? 'Active' : 'Inactive' }}</td>
+                <td>{{ room.getStatus() == 1 ? 'Active' : 'Inactive' }}</td>
                 <td>{{ room.isAccessible() ? 'Yes' : 'No' }}</td>
             </tr>
         </tbody>

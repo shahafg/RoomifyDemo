@@ -11,6 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
   templateUrl: './maintenance-management.component.html',
   styleUrls: ['./maintenance-management.component.css']
 })
+
 export class MaintenanceManagementComponent implements OnInit {
   maintenancePeriods: MaintenancePeriod[] = [];
   maintenanceForm: FormGroup;

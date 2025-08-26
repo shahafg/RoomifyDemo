@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
+
 export class HomeComponent {
   userRole : Role = 10;
   isLoggedIn: boolean = false;
