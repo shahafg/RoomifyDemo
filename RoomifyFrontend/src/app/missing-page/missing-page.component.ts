@@ -1,4 +1,6 @@
+// src/app/missing-page/missing-page.component.ts
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-missing-page',
@@ -8,5 +10,10 @@ import { Component } from '@angular/core';
   styleUrl: './missing-page.component.css'
 })
 export class MissingPageComponent {
+  
+  constructor(private router: Router) {}
 
+  goToHomepage(): void {
+    this.router.navigate(['/home']);
+  }
 }

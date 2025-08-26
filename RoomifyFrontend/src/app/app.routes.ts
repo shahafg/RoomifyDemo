@@ -1,3 +1,4 @@
+// src/app/app.routes.ts
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
@@ -17,28 +18,41 @@ import { AboutComponent } from './about/about.component';
 import { CreateTicketComponent } from './create-ticket/create-ticket.component';
 import { MaintenanceManagementComponent } from './maintenance-management/maintenance-management.component';
 
+// Import the guards
+import { AuthGuard } from './guards/auth.guard';
+import { AdminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: HomeComponent },
-    { path: 'view-rooms', component: ViewRoomsComponent },
-    { path: 'room-search', component: RoomSearchComponent },
-    { path: 'rooms', component: RoomManagementComponent },
-    { path: 'register-users', component: RegisterUsersComponent },
-    { path: 'auditorium-schedule', component: AuditoriumScheduleComponent },
-    { path: 'time-schedule', component: TimeScheduleComponent },
-    { path: 'classroom-exchange', component: ClassroomExchangeComponent },
-    { path: 'create-ticket', component: CreateTicketComponent },
-    { path: 'tickets', component: TicketsComponent },
-    { path: 'create-ticket', component: CreateTicketComponent },
-    { path: 'messages', component: MessagesComponent },
+    
+    // Public routes
     { path: 'about', component: AboutComponent },
-    { path: 'maintenance', component: MaintenanceManagementComponent },
+    
+    // Profile routes (public)
     { path: 'profile', children: [
         { path: '', redirectTo: 'login', pathMatch: 'full' }, 
         { path: 'login', component: LoginComponent },
         { path: 'register', component: RegisterComponent },
-        { path: 'user-details', component: UserDetailsComponent }
+        { path: 'user-details', component: UserDetailsComponent, canActivate: [AuthGuard] }
     ]},
-    { path: '**', component: MissingPageComponent } 
+    
+    // Protected routes - require login only
+    { path: 'view-rooms', component: ViewRoomsComponent, canActivate: [AuthGuard] },
+    { path: 'room-search', component: RoomSearchComponent, canActivate: [AuthGuard] },
+    { path: 'auditorium-schedule', component: AuditoriumScheduleComponent, canActivate: [AuthGuard] },
+    { path: 'time-schedule', component: TimeScheduleComponent, canActivate: [AuthGuard] },
+    { path: 'classroom-exchange', component: ClassroomExchangeComponent, canActivate: [AuthGuard] },
+    { path: 'create-ticket', component: CreateTicketComponent, canActivate: [AuthGuard] },
+    { path: 'tickets', component: TicketsComponent, canActivate: [AuthGuard] },
+    { path: 'messages', component: MessagesComponent, canActivate: [AuthGuard] },
+    
+    // Admin-only routes - NOTE: Only AdminGuard needed (it checks login internally)
+    { path: 'rooms', component: RoomManagementComponent, canActivate: [AdminGuard] },
+    { path: 'register-users', component: RegisterUsersComponent, canActivate: [AdminGuard] },
+    { path: 'maintenance', component: MaintenanceManagementComponent, canActivate: [AdminGuard] },
+    
+    // 404 route
+    { path: '404', component: MissingPageComponent },
+    { path: '**', redirectTo: '/404' }
 ];
