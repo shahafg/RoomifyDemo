@@ -22,6 +22,7 @@ interface Statistics {
   weekBookings: number;
   roomUtilization: number;
   mostBookedRoom: string;
+  leastBookedRoom: string;
 }
 
 @Component({
@@ -45,7 +46,8 @@ export class RoomManagementComponent implements OnInit {
     todayBookings: 0,
     weekBookings: 0,
     roomUtilization: 0,
-    mostBookedRoom: 'N/A'
+    mostBookedRoom: 'N/A',
+    leastBookedRoom: 'N/A'
   };
 
   // Data arrays
@@ -238,50 +240,103 @@ export class RoomManagementComponent implements OnInit {
 
   // Update statistics
   updateStatistics(): void {
-    this.statistics.totalRooms = this.rooms.length;
-    this.statistics.totalBuildings = this.buildings.length;
-    this.statistics.totalUsers = this.users.length;
-    this.statistics.totalBookings = this.bookings.filter(b => b.status === 'active').length;
-    this.statistics.availableRooms = this.rooms.filter(r => r.getStatus() === 0).length;
+  this.statistics.totalRooms = this.rooms.length;
+  this.statistics.totalBuildings = this.buildings.length;
+  this.statistics.totalUsers = this.users.length;
+  this.statistics.totalBookings = this.bookings.filter(b => b.status === 'active').length;
+  this.statistics.availableRooms = this.rooms.filter(r => r.getStatus() === 0).length;
 
-    // Today's bookings
-    const today = this.getDateString(new Date());
-    this.statistics.todayBookings = this.bookings.filter(b => 
-      b.status === 'active' && b.bookingDate === today
-    ).length;
+  // Today's bookings
+ const today = this.getDateString(new Date());
+this.statistics.todayBookings = this.bookings.filter(b => {
+  if (b.status !== 'active') return false;
+  
+  // Extract just the date part from the ISO string
+  const bookingDateOnly = b.bookingDate.split('T')[0];
+  
+  return bookingDateOnly === today;
+}).length;
 
-    // This week's bookings
-    const weekFromNow = new Date();
-    weekFromNow.setDate(weekFromNow.getDate() + 7);
-    this.statistics.weekBookings = this.bookings.filter(b => {
-      const bookingDate = new Date(b.bookingDate);
-      return b.status === 'active' && bookingDate <= weekFromNow && bookingDate >= new Date();
-    }).length;
+  // This week's bookings
+  const now = new Date();
+now.setHours(0, 0, 0, 0); // Start of today
+const weekFromNow = new Date();
+weekFromNow.setDate(weekFromNow.getDate() + 7);
+weekFromNow.setHours(23, 59, 59, 999); // End of the day one week from now
 
-    // Room utilization (percentage of rooms currently booked)
-    if (this.rooms.length > 0) {
-      this.statistics.roomUtilization = Math.round(
-        ((this.rooms.length - this.statistics.availableRooms) / this.rooms.length) * 100
-      );
+this.statistics.weekBookings = this.bookings.filter(b => {
+  if (b.status !== 'active') return false;
+  
+  // Parse the ISO date string properly
+  const bookingDate = new Date(b.bookingDate.split('T')[0] + 'T00:00:00.000Z');
+  return bookingDate >= now && bookingDate <= weekFromNow;
+}).length;
+
+  // Room utilization (percentage of rooms currently booked)
+  if (this.rooms.length > 0) {
+    this.statistics.roomUtilization = Math.round(
+      ((this.rooms.length - this.statistics.availableRooms) / this.rooms.length) * 100
+    );
+  }
+
+  // Most booked room and Least booked room
+  if (this.bookings.length > 0 && this.rooms.length > 0) {
+    // Create a map of all rooms with their booking counts (initialize with 0)
+    const roomBookingCounts: { [key: string]: number } = {};
+    
+    // Initialize all rooms with 0 bookings
+    this.rooms.forEach(room => {
+      roomBookingCounts[room.getName()] = 0;
+    });
+    
+    // Count actual bookings
+    this.bookings.forEach(b => {
+      if (b.status === 'active') {
+        roomBookingCounts[b.roomName] = (roomBookingCounts[b.roomName] || 0) + 1;
+      }
+    });
+    
+    const sortedRooms = Object.entries(roomBookingCounts)
+      .sort((a, b) => b[1] - a[1]); // Sort by booking count (descending)
+    
+    // Most booked room (highest count)
+    const mostBooked = sortedRooms[0];
+    if (mostBooked) {
+      this.statistics.mostBookedRoom = `${mostBooked[0]} (${mostBooked[1]} bookings)`;
     }
-
-    // Most booked room
-    if (this.bookings.length > 0) {
-      const roomBookingCounts: { [key: string]: number } = {};
-      this.bookings.forEach(b => {
-        if (b.status === 'active') {
-          roomBookingCounts[b.roomName] = (roomBookingCounts[b.roomName] || 0) + 1;
-        }
-      });
+    
+    // Least booked room(s) (lowest count)
+    const minBookings = Math.min(...Object.values(roomBookingCounts));
+    const leastBookedRooms = Object.entries(roomBookingCounts)
+      .filter(([roomName, count]) => count === minBookings)
+      .map(([roomName, count]) => roomName);
+    
+    if (leastBookedRooms.length === 1) {
+      // Only one room with minimum bookings
+      this.statistics.leastBookedRoom = `${leastBookedRooms[0]} (${minBookings} bookings)`;
+    } else if (leastBookedRooms.length === this.rooms.length) {
+      // All rooms have the same number of bookings
+      this.statistics.leastBookedRoom = `All rooms (${minBookings} bookings each)`;
+    } else {
+      // Multiple rooms tied for least bookings
+      const roomList = leastBookedRooms.slice(0, 3).join(', '); // Show up to 3 rooms
+      const remaining = leastBookedRooms.length - 3;
       
-      const mostBooked = Object.entries(roomBookingCounts)
-        .sort((a, b) => b[1] - a[1])[0];
-      
-      if (mostBooked) {
-        this.statistics.mostBookedRoom = `${mostBooked[0]} (${mostBooked[1]} bookings)`;
+      if (remaining > 0) {
+        this.statistics.leastBookedRoom = `${roomList} and ${remaining} more (${minBookings} bookings each)`;
+      } else {
+        this.statistics.leastBookedRoom = `${roomList} (${minBookings} bookings each)`;
       }
     }
+  } else if (this.rooms.length > 0) {
+    // No bookings but rooms exist
+    if (this.rooms.length === 1) {
+      this.statistics.leastBookedRoom = `${this.rooms[0].getName()} (0 bookings)`;
+    } else {
+      this.statistics.leastBookedRoom = `All rooms (0 bookings each)`;
+    }
   }
+}
 
   // Filter bookings
   filterBookings(): void {

@@ -67,7 +67,8 @@
             </div>
           </div>
         </div>
-        <div class="col-md-3">
+        <!-- hidden until buildings issue is fixed -->
+        <!-- <div class="col-md-3">
           <div class="stat-card card text-white bg-info">
             <div class="card-body">
               <div class="stat-icon"><i class="bi bi-building"></i></div>
@@ -75,7 +76,7 @@
               <p>Buildings</p>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="col-md-3">
           <div class="stat-card card text-white bg-warning">
             <div class="card-body">
@@ -130,41 +131,47 @@
       <!-- Additional Stats and Recent Activity -->
       <div class="row g-3">
         <div class="col-md-6">
-          <div class="card">
-            <div class="card-header">
-              <h5><i class="bi bi-activity"></i> System Overview</h5>
-            </div>
-            <div class="card-body">
-              <div class="mb-3">
-                <div class="d-flex justify-content-between">
-                  <span>Room Utilization Rate</span>
-                  <strong>{{ statistics.roomUtilization }}%</strong>
-                </div>
-                <div class="progress mt-2">
-                  <div class="progress-bar" [style.width.%]="statistics.roomUtilization"></div>
-                </div>
-              </div>
-              <div class="mb-3">
-                <div class="d-flex justify-content-between">
-                  <span>Most Booked Room</span>
-                  <strong>{{ statistics.mostBookedRoom }}</strong>
-                </div>
-              </div>
-              <div class="mb-3">
-                <div class="d-flex justify-content-between">
-                  <span>Total Users</span>
-                  <strong>{{ statistics.totalUsers }}</strong>
-                </div>
-              </div>
-              <div>
-                <div class="d-flex justify-content-between">
-                  <span>Active Bookings</span>
-                  <strong>{{ statistics.totalBookings }}</strong>
-                </div>
-              </div>
-            </div>
-          </div>
+  <div class="card">
+    <div class="card-header">
+      <h5><i class="bi bi-activity"></i> System Overview</h5>
+    </div>
+    <div class="card-body">
+      <div class="mb-3">
+        <div class="d-flex justify-content-between">
+          <span>Room Utilization Rate</span>
+          <strong>{{ statistics.roomUtilization }}%</strong>
         </div>
+        <div class="progress mt-2">
+          <div class="progress-bar" [style.width.%]="statistics.roomUtilization"></div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <div class="d-flex justify-content-between">
+          <span>Most Booked Room</span>
+          <strong>{{ statistics.mostBookedRoom }}</strong>
+        </div>
+      </div>
+      <div class="mb-3">
+        <div class="d-flex justify-content-between">
+          <span>Least Booked Room</span>
+          <strong>{{ statistics.leastBookedRoom }}</strong>
+        </div>
+      </div>
+      <div class="mb-3">
+        <div class="d-flex justify-content-between">
+          <span>Total Users</span>
+          <strong>{{ statistics.totalUsers }}</strong>
+        </div>
+      </div>
+      <div>
+        <div class="d-flex justify-content-between">
+          <span>Active Bookings</span>
+          <strong>{{ statistics.totalBookings }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
         <div class="col-md-6">
           <div class="card">
@@ -185,7 +192,8 @@
                   <tbody>
                     <tr *ngFor="let booking of bookings.slice(0, 5)">
                       <td>{{ booking.roomName }}</td>
-                      <td>{{ booking.bookingDate }}</td>
+                      <td>{{ booking.bookingDate | slice:0:10 }}</td> 
+                      <!-- <td>{{ booking.bookingDate }}</td> old one shows the whole date format -->
                       <td>{{ booking.startTime }} - {{ booking.endTime }}</td>
                       <td>
                         <span class="badge" 
@@ -525,7 +533,8 @@
                   <td>{{ booking.id }}</td>
                   <td>{{ booking.roomName }}</td>
                   <td>{{ booking.building }}</td>
-                  <td>{{ booking.bookingDate }}</td>
+                  <td>{{ booking.bookingDate | slice:0:10 }}</td>
+                  <!-- <td>{{ booking.bookingDate }}</td> old one shows the whole date format -->
                   <td>{{ booking.startTime }} - {{ booking.endTime }}</td>
                   <td>{{ booking.purpose }}</td>
                   <td>{{ booking.attendees }}</td>
