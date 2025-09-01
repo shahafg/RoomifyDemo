@@ -4,6 +4,15 @@ import { User } from '../models/user';
 import { map, Observable } from 'rxjs';
 import { Role } from '../models/role';
 
+interface BulkRegistrationResult {
+  message: string;
+  results: {
+    successful: Array<{ index: number; email: string; id: string }>;
+    failed: Array<{ index: number; email: string; error: string }>;
+    total: number;
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -74,4 +83,7 @@ export class UsersService {
     return this.http.post<User>(this.apiUrl + "/register", newUser);
   }
 
+  bulkRegisterUsers(users: any[]): Observable<BulkRegistrationResult> {
+    return this.http.post<BulkRegistrationResult>(this.apiUrl + "/bulk-register", { users });
+  }
 }

@@ -60,6 +60,93 @@ usersRouter.post("/register", async (req, res) => {
   }
 });
 
+// BULK CREATE users
+usersRouter.post("/bulk-register", async (req, res) => {
+  try {
+    const { users } = req.body;
+    
+    if (!users || !Array.isArray(users)) {
+      return res.status(400).send({
+        message: "Request body must contain a 'users' array"
+      });
+    }
+
+    const results = {
+      successful: [],
+      failed: [],
+      total: users.length
+    };
+
+    // Process each user
+    for (let i = 0; i < users.length; i++) {
+      const userData = users[i];
+      
+      try {
+        // Check if user already exists
+        const existingUser = await usersSchema.findOne({ email: userData.email });
+        
+        if (existingUser) {
+          results.failed.push({
+            index: i,
+            email: userData.email,
+            error: "User with this email already exists"
+          });
+          continue;
+        }
+
+        // Validate required fields
+        if (!userData.email || !userData.password || !userData.fullName || 
+            !userData.dateOfBirth || !userData.gender) {
+          results.failed.push({
+            index: i,
+            email: userData.email || 'unknown',
+            error: "Missing required fields"
+          });
+          continue;
+        }
+
+        // Create new user
+        const newUser = new usersSchema({
+          ...userData,
+          role: userData.role || 10,
+          image: userData.image || (userData.gender === 'male' ? 'assets/images/profile/male.jpg' : 'assets/images/profile/female.jpg')
+        });
+        
+        const savedUser = await newUser.save();
+        
+        results.successful.push({
+          index: i,
+          email: userData.email,
+          id: savedUser._id
+        });
+
+      } catch (userError) {
+        results.failed.push({
+          index: i,
+          email: userData.email || 'unknown',
+          error: userError.message
+        });
+      }
+    }
+
+    // Return results
+    const statusCode = results.failed.length === 0 ? 201 : 
+                      results.successful.length === 0 ? 400 : 207; // 207 = Multi-Status
+
+    res.status(statusCode).send({
+      message: `Bulk registration completed. ${results.successful.length} successful, ${results.failed.length} failed.`,
+      results: results
+    });
+
+  } catch (error) {
+    console.error("Error in bulk registration:", error);
+    res.status(500).send({ 
+      message: "Error in bulk registration", 
+      error: error.message 
+    });
+  }
+});
+
 // UPDATE user
 usersRouter.put("/:id", async (req, res) => {
     try {
