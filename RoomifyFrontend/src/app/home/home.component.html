@@ -1,10 +1,31 @@
 <div class="container">
     <div class="homepage-container" *ngIf="!isLoggedIn">
         <section class="hero">
+            <div class="logo-container">
+                <img src="assets/images/RoomifyLogo.jpg" alt="Roomify Logo" class="logo">
+            </div>
             <h1>Welcome to Roomify</h1>
-            <p>Your smart solution for booking rooms and managing academic spaces efficiently.</p>
-            <br>
-            <h3>Login to continue!</h3>
+            <p class="subtitle">Your smart solution for booking rooms and managing academic spaces efficiently.</p>
+            <div class="features">
+                <div class="feature-item">
+                    <h4>📅 Easy Booking</h4>
+                    <p>Reserve rooms with just a few clicks</p>
+                </div>
+                <div class="feature-item">
+                    <h4>🏫 Space Management</h4>
+                    <p>Efficiently manage all academic facilities</p>
+                </div>
+                <div class="feature-item">
+                    <h4>📊 Real-time Updates</h4>
+                    <p>Stay informed about room availability</p>
+                </div>
+            </div>
+            <div class="cta-section">
+                <h3>Ready to get started?</h3>
+                <div class="auth-buttons">
+                    <a routerLink="/profile/login" class="btn btn-primary">Login</a>
+                </div>
+            </div>
         </section>
     </div>
 

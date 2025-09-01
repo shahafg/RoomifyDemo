@@ -1,3 +1,138 @@
+/* Homepage styles for non-logged in users */
+.homepage-container {
+    min-height: 80vh;
+    background: #ffeaea;
+    padding: 1.5rem;
+}
+
+.hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.logo-container {
+    margin-bottom: 1rem;
+}
+
+.logo {
+    max-width: 200px;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    text-shadow: none;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #5a6c7d;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+}
+
+.features {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.feature-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+    flex: 1;
+    max-width: 300px;
+    min-width: 250px;
+}
+
+.feature-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.feature-item h4 {
+    color: #2c3e50;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.feature-item p {
+    color: #5a6c7d;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.cta-section {
+    margin-top: 1.5rem;
+}
+
+.cta-section h3 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    min-width: 150px;
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+.btn-primary {
+    background: var(--main);
+    color: white;
+    box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+    border: 2px solid var(--main);
+}
+
+.btn-primary:hover {
+    background: var(--main_dark);
+    color: white;
+    border: 2px solid var(--main_dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(220, 53, 69, 0.4);
+}
+
+
+/* Styles for logged-in users */
 .container {
     display: flex;
     justify-content: center;
@@ -5,6 +140,7 @@
     flex: 1;
     flex-direction: column;
 }
+
 .container > div {
     display: flex;
     flex-direction: column;
@@ -12,6 +148,7 @@
     align-items: center;
     gap: 10px;
 }
+
 .container > div > a {
     display: flex;
     justify-content: center;
@@ -19,24 +156,72 @@
     height: 60px;
     width: 100%;
     max-width: 400px;
-    border: 2px solid black;
-    border-radius: 8px;
+    border: 2px solid #007bff;
+    border-radius: 12px;
     text-decoration: none;
     font-size: 1.1rem;
-    font-weight: bold;
-    color: black;
-    background-color: #f8f9fa;
-    transition: all 0.3s ease-in-out;
+    font-weight: 600;
+    color: #007bff;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
+
 .container > div > a:hover {
-    background-color: #e0e0e0;
-    border-color: #333;
-    transform: scale(1.05);
+    background: linear-gradient(145deg, #007bff, #0056b3);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .features {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    
+    .feature-item {
+        max-width: 100%;
+        width: 100%;
+        padding: 1.5rem;
+    }
+    
+    .auth-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 250px;
+    }
+    
+    .logo {
+        max-width: 150px;
+    }
 }
 
 @media (max-width: 600px) {
     .container > div > a {
         width: 90%;
         font-size: 1rem;
+    }
+    
+    .homepage-container {
+        padding: 1rem;
+    }
+    
+    .hero {
+        padding: 2rem 0.5rem;
     }
 }
