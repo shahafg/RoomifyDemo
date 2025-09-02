@@ -1,0 +1,163 @@
+<div class="room-schedule-container" *ngIf="!loading && !error && roomSchedule">
+  <div class="room-schedule-content">
+    <!-- Room Information Section -->
+    <div class="room-info-section">
+      <div class="room-info-header">
+        <i class="icon">🏢</i>
+        <h3>Room Information</h3>
+      </div>
+      
+      <div class="room-details">
+        <div class="detail-row">
+          <span class="icon">👥</span>
+          <span>Capacity: {{ roomSchedule.room.capacity }} people</span>
+        </div>
+        
+        <div class="detail-row">
+          <span class="icon">📍</span>
+          <span>Floor {{ roomSchedule.room.floor }}</span>
+        </div>
+      </div>
+
+      <div class="facilities" *ngIf="roomSchedule.room.facilities">
+        <p><strong>Facilities:</strong></p>
+        <div class="facility-tags">
+          <span 
+            *ngFor="let facility of getFacilitiesList(roomSchedule.room.facilities)" 
+            class="facility-tag"
+            [class.available]="facility.available">
+            <span class="facility-icon">{{ getFacilityIcon(facility.key) }}</span>
+            {{ getFacilityDisplay(facility.key) }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Status Section -->
+    <div class="current-status-section">
+      <div class="status-header">
+        <i class="icon">🕐</i>
+        <h3>Current Status</h3>
+      </div>
+      
+      <div class="status-content">
+        <div class="availability-status" [class.available]="roomSchedule.currentStatus.available">
+          <div class="status-indicator">
+            <span class="status-dot" [class.available]="roomSchedule.currentStatus.available"></span>
+            <span class="status-text">
+              {{ roomSchedule.currentStatus.available ? 'Available Now' : 'Occupied' }}
+            </span>
+            <span class="status-label">
+              {{ roomSchedule.currentStatus.available ? 'FREE' : 'BUSY' }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="upcoming-info">
+          <p *ngIf="!roomSchedule.currentStatus.nextBooking && isToday()">
+            No upcoming bookings
+          </p>
+          <p *ngIf="roomSchedule.currentStatus.nextBooking">
+            Next: {{ roomSchedule.currentStatus.nextBooking.startTime }} - {{ roomSchedule.currentStatus.nextBooking.endTime }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Schedule Section -->
+  <div class="schedule-section">
+    <div class="schedule-header">
+      <div class="schedule-title">
+        <i class="icon">🕐</i>
+        <h3>{{ roomSchedule.room.name }} Schedule</h3>
+      </div>
+      
+      <div class="schedule-controls">
+        <div class="view-toggle">
+          <button 
+            [class.active]="viewMode === 'day'"
+            (click)="switchView('day')"
+            class="toggle-btn">
+            Day View
+          </button>
+          <button 
+            [class.active]="viewMode === 'calendar'"
+            (click)="switchView('calendar')"
+            class="toggle-btn">
+            Calendar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="date-selector">
+      <div class="date-navigation">
+        <h4>{{ formatDate(selectedDate) }}</h4>
+        <input 
+          type="date" 
+          [(ngModel)]="selectedDate" 
+          (change)="onDateChange()"
+          class="date-input">
+      </div>
+      <div class="today-indicator" *ngIf="isToday()">
+        Today
+      </div>
+    </div>
+
+    <!-- Time Slots -->
+    <div class="time-slots" *ngIf="viewMode === 'day'">
+      <div 
+        *ngFor="let timeSlot of roomSchedule.timeSlots" 
+        class="time-slot"
+        [class.available]="timeSlot.available"
+        [class.booked]="!timeSlot.available"
+        (click)="onTimeSlotClick(timeSlot)">
+        
+        <div class="time-info">
+          <span class="time">{{ timeSlot.time }}</span>
+        </div>
+        
+        <div class="slot-status">
+          <div class="status-indicator">
+            <span class="status-dot" [class.available]="timeSlot.available"></span>
+            <span class="status-text">
+              {{ timeSlot.available ? 'Available' : (timeSlot.booking?.purpose || 'Booked') }}
+            </span>
+          </div>
+          
+          <div class="booking-details" *ngIf="!timeSlot.available && timeSlot.booking">
+            <small>{{ timeSlot.booking.bookedBy }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendar View Placeholder -->
+    <div class="calendar-view" *ngIf="viewMode === 'calendar'">
+      <div class="calendar-placeholder">
+        <p>Calendar view coming soon...</p>
+        <p>Use Day View to see available time slots.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-container" *ngIf="loading">
+  <div class="loading-spinner"></div>
+  <p>Loading room schedule...</p>
+</div>
+
+<!-- Error State -->
+<div class="error-container" *ngIf="error">
+  <div class="error-icon">❌</div>
+  <p>{{ error }}</p>
+  <button (click)="loadSchedule()" class="retry-btn">Retry</button>
+</div>
+
+<!-- No Room Selected -->
+<div class="no-room-container" *ngIf="!roomId && !loading">
+  <div class="no-room-icon">🏢</div>
+  <p>Please select a room to view its schedule</p>
+</div>

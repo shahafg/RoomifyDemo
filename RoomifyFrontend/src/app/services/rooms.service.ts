@@ -70,4 +70,9 @@ export class RoomsService {
   deleteRoom(id: number): Observable<any> {
     return this.http.delete<any>(`${this.roomsUrl}/${id}`);
   }
+
+  // Get room schedule for a specific date
+  getRoomSchedule(roomId: number, date: string): Observable<any> {
+    return this.http.get<any>(`${this.roomsUrl}/${roomId}/schedule/${date}`);
+  }
 }

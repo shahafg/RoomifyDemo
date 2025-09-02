@@ -21,7 +21,7 @@ export class RegisterComponent {
   gender: 'male' | 'female' = 'male';
   errorMessage = '';
   imageFile: File | null = null;
-  role: Role = 10;
+  role: Role = 0;
 
   constructor(private usersService: UsersService, private router: Router) { }
 

@@ -763,10 +763,27 @@ this.statistics.weekBookings = this.bookings.filter(b => {
   }
 
   deleteUser(user: User): void {
-    if (confirm(`Are you sure you want to delete user ${user.getFullName()}?`)) {
-      alert('User deletion functionality to be implemented with backend API');
-      // TODO: Implement usersService.deleteUser() method
-      this.loadUsers();
+    if (confirm(`Are you sure you want to delete user ${user.getFullName()}?\nEmail: ${user.getEmail()}\n\nThis action cannot be undone.`)) {
+      this.usersService.deleteUser(user.getEmail()).subscribe({
+        next: (response) => {
+          const index = this.users.findIndex(u => u.getEmail() === user.getEmail());
+          if (index !== -1) {
+            this.users.splice(index, 1);
+            this.filterUsers();
+            this.updateStatistics();
+          }
+          alert(`User ${user.getFullName()} has been successfully deleted.`);
+        },
+        error: (error) => {
+          console.error('Error deleting user:', error);
+          if (error.status === 404) {
+            alert('User not found. They may have already been deleted.');
+            this.loadUsers();
+          } else {
+            alert('Failed to delete user. Please try again.');
+          }
+        }
+      });
     }
   }
 

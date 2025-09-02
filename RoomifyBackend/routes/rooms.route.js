@@ -1,6 +1,7 @@
 const express = require("express");
 const roomsRouter = express.Router();
 const roomSchema = require('../models/roomSchema.js');
+const bookingSchema = require('../models/BookingSchema.js');
 
 // GET all rooms
 roomsRouter.get("/", async (req, res) => {
@@ -84,6 +85,94 @@ roomsRouter.get("/status/:statusCode", async (req, res) => {
     } catch (error) {
         console.error(`Error fetching rooms with status ${req.params.statusCode}:`, error);
         res.status(500).send({ message: "Error fetching rooms by status", error: error.message });
+    }
+});
+
+// GET room schedule with availability for a specific date
+roomsRouter.get("/:id/schedule/:date", async (req, res) => {
+    try {
+        const roomId = parseInt(req.params.id);
+        const date = req.params.date;
+        
+        if (isNaN(roomId)) {
+            return res.status(400).send({ message: "Invalid room ID format" });
+        }
+        
+        // Get room information
+        const room = await roomSchema.findOne({ id: roomId }, { _id: 0 });
+        if (!room) {
+            return res.status(404).send({ message: `Room with ID ${roomId} not found` });
+        }
+        
+        // Get bookings for the specific date
+        const requestedDate = new Date(date);
+        const startOfDay = new Date(requestedDate);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(requestedDate);
+        endOfDay.setHours(23, 59, 59, 999);
+        
+        const bookings = await bookingSchema.find({
+            roomId: roomId,
+            bookingDate: { $gte: startOfDay, $lte: endOfDay },
+            status: 'active'
+        }, { _id: 0 }).sort({ startTime: 1 });
+        
+        // Generate time slots (8:00 AM to 6:00 PM in 1-hour intervals)
+        const timeSlots = [];
+        for (let hour = 8; hour <= 18; hour++) {
+            const timeString = `${hour.toString().padStart(2, '0')}:00`;
+            const endTimeString = `${(hour + 1).toString().padStart(2, '0')}:00`;
+            
+            // Check if this time slot conflicts with any booking
+            const isBooked = bookings.some(booking => {
+                const bookingStart = booking.startTime;
+                const bookingEnd = booking.endTime;
+                
+                return (timeString >= bookingStart && timeString < bookingEnd) ||
+                       (endTimeString > bookingStart && endTimeString <= bookingEnd) ||
+                       (timeString <= bookingStart && endTimeString >= bookingEnd);
+            });
+            
+            timeSlots.push({
+                time: timeString,
+                endTime: endTimeString,
+                available: !isBooked,
+                booking: isBooked ? bookings.find(b => 
+                    (timeString >= b.startTime && timeString < b.endTime) ||
+                    (endTimeString > b.startTime && endTimeString <= b.endTime) ||
+                    (timeString <= b.startTime && endTimeString >= b.endTime)
+                ) : null
+            });
+        }
+        
+        // Get current status
+        const currentDate = new Date();
+        const isToday = currentDate.toDateString() === requestedDate.toDateString();
+        const currentTime = currentDate.toTimeString().slice(0, 5);
+        
+        let currentStatus = {
+            available: room.status === 0,
+            nextBooking: null
+        };
+        
+        if (isToday) {
+            const upcomingBookings = bookings.filter(b => b.startTime > currentTime);
+            if (upcomingBookings.length > 0) {
+                currentStatus.nextBooking = upcomingBookings[0];
+            }
+        }
+        
+        res.status(200).send({
+            room: room,
+            date: date,
+            timeSlots: timeSlots,
+            currentStatus: currentStatus,
+            bookings: bookings
+        });
+        
+    } catch (error) {
+        console.error(`Error fetching room schedule ${req.params.id}:`, error);
+        res.status(500).send({ message: "Error fetching room schedule", error: error.message });
     }
 });
 

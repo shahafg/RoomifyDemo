@@ -11,6 +11,7 @@
                 <th>Capacity</th>
                 <th>Status</th>
                 <th>Accessible</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -21,9 +22,28 @@
                 <td>{{ room.getBuilding() }}</td>
                 <td>{{ room.getFloor() }}</td>
                 <td>{{ room.getCapacity() }}</td>
-                <td>{{ room.getStatus() == 1 ? 'Active' : 'Inactive' }}</td>
+                <td>{{ room.getStatus() == 1 ? 'Unavailable' : 'Available' }}</td>
                 <td>{{ room.isAccessible() ? 'Yes' : 'No' }}</td>
+                <td>
+                    <button 
+                        class="schedule-btn"
+                        (click)="viewSchedule(room.getId())"
+                        title="View Room Schedule">
+                        📅 Schedule
+                    </button>
+                </td>
             </tr>
         </tbody>
     </table>
+
+    <!-- Room Schedule Modal/Section -->
+    <div class="schedule-modal" *ngIf="selectedRoomId" (click)="closeSchedule()">
+        <div class="schedule-modal-content" (click)="$event.stopPropagation()">
+            <div class="schedule-modal-header">
+                <h2>Room Schedule</h2>
+                <button class="close-btn" (click)="closeSchedule()">✕</button>
+            </div>
+            <app-room-schedule [roomId]="selectedRoomId"></app-room-schedule>
+        </div>
+    </div>
 </div>

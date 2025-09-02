@@ -86,4 +86,9 @@ export class UsersService {
   bulkRegisterUsers(users: any[]): Observable<BulkRegistrationResult> {
     return this.http.post<BulkRegistrationResult>(this.apiUrl + "/bulk-register", { users });
   }
+
+  deleteUser(email: string): Observable<any> {
+    const encodedEmail = encodeURIComponent(email);
+    return this.http.delete(`${this.apiUrl}/${encodedEmail}`);
+  }
 }

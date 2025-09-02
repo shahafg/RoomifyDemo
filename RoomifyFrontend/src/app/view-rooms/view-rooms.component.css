@@ -37,6 +37,93 @@ table th {
   border: 1px solid #ddd;
 }
 
+/* Schedule Button */
+.schedule-btn {
+  background: var(--main);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.schedule-btn:hover {
+  background: var(--main_dark);
+  transform: translateY(-1px);
+}
+
+.schedule-btn:active {
+  transform: translateY(0);
+}
+
+/* Schedule Modal */
+.schedule-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.schedule-modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 1400px;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.schedule-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+  border-radius: 12px 12px 0 0;
+}
+
+.schedule-modal-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6c757d;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #e9ecef;
+  color: #2c3e50;
+}
+
 @media (max-width: 768px) {
   table {
     font-size: 14px;
@@ -45,5 +132,26 @@ table th {
   table th,
   table td {
     padding: 8px;
+  }
+
+  .schedule-btn {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .schedule-modal {
+    padding: 0.5rem;
+  }
+
+  .schedule-modal-content {
+    max-height: 95vh;
+  }
+
+  .schedule-modal-header {
+    padding: 1rem 1.5rem;
+  }
+
+  .schedule-modal-header h2 {
+    font-size: 1.3rem;
   }
 }

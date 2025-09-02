@@ -179,23 +179,23 @@ usersRouter.put("/:id", async (req, res) => {
     }
 });
 
-// DELETE user
-usersRouter.delete("/:id", async (req, res) => {
+// DELETE user by email
+usersRouter.delete("/:email", async (req, res) => {
     try {
-        const userId = req.params.id;
+        const userEmail = decodeURIComponent(req.params.email);
         
         // Check if user exists
-        const existingUser = await usersSchema.findOne({ id: userId });
+        const existingUser = await usersSchema.findOne({ email: userEmail });
         if (!existingUser) {
-            return res.status(404).send({ message: `User with ID ${userId} not found` });
+            return res.status(404).send({ message: `User with email ${userEmail} not found` });
         }
         
         // Delete user
-        await usersSchema.deleteOne({ id: userId });
+        await usersSchema.deleteOne({ email: userEmail });
         
-        res.status(200).send({ message: `User with ID ${userId} successfully deleted` });
+        res.status(200).send({ message: `User with email ${userEmail} successfully deleted` });
     } catch (error) {
-        console.error(`Error deleting user ${req.params.id}:`, error);
+        console.error(`Error deleting user ${req.params.email}:`, error);
         res.status(500).send({ message: "Error deleting user", error: error.message });
     }
 });

@@ -42,7 +42,7 @@ interface RegistrationResult {
       "fullName": "John Doe",
       "dateOfBirth": "1990-01-15",
       "gender": "male",
-      "role": 10
+      "role": 0
     {{ '}' }}
   ]
 {{ '}' }}
