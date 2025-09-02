@@ -4,7 +4,6 @@ import { User } from '../models/user';
 import { CommonModule } from '@angular/common';
 import { Role } from '../models/role';
 
-
 @Component({
   selector: 'app-user-details',
   standalone: true,
@@ -12,6 +11,7 @@ import { Role } from '../models/role';
   templateUrl: './user-details.component.html',
   styleUrls: ['./user-details.component.css'],
 })
+
 export class UserDetailsComponent {
   user: User | null = null;
   Role = Role; // Expose the enum to the template
@@ -35,9 +35,6 @@ export class UserDetailsComponent {
     } else {
       this.router.navigateByUrl('/profile/login');
     }
-    
-
-
   }
 
   showGender(): string {
