@@ -85,4 +85,29 @@ schedulePeriodRouter.delete("/:id", async (req, res) => {
   }
 });
 
+// BULK SAVE/UPDATE schedule periods - for saving entire schedules
+schedulePeriodRouter.post("/bulk", async (req, res) => {
+  try {
+    const scheduleData = req.body;
+
+    // Check if schedule already exists
+    const existingSchedule = await schedulePeriodSchema.findOne({ id: scheduleData.id });
+    
+    if (existingSchedule) {
+      // Update existing schedule
+      await schedulePeriodSchema.updateOne({ id: scheduleData.id }, { $set: scheduleData });
+      const updatedSchedule = await schedulePeriodSchema.findOne({ id: scheduleData.id }, { _id: 0 });
+      res.status(200).send({ message: "Schedule updated successfully", data: updatedSchedule });
+    } else {
+      // Create new schedule
+      const newSchedule = new schedulePeriodSchema(scheduleData);
+      const savedSchedule = await newSchedule.save();
+      res.status(201).send({ message: "Schedule created successfully", data: savedSchedule });
+    }
+  } catch (error) {
+    console.error("Error saving schedule:", error);
+    res.status(500).send({ message: "Error saving schedule", error: error.message });
+  }
+});
+
 module.exports = schedulePeriodRouter;

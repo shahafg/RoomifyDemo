@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SchedulePeriod } from '../models/schedule-period';
+import { ScheduleService } from '../services/schedule.service';
 
 @Component({
   selector: 'app-time-schedule',
@@ -15,20 +16,24 @@ export class TimeScheduleComponent implements OnInit {
   hasTimeConflict: boolean = false;
   currentEditPeriod: SchedulePeriod | null = null;
   showModal: boolean = false;
+  scheduleName: string = 'Default Schedule';
+  scheduleId: string = 'default-schedule-1';
+  isLoading: boolean = false;
+  isSaving: boolean = false;
 
-  constructor() { 
+  constructor(private scheduleService: ScheduleService) { 
     console.log('TimeScheduleComponent constructor called');
   }
 
   ngOnInit(): void {
     console.log('TimeScheduleComponent initialized');
-    this.initializeSchedule();
+    this.loadExistingSchedule();
   }
 
   initializeSchedule(): void {
     this.schedulePeriods = [
       new SchedulePeriod(0, '1', '08:00', '08:50', '1st Class'),
-      new SchedulePeriod(1, '2', '09:00', '10:50', '2nd Class'),
+      new SchedulePeriod(1, '2', '09:00', '09:50', '2nd Class'),
       new SchedulePeriod(2, '3', '10:00', '10:50', '3rd Class'),
       new SchedulePeriod(3, '4', '11:00', '11:50', '4th Class'),
       new SchedulePeriod(4, 'LUNCH', '11:50', '12:20', 'LUNCH'),
@@ -70,7 +75,7 @@ export class TimeScheduleComponent implements OnInit {
         const start2 = this.timeToMinutes(period2.getStartTime());
         const end2 = this.timeToMinutes(period2.getEndTime());
         
-        if ((start1 < end2 && end1 > start2) || (start2 < end1 && end2 > start1)) {
+        if (start1 < end2 && end1 > start2 && !(end1 === start2 || end2 === start1)) {
           this.hasTimeConflict = true;
           return;
         }
@@ -137,14 +142,81 @@ export class TimeScheduleComponent implements OnInit {
         return;
       }
     }
+
+    if (this.isSaving) return;
+
+    this.isSaving = true;
     console.log('Saving schedule:', this.schedulePeriods);
-    alert('Schedule saved successfully!');
+
+    const scheduleData = this.scheduleService.convertSchedulePeriodsToData(
+      this.schedulePeriods, 
+      this.scheduleId, 
+      this.scheduleName
+    );
+
+    this.scheduleService.saveScheduleBulk(scheduleData).subscribe({
+      next: (response) => {
+        console.log('Schedule saved successfully:', response);
+        alert('Schedule saved successfully!');
+        this.isSaving = false;
+      },
+      error: (error) => {
+        console.error('Error saving schedule:', error);
+        alert('Error saving schedule. Please try again.');
+        this.isSaving = false;
+      }
+    });
+  }
+
+  private updateExistingSchedule(scheduleData: any): void {
+    this.scheduleService.updateSchedule(this.scheduleId, scheduleData).subscribe({
+      next: (response) => {
+        console.log('Schedule updated successfully:', response);
+        alert('Schedule updated successfully!');
+        this.isSaving = false;
+      },
+      error: (error) => {
+        console.error('Error updating schedule:', error);
+        alert('Error updating schedule. Please try again.');
+        this.isSaving = false;
+      }
+    });
+  }
+
+  private loadExistingSchedule(): void {
+    this.isLoading = true;
+    this.scheduleService.getScheduleById(this.scheduleId).subscribe({
+      next: (scheduleData) => {
+        console.log('Loaded existing schedule:', scheduleData);
+        this.schedulePeriods = this.scheduleService.convertDataToSchedulePeriods(scheduleData);
+        this.scheduleName = scheduleData.name;
+        this.checkForTimeConflicts();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.log('No existing schedule found, initializing default:', error);
+        this.initializeSchedule();
+        this.isLoading = false;
+      }
+    });
   }
 
   resetSchedule(): void {
     if (confirm('Are you sure you want to reset the schedule? All changes will be lost.')) {
       this.initializeSchedule();
       this.hasTimeConflict = false;
+    }
+  }
+
+  removeLastPeriod(): void {
+    if (this.schedulePeriods.length <= 1) {
+      alert('Cannot delete the last remaining period.');
+      return;
+    }
+    
+    if (confirm('Are you sure you want to delete the last period?')) {
+      this.schedulePeriods.pop();
+      this.checkForTimeConflicts();
     }
   }
 }
