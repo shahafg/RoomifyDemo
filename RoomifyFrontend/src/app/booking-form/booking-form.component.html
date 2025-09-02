@@ -1,0 +1,121 @@
+<div class="booking-form-overlay" (click)="onClose()">
+  <div class="booking-form-container" (click)="$event.stopPropagation()">
+    <div class="form-header">
+      <h2>Book Room: {{ roomName }}</h2>
+      <button class="close-btn" (click)="onClose()">×</button>
+    </div>
+
+    <div class="form-content" *ngIf="!loading">
+      <!-- Room and Date Information -->
+      <div class="booking-info">
+        <div class="info-item">
+          <span class="icon">🏢</span>
+          <span>{{ building }} - Floor {{ floor }}</span>
+        </div>
+        <div class="info-item">
+          <span class="icon">📅</span>
+          <span>{{ formatDate(selectedDate) }}</span>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div class="error-message" *ngIf="error">
+        <span class="error-icon">⚠️</span>
+        {{ error }}
+      </div>
+
+      <!-- Period Selection Section -->
+      <div class="period-selection-section">
+        <h3>Select Time Periods</h3>
+        <p class="instruction">Choose one or more periods for your booking:</p>
+        
+        <div class="periods-grid">
+          <div 
+            *ngFor="let period of availablePeriods"
+            class="period-card"
+            [class.selected]="isPeriodSelected(period)"
+            (click)="togglePeriodSelection(period)">
+            
+            <div class="period-header">
+              <span class="period-name">{{ period.getPeriodName() }}</span>
+              <span class="period-time">{{ period.getStartTime() }} - {{ period.getEndTime() }}</span>
+            </div>
+            
+            <div class="period-subject">{{ period.getSubject() }}</div>
+            
+            <div class="selection-indicator" *ngIf="isPeriodSelected(period)">
+              <span class="check-icon">✓</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="selection-summary" *ngIf="selectedPeriods.length > 0">
+          <div class="summary-item">
+            <span class="icon">⏰</span>
+            <span>{{ getSelectedPeriodsDisplay() }}</span>
+          </div>
+          <button class="clear-selection-btn" (click)="clearSelection()">Clear Selection</button>
+        </div>
+      </div>
+
+      <!-- Booking Details Form -->
+      <form class="booking-details-form" *ngIf="selectedPeriods.length > 0">
+        <div class="form-group">
+          <label for="purpose">Purpose *</label>
+          <input 
+            type="text" 
+            id="purpose"
+            [(ngModel)]="booking.purpose"
+            name="purpose"
+            placeholder="Enter the purpose of your booking"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="attendees">Number of Attendees *</label>
+          <input 
+            type="number" 
+            id="attendees"
+            [(ngModel)]="booking.attendees"
+            name="attendees"
+            min="1"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Additional Notes</label>
+          <textarea 
+            id="notes"
+            [(ngModel)]="booking.additionalNotes"
+            name="notes"
+            placeholder="Any additional information or requirements"
+            rows="3"></textarea>
+        </div>
+      </form>
+
+      <!-- Action Buttons -->
+      <div class="form-actions">
+        <button class="cancel-btn" (click)="onClose()">Cancel</button>
+        <button 
+          class="check-availability-btn" 
+          (click)="checkAvailability()"
+          [disabled]="selectedPeriods.length === 0 || loading">
+          Check Availability
+        </button>
+        <button 
+          class="submit-btn" 
+          (click)="submitBooking()"
+          [disabled]="selectedPeriods.length === 0 || !booking.purpose || isSubmitting || error">
+          <span *ngIf="!isSubmitting">Book Room</span>
+          <span *ngIf="isSubmitting">Booking...</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-content" *ngIf="loading">
+      <div class="loading-spinner"></div>
+      <p>Loading available periods...</p>
+    </div>
+  </div>
+</div>

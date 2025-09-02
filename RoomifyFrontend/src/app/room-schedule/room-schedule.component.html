@@ -91,6 +91,17 @@
       </div>
     </div>
 
+    <!-- Book Room Button -->
+    <div class="book-room-section" *ngIf="roomSchedule && roomSchedule.room">
+      <button 
+        class="book-room-btn" 
+        (click)="openBookingForm()"
+        [disabled]="loading">
+        <span class="btn-icon">📅</span>
+        Book This Room
+      </button>
+    </div>
+
     <div class="date-selector">
       <div class="date-navigation">
         <h4>{{ formatDate(selectedDate) }}</h4>
@@ -105,8 +116,41 @@
       </div>
     </div>
 
-    <!-- Time Slots -->
-    <div class="time-slots" *ngIf="viewMode === 'day'">
+    <!-- Period-Based Time Slots -->
+    <div class="time-slots" *ngIf="viewMode === 'day' && periodTimeSlots.length > 0">
+      <div 
+        *ngFor="let periodSlot of periodTimeSlots" 
+        class="time-slot period-slot"
+        [class.available]="periodSlot.available"
+        [class.booked]="!periodSlot.available"
+        (click)="onPeriodTimeSlotClick(periodSlot)">
+        
+        <div class="period-info">
+          <div class="period-name">{{ periodSlot.period.getPeriodName() }}</div>
+          <div class="period-time">{{ periodSlot.time }} - {{ periodSlot.endTime }}</div>
+        </div>
+        
+        <div class="slot-status">
+          <div class="period-subject">
+            <span class="subject-label">{{ periodSlot.period.getSubject() }}</span>
+          </div>
+          
+          <div class="status-indicator">
+            <span class="status-dot" [class.available]="periodSlot.available"></span>
+            <span class="status-text">
+              {{ periodSlot.available ? 'Available' : (periodSlot.booking?.purpose || 'Booked') }}
+            </span>
+          </div>
+          
+          <div class="booking-details" *ngIf="!periodSlot.available && periodSlot.booking">
+            <small>{{ periodSlot.booking.bookedBy }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fallback: Generic Time Slots (when periods not available) -->
+    <div class="time-slots" *ngIf="viewMode === 'day' && periodTimeSlots.length === 0 && roomSchedule?.timeSlots">
       <div 
         *ngFor="let timeSlot of roomSchedule.timeSlots" 
         class="time-slot"
@@ -161,3 +205,16 @@
   <div class="no-room-icon">🏢</div>
   <p>Please select a room to view its schedule</p>
 </div>
+
+<!-- Booking Form Modal -->
+<app-booking-form
+  *ngIf="showBookingForm && roomSchedule"
+  [roomId]="roomSchedule.room.id"
+  [roomName]="roomSchedule.room.name"
+  [building]="roomSchedule.room.building"
+  [floor]="roomSchedule.room.floor"
+  [selectedDate]="selectedDate"
+  [preSelectedTimeSlot]="selectedTimeSlot"
+  (closeForm)="closeBookingForm()"
+  (bookingCreated)="onBookingCreated($event)">
+</app-booking-form>
