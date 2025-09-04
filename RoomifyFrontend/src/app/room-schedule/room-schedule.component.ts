@@ -7,6 +7,7 @@ import { BookingFormComponent } from '../booking-form/booking-form.component';
 import { Booking } from '../services/bookings.service';
 import { ScheduleService } from '../services/schedule.service';
 import { SchedulePeriod } from '../models/schedule-period';
+import { Role } from '../models/role';
 
 @Component({
   selector: 'app-room-schedule',
@@ -17,7 +18,7 @@ import { SchedulePeriod } from '../models/schedule-period';
 })
 export class RoomScheduleComponent implements OnInit {
   @Input() roomId: number | null = null;
-  
+
   roomSchedule: RoomSchedule | null = null;
   selectedDate: string = '';
   loading: boolean = false;
@@ -28,23 +29,34 @@ export class RoomScheduleComponent implements OnInit {
   selectedTimeSlot: TimeSlot | null = null;
   schedulePeriods: SchedulePeriod[] = [];
   periodTimeSlots: any[] = [];
+  isStudent: boolean = false;
+  userRole: Role = 10;
 
   constructor(
     private roomsService: RoomsService,
     private scheduleService: ScheduleService
-  ) {}
+  ) { }
 
   ngOnInit() {
     // Set default date to today
     const today = new Date();
     this.selectedDate = today.toISOString().split('T')[0];
-    
+
     // Load schedule periods first
     this.loadSchedulePeriods();
-    
+
     // Load schedule if roomId is provided
     if (this.roomId) {
       this.loadSchedule();
+    }
+
+    let userData = sessionStorage.getItem('loggedInUser');
+    if (userData) {
+      let user = JSON.parse(userData);
+      this.userRole = user.role;
+      if (this.userRole == 0) {
+        this.isStudent = true;
+      }
     }
   }
 
@@ -113,12 +125,12 @@ export class RoomScheduleComponent implements OnInit {
         const bookingEnd = this.timeToMinutes(booking.endTime);
         const periodStart = this.timeToMinutes(period.getStartTime());
         const periodEnd = this.timeToMinutes(period.getEndTime());
-        
+
         // Check for overlap
         return (bookingStart < periodEnd && bookingEnd > periodStart);
       });
 
-      const overlappingBooking = isBooked ? 
+      const overlappingBooking = isBooked ?
         this.roomSchedule!.bookings.find(booking => {
           const bookingStart = this.timeToMinutes(booking.startTime);
           const bookingEnd = this.timeToMinutes(booking.endTime);
@@ -153,6 +165,7 @@ export class RoomScheduleComponent implements OnInit {
   }
 
   onPeriodTimeSlotClick(periodSlot: any) {
+    if (this.isStudent) return;
     if (periodSlot.available) {
       this.selectedTimeSlot = {
         time: periodSlot.time,
@@ -168,6 +181,7 @@ export class RoomScheduleComponent implements OnInit {
   }
 
   openBookingForm(timeSlot?: TimeSlot) {
+    if (this.isStudent) return;
     this.selectedTimeSlot = timeSlot || null;
     this.showBookingForm = true;
   }
@@ -209,11 +223,11 @@ export class RoomScheduleComponent implements OnInit {
 
   formatDate(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   }
 

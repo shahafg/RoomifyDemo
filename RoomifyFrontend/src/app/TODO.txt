@@ -1,8 +1,8 @@
-1. Add room function
-2. remove room function
-3. ui for admin to manage rooms (view, add, remove)
-4. Connect project to database
-5. Encrypt Passwords
-need to add a function for the user to add buildings
+1. allow students to view rooms, block students from ordering rooms 
+2. Search room needs to work with Time Schedule
+3. Classroom Exchange
+4. Auditorium
+5. Improve Statistics
 
-remove catalog and manage-products from navbar
+Optional:
+Encrypt Passwords
