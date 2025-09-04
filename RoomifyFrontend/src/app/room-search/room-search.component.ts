@@ -7,6 +7,7 @@ import { RoomsService } from '../services/rooms.service';
 import { BookingsService, Booking } from '../services/bookings.service';
 import { MaintenanceService, MaintenancePeriod } from '../services/maintenance.service';
 import { HttpClientModule } from '@angular/common/http';
+import { RoomScheduleComponent } from '../room-schedule/room-schedule.component';
 
 interface RoomTypeOption {
   value: string;
@@ -64,7 +65,7 @@ const pastDateValidator = (control: AbstractControl): ValidationErrors | null =>
 @Component({
   selector: 'app-room-search',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule, RoomScheduleComponent],
   templateUrl: './room-search.component.html',
   styleUrls: ['./room-search.component.css']
 })
@@ -73,6 +74,7 @@ export class RoomSearchComponent implements OnInit {
   allRooms: Room[] = [];
   filteredRooms: Room[] = [];
   selectedRoom: Room | null = null;
+  selectedRoomId: number | null = null;
   RoomType = RoomType;
   roomTypeOptions: RoomTypeOption[] = [];
   activeMaintenance: MaintenancePeriod[] = [];
@@ -219,170 +221,21 @@ export class RoomSearchComponent implements OnInit {
   }
 
   selectRoom(room: Room): void {
-    if (room.getStatus() !== 0) {
-      alert('This room is already booked. Please select an available room.');
-      return;
-    }
     this.selectedRoom = room;
-
-    this.bookingForm.patchValue({
-      attendees: Math.min(10, room.getCapacity())
-    });
-    
-    this.bookingForm.get('attendees')?.setValidators([
-      Validators.required,
-      Validators.min(1),
-      Validators.max(room.getCapacity())
-    ]);
-    this.bookingForm.get('attendees')?.updateValueAndValidity();
-
-    this.showBookingForm();
+    this.viewSchedule(room.getId());
   }
 
-  showBookingForm(): void {
-    setTimeout(() => {
-      const bookingForm = document.getElementById('bookingForm');
-      bookingForm?.scrollIntoView({ behavior: 'smooth' });
-      bookingForm?.classList.add('scrolled-to');
-      setTimeout(() => {
-        bookingForm?.classList.remove('scrolled-to');
-      }, 1500);
-    }, 100);
+  viewSchedule(roomId: number) {
+    this.selectedRoomId = roomId;
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
   }
 
-  cancelBooking(): void {
+  closeSchedule() {
+    this.selectedRoomId = null;
     this.selectedRoom = null;
-    this.bookingForm.reset({
-      bookingDate: this.todayDate,
-      startTime: '09:00',
-      endTime: '10:00',
-      bookingPurpose: '',
-      attendees: 0,
-      additionalNotes: ''
-    });
+    document.body.style.overflow = 'auto'; // Restore scrolling
   }
 
-  bookRoom(): void {
-    if (!this.selectedRoom) {
-      alert('Please select a room before booking.');
-      return;
-    }
-
-    this.bookingForm.markAllAsTouched();
-
-    if (this.bookingForm.invalid) {
-      console.log('Form is invalid. Cannot proceed with booking.');
-      return;
-    }
-
-    const formValue = this.bookingForm.value;
-
-    // Create datetime strings for maintenance check
-    const startDateTime = this.maintenanceService.formatDateTime(formValue.bookingDate, formValue.startTime);
-    const endDateTime = this.maintenanceService.formatDateTime(formValue.bookingDate, formValue.endTime);
-
-    // First check if booking is allowed (not during maintenance)
-    this.maintenanceService.checkBookingAllowed(startDateTime, endDateTime).subscribe({
-      next: (maintenanceCheck) => {
-        if (!maintenanceCheck.allowed) {
-          let message = 'Booking is not allowed during the scheduled maintenance period.\n\n';
-          if (maintenanceCheck.maintenancePeriods && maintenanceCheck.maintenancePeriods.length > 0) {
-            const maintenance = maintenanceCheck.maintenancePeriods[0];
-            message += `Maintenance: ${maintenance.title}\n`;
-            message += `Period: ${new Date(maintenance.startDate).toLocaleString()} - ${new Date(maintenance.endDate).toLocaleString()}\n`;
-            message += `Description: ${maintenance.description}`;
-          }
-          alert(message);
-          return;
-        }
-
-        // If no maintenance conflict, proceed with regular booking flow
-        this.proceedWithBooking(formValue);
-      },
-      error: (error) => {
-        console.error('Error checking maintenance periods:', error);
-        // If maintenance check fails, proceed with regular booking but warn user
-        console.warn('Could not verify maintenance schedule, proceeding with booking...');
-        this.proceedWithBooking(formValue);
-      }
-    });
-  }
-
-  private proceedWithBooking(formValue: any): void {
-    this.bookingsService.checkAvailability(
-      this.selectedRoom!.getId(),
-      formValue.bookingDate,
-      formValue.startTime,
-      formValue.endTime
-    ).subscribe({
-      next: (availabilityCheck) => {
-        if (!availabilityCheck.available) {
-          if (availabilityCheck.reason) {
-            // This is a maintenance conflict from the backend
-            alert(availabilityCheck.reason);
-          } else {
-            // This is a regular booking conflict
-            alert('This time slot is already booked. Please choose a different time.');
-            if (availabilityCheck.conflicts && availabilityCheck.conflicts.length > 0) {
-              const conflict = availabilityCheck.conflicts[0];
-              console.log(`Conflict: ${conflict.startTime} - ${conflict.endTime} for ${conflict.purpose}`);
-            }
-          }
-          return;
-        }
-
-        const booking: Booking = {
-          roomId: this.selectedRoom!.getId(),
-          roomName: this.selectedRoom!.getName(),
-          building: this.selectedRoom!.getBuilding(),
-          floor: this.selectedRoom!.getFloor(),
-          bookingDate: formValue.bookingDate,
-          startTime: formValue.startTime,
-          endTime: formValue.endTime,
-          purpose: formValue.bookingPurpose,
-          attendees: formValue.attendees,
-          additionalNotes: formValue.additionalNotes || ''
-        };
-
-        this.bookingsService.createBooking(booking).subscribe({
-          next: (response) => {
-            console.log('Booking saved:', response);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const bookingDate = new Date(formValue.bookingDate);
-            bookingDate.setHours(0, 0, 0, 0);
-
-            if (bookingDate.getTime() === today.getTime()) {
-              const currentTime = new Date().toTimeString().slice(0, 5);
-              if (currentTime >= formValue.startTime && currentTime < formValue.endTime) {
-                this.selectedRoom!.setStatus(1);
-              }
-            }
-
-            alert(`Room ${this.selectedRoom!.getName()} booked successfully!\n\nBooking ID: ${response.booking.id}\nDate: ${formValue.bookingDate}\nTime: ${formValue.startTime} - ${formValue.endTime}\nPurpose: ${formValue.bookingPurpose}\nAttendees: ${formValue.attendees}`);
-
-            this.cancelBooking();
-            this.applyFilters();
-          },
-          error: (error) => {
-            console.error('Error saving booking:', error);
-            if (error.status === 409) {
-              alert('This room has been booked by someone else just now. Please select a different time or room.');
-            } else if (error.status === 423) {
-              // Maintenance period conflict from backend
-              alert('Cannot create booking during maintenance period: ' + (error.error?.message || 'Unknown maintenance conflict'));
-            } else {
-              alert('Failed to save booking. Please try again.');
-            }
-          }
-        });
-      },
-      error: (error) => {
-        console.error('Error checking availability:', error);
-        alert('Failed to check availability. Please try again.');
-      }
-    });
-  }
 
   // Method to check if there's any active maintenance notification to show
   hasActiveMaintenanceWarning(): boolean {

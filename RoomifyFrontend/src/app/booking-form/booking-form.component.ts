@@ -85,15 +85,30 @@ export class BookingFormComponent implements OnInit {
     const scheduleId = 'default-schedule-1';
     this.scheduleService.getScheduleById(scheduleId).subscribe({
       next: (scheduleData) => {
+        console.log('✅ Booking form loaded schedule from database:', scheduleData.name);
         this.availablePeriods = this.scheduleService.convertDataToSchedulePeriods(scheduleData);
         this.loading = false;
       },
       error: (error) => {
-        this.error = 'Failed to load time schedule';
+        console.log('⚠️ Booking form failed to load from database, using default periods');
+        this.createDefaultSchedulePeriods();
         this.loading = false;
         console.error('Error loading schedule:', error);
       }
     });
+  }
+
+  private createDefaultSchedulePeriods() {
+    this.availablePeriods = [
+      new SchedulePeriod(0, '1', '08:00', '08:50', '1st Class'),
+      new SchedulePeriod(1, '2', '09:00', '09:50', '2nd Class'),
+      new SchedulePeriod(2, '3', '10:00', '10:50', '3rd Class'),
+      new SchedulePeriod(3, '4', '11:00', '11:50', '4th Class'),
+      new SchedulePeriod(4, 'LUNCH', '11:50', '12:20', 'LUNCH'),
+      new SchedulePeriod(5, '5', '12:20', '13:10', '5th Class'),
+      new SchedulePeriod(6, '6', '13:20', '14:10', '6th Class'),
+      new SchedulePeriod(7, '7', '14:20', '15:10', '7th Class')
+    ];
   }
 
   togglePeriodSelection(period: SchedulePeriod) {
@@ -128,10 +143,9 @@ export class BookingFormComponent implements OnInit {
       return;
     }
 
-    // Set start time to the earliest selected period's start time
+    // Don't set continuous range - individual periods will be booked separately
+    // These are just for display/validation purposes
     this.booking.startTime = this.selectedPeriods[0].getStartTime();
-    
-    // Set end time to the latest selected period's end time
     this.booking.endTime = this.selectedPeriods[this.selectedPeriods.length - 1].getEndTime();
   }
 
@@ -150,11 +164,13 @@ export class BookingFormComponent implements OnInit {
       return `${period.getPeriodName()} (${period.getStartTime()} - ${period.getEndTime()})`;
     }
 
-    return `${this.selectedPeriods.length} periods selected (${this.booking.startTime} - ${this.booking.endTime})`;
+    // Show individual periods, not a continuous range
+    const periodNames = this.selectedPeriods.map(p => p.getPeriodName()).join(', ');
+    return `${this.selectedPeriods.length} periods selected: ${periodNames}`;
   }
 
-  checkAvailability() {
-    if (!this.booking.roomId || !this.booking.startTime || !this.booking.endTime) {
+  async checkAvailability() {
+    if (!this.booking.roomId || this.selectedPeriods.length === 0) {
       this.error = 'Please select at least one period';
       return;
     }
@@ -162,29 +178,33 @@ export class BookingFormComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    this.bookingsService.checkAvailability(
-      this.booking.roomId,
-      this.booking.bookingDate,
-      this.booking.startTime,
-      this.booking.endTime
-    ).subscribe({
-      next: (availability) => {
-        if (!availability.available) {
-          this.error = availability.reason || 'Selected time slots are not available';
-        } else {
-          this.error = '';
+    try {
+      // Check availability for each selected period individually
+      for (const period of this.selectedPeriods) {
+        const availability = await this.bookingsService.checkAvailability(
+          this.booking.roomId,
+          this.booking.bookingDate,
+          period.getStartTime(),
+          period.getEndTime()
+        ).toPromise();
+
+        if (availability && !availability.available) {
+          this.error = `Period ${period.getPeriodName()} is not available: ${availability.reason || 'Time slot already booked'}`;
+          this.loading = false;
+          return;
         }
-        this.loading = false;
-      },
-      error: (error) => {
-        this.error = 'Failed to check availability';
-        this.loading = false;
-        console.error('Error checking availability:', error);
       }
-    });
+      
+      this.error = '';
+      this.loading = false;
+    } catch (error) {
+      this.error = 'Failed to check availability';
+      this.loading = false;
+      console.error('Error checking availability:', error);
+    }
   }
 
-  submitBooking() {
+  async submitBooking() {
     if (!this.isValidBooking()) {
       return;
     }
@@ -192,30 +212,33 @@ export class BookingFormComponent implements OnInit {
     this.isSubmitting = true;
     this.error = '';
 
-    // Add selected periods information to additional notes
-    const periodsInfo = this.selectedPeriods.map(p => 
-      `${p.getPeriodName()} (${p.getSubject()})`
-    ).join(', ');
-    
-    const bookingToSubmit = {
-      ...this.booking,
-      additionalNotes: this.booking.additionalNotes 
-        ? `${this.booking.additionalNotes}\n\nSelected Periods: ${periodsInfo}`
-        : `Selected Periods: ${periodsInfo}`
-    };
+    try {
+      const createdBookings: Booking[] = [];
+      
+      // Create separate bookings for each selected period
+      for (const period of this.selectedPeriods) {
+        const bookingForPeriod = {
+          ...this.booking,
+          startTime: period.getStartTime(),
+          endTime: period.getEndTime(),
+          additionalNotes: this.booking.additionalNotes 
+            ? `${this.booking.additionalNotes}\n\nPeriod: ${period.getPeriodName()} (${period.getSubject()})`
+            : `Period: ${period.getPeriodName()} (${period.getSubject()})`
+        };
 
-    this.bookingsService.createBooking(bookingToSubmit).subscribe({
-      next: (response) => {
-        this.bookingCreated.emit(bookingToSubmit);
-        this.closeForm.emit();
-        this.isSubmitting = false;
-      },
-      error: (error) => {
-        this.error = error.error?.message || 'Failed to create booking';
-        this.isSubmitting = false;
-        console.error('Error creating booking:', error);
+        const response = await this.bookingsService.createBooking(bookingForPeriod).toPromise();
+        createdBookings.push(bookingForPeriod);
       }
-    });
+
+      // Emit the first booking for compatibility (or you could emit all bookings)
+      this.bookingCreated.emit(createdBookings[0]);
+      this.closeForm.emit();
+      this.isSubmitting = false;
+    } catch (error: any) {
+      this.error = error.error?.message || 'Failed to create booking';
+      this.isSubmitting = false;
+      console.error('Error creating booking:', error);
+    }
   }
 
   private isValidBooking(): boolean {

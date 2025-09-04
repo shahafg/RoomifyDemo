@@ -88,14 +88,18 @@ export class RoomScheduleComponent implements OnInit {
     const scheduleId = 'default-schedule-1';
     this.scheduleService.getScheduleById(scheduleId).subscribe({
       next: (scheduleData) => {
+        console.log('✅ Loaded schedule periods from database:', scheduleData.name);
         this.schedulePeriods = this.scheduleService.convertDataToSchedulePeriods(scheduleData);
         if (this.roomSchedule) {
           this.createPeriodTimeSlots();
         }
       },
       error: (error) => {
-        console.log('Using default schedule periods');
+        console.log('⚠️ Failed to load from database, using default schedule periods');
         this.createDefaultSchedulePeriods();
+        if (this.roomSchedule) {
+          this.createPeriodTimeSlots();
+        }
       }
     });
   }
@@ -119,14 +123,14 @@ export class RoomScheduleComponent implements OnInit {
     }
 
     this.periodTimeSlots = this.schedulePeriods.map(period => {
-      // Check if this period is booked by looking for overlapping bookings
+      // Check if this period is booked by looking for exact or overlapping bookings
       const isBooked = this.roomSchedule!.bookings.some(booking => {
         const bookingStart = this.timeToMinutes(booking.startTime);
         const bookingEnd = this.timeToMinutes(booking.endTime);
         const periodStart = this.timeToMinutes(period.getStartTime());
         const periodEnd = this.timeToMinutes(period.getEndTime());
 
-        // Check for overlap
+        // Check for overlap - any part of the period overlaps with any part of the booking
         return (bookingStart < periodEnd && bookingEnd > periodStart);
       });
 
