@@ -14,10 +14,10 @@
 .facility-icon{font-size:1rem}
 .availability-status{background:#f8f9fa;border-radius:8px;padding:1rem;margin-bottom:1rem}
 .availability-status.available{background:#d4edda;border:1px solid #c3e6cb}
-.status-indicator{display:flex;align-items:center;gap:.5rem}
-.status-dot{width:12px;height:12px;border-radius:50%;background:#dc3545}
+.status-indicator{display:flex;align-items:center;gap:.4rem;min-width:0;overflow:hidden}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#dc3545;flex-shrink:0}
 .status-dot.available{background:#28a745}
-.status-text{font-weight:600;color:#2c3e50;word-wrap:break-word;overflow-wrap:break-word;hyphens:auto;max-width:100%}
+.status-text{font-weight:600;color:#2c3e50;font-size:0.9rem;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .status-label{margin-left:auto;font-weight:700;color:var(--main);background:#fff;padding:.2rem .5rem;border-radius:4px;font-size:.8rem}
 .upcoming-info{color:#5a6c7d;font-size:.9rem}
 .schedule-section{background:#fff;border-radius:12px;padding:1.5rem;box-shadow:0 4px 15px rgba(0,0,0,0.1);border:1px solid #f0f0f0;grid-column:1/-1}
@@ -55,7 +55,7 @@
 .book-room-btn:hover:not(:disabled){background:#0056b3;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,123,255,0.3)}
 .book-room-btn:disabled{background:#6c757d;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-icon{font-size:1.1rem}
-.period-slot{min-height:80px;overflow:hidden}
+.period-slot{min-height:80px;overflow:hidden;grid-template-columns:140px 1fr}
 .period-info{display:flex;flex-direction:column;justify-content:center;padding:0.75rem 1rem;background:#f8f9fa;border-right:1px solid #e9ecef;min-width:120px}
 .period-name{font-weight:700;color:#2c3e50;font-size:1.1rem;margin-bottom:0.2rem}
 .period-time{font-size:0.85rem;color:#6c757d;font-weight:500}

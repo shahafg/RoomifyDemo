@@ -81,12 +81,6 @@
             class="toggle-btn">
             Day View
           </button>
-          <button 
-            [class.active]="viewMode === 'calendar'"
-            (click)="switchView('calendar')"
-            class="toggle-btn">
-            Calendar
-          </button>
         </div>
       </div>
     </div>
@@ -177,13 +171,7 @@
       </div>
     </div>
 
-    <!-- Calendar View Placeholder -->
-    <div class="calendar-view" *ngIf="viewMode === 'calendar'">
-      <div class="calendar-placeholder">
-        <p>Calendar view coming soon...</p>
-        <p>Use Day View to see available time slots.</p>
-      </div>
-    </div>
+  
   </div>
 </div>
 
