@@ -36,11 +36,11 @@
     <div *ngIf="isLoggedIn && !isStudent">
         <a class="nav-item nav-link active" routerLink="/create-ticket">Create a Ticket</a>
         <a *ngIf="isTeacher || isAdmin" class="nav-item nav-link active" routerLink="/room-search">Room Search</a>
+        <a *ngIf="isTeacher || isAdmin" class="nav-item nav-link active" routerLink="/auditorium-schedule">Auditorium Booking</a>
     </div><br><br>
     <div *ngIf="isAdmin">
         <a class="nav-item nav-link active" routerLink="/rooms">Room Management</a>
         <a class="nav-item nav-link active" routerLink="/register-users">Register Users</a>
-        <a class="nav-item nav-link active" routerLink="/auditorium-schedule">Auditorium Schedule</a>
         <a class="nav-item nav-link active" routerLink="/time-schedule">Assign Time Schedule</a>
         <a class="nav-item nav-link active" routerLink="/classroom-exchange">Classroom Exchange</a>
         <a class="nav-item nav-link active" routerLink="/maintenance">Maintenance</a>

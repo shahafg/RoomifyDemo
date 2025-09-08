@@ -61,6 +61,18 @@ app.use("/maintenance", maintenanceRouter);
 const bookingsRouter = require('./routes/bookings-route.js');
 app.use('/bookings', bookingsRouter);
 
+//use auditoriums route
+const auditoriumsRouter = require('./routes/auditoriums.route.js');
+app.use('/auditoriums', auditoriumsRouter);
+
+//use auditorium-bookings route
+const auditoriumBookingsRouter = require('./routes/auditorium-bookings.route.js');
+app.use('/auditorium-bookings', auditoriumBookingsRouter);
+
+//use auditorium-time-slots route
+const auditoriumTimeSlotsRouter = require('./routes/auditorium-time-slots.route.js');
+app.use('/auditorium-time-slots', auditoriumTimeSlotsRouter);
+
 //Start the server
 app.listen(PORT, (err) => {
     if (err) {

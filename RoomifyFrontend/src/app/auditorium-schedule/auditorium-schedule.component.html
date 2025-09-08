@@ -1,1 +1,189 @@
-<p>auditorium-schedule works!</p>
+<div class="auditorium-schedule-container">
+  <h2>Auditorium Booking</h2>
+
+  <!-- Success/Error Messages -->
+  <div *ngIf="successMessage" class="alert success" (click)="clearMessages()">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="alert error" (click)="clearMessages()">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Selection Controls -->
+  <div class="controls">
+    <div class="form-group">
+      <label for="auditoriumSelect">Select Auditorium:</label>
+      <select 
+        id="auditoriumSelect" 
+        [(ngModel)]="selectedAuditorium" 
+        (change)="onAuditoriumChange()" 
+        [disabled]="loading.auditoriums">
+        <option *ngFor="let auditorium of auditoriums" [ngValue]="auditorium">
+          {{ auditorium.name }} (Capacity: {{ auditorium.capacity }})
+        </option>
+      </select>
+      <div *ngIf="loading.auditoriums" class="spinner">Loading auditoriums...</div>
+    </div>
+
+    <div class="form-group">
+      <label for="dateSelect">Select Date:</label>
+      <input 
+        type="date" 
+        id="dateSelect" 
+        [(ngModel)]="selectedDate" 
+        (change)="onDateChange()"
+        [min]="minDate">
+    </div>
+  </div>
+
+  <!-- Auditorium Details -->
+  <div *ngIf="selectedAuditorium" class="auditorium-details">
+    <h3>{{ selectedAuditorium.name }}</h3>
+    <div class="details-grid">
+      <div><strong>Capacity:</strong> {{ selectedAuditorium.capacity }} people</div>
+      <div><strong>Building:</strong> Building {{ selectedAuditorium.buildingId }}</div>
+      <div *ngIf="selectedAuditorium.features.length > 0">
+        <strong>Features:</strong> {{ selectedAuditorium.features.join(', ') }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Time Slots Grid -->
+  <div *ngIf="availability && !loading.availability" class="time-slots-container">
+    <h3>Available Time Slots for {{ availability.date | date:'mediumDate' }}</h3>
+    <div class="time-slots-grid">
+      <div 
+        *ngFor="let slot of availability.availability" 
+        class="time-slot" 
+        [class]="getTimeSlotClass(slot)"
+        (click)="slot.available && canBookTimeSlot(slot.timeSlot) ? openBookingModal(slot.timeSlot) : null">
+        
+        <div class="time-display">{{ slot.timeSlot.displayName }}</div>
+        
+        <div class="slot-status" [ngSwitch]="true">
+          <span *ngSwitchCase="!slot.available" class="booked-indicator">
+            Booked
+          </span>
+          <span *ngSwitchCase="canBookTimeSlot(slot.timeSlot)" class="available-indicator">
+            Available
+          </span>
+          <span *ngSwitchDefault class="past-indicator">
+            Past
+          </span>
+        </div>
+
+        <!-- Show booking details if booked -->
+        <div *ngIf="slot.booking" class="booking-details">
+          <small>{{ slot.booking.purpose }}</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color available"></div>
+        <span>Available - Click to book</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color booked"></div>
+        <span>Booked</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color past"></div>
+        <span>Past time</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading indicator -->
+  <div *ngIf="loading.availability" class="loading-container">
+    <div class="spinner">Loading availability...</div>
+  </div>
+
+  <!-- My Upcoming Bookings -->
+  <div *ngIf="myBookings.length > 0" class="my-bookings">
+    <h3>My Upcoming Bookings</h3>
+    <div class="bookings-list">
+      <div *ngFor="let booking of myBookings" class="booking-card">
+        <div class="booking-header">
+          <h4>{{ booking.purpose }}</h4>
+          <span class="booking-status" [class]="booking.status">{{ booking.statusDisplay }}</span>
+        </div>
+        <div class="booking-details">
+          <div><strong>Date:</strong> {{ booking.formattedDate }}</div>
+          <div><strong>Time:</strong> {{ booking.timeSlot }}</div>
+          <div><strong>Attendees:</strong> {{ booking.attendeeCount }}</div>
+        </div>
+        <div class="booking-actions">
+          <button 
+            *ngIf="booking.canBeCancelled()" 
+            class="btn btn-danger btn-sm"
+            (click)="cancelBooking(booking)">
+            Cancel Booking
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Modal -->
+  <div *ngIf="showBookingModal" class="modal-overlay" (click)="closeBookingModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Book {{ selectedTimeSlot?.displayName }}</h3>
+        <button class="close-btn" (click)="closeBookingModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <form (ngSubmit)="submitBooking()" #bookingFormRef="ngForm">
+          <div class="form-group">
+            <label for="purpose">Purpose of booking:</label>
+            <textarea 
+              id="purpose"
+              [(ngModel)]="bookingForm.purpose" 
+              name="purpose"
+              required
+              class="form-control"
+              rows="3"
+              placeholder="Enter the purpose of your booking...">
+            </textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="attendeeCount">Expected number of attendees:</label>
+            <input 
+              type="number" 
+              id="attendeeCount"
+              [(ngModel)]="bookingForm.attendeeCount" 
+              name="attendeeCount"
+              required
+              min="1" 
+              [max]="selectedAuditorium?.capacity || 999"
+              class="form-control">
+            <small class="form-text">
+              Maximum capacity: {{ selectedAuditorium?.capacity }} people
+            </small>
+          </div>
+
+          <div *ngIf="errorMessage" class="alert error">
+            {{ errorMessage }}
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeBookingModal()">
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-primary"
+              [disabled]="loading.booking || !bookingFormRef.form.valid">
+              <span *ngIf="loading.booking" class="spinner-sm">Booking...</span>
+              <span *ngIf="!loading.booking">Confirm Booking</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

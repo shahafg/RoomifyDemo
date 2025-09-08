@@ -30,7 +30,7 @@ export class UsersService {
     return this.http.get<User>(`${this.apiUrl}?email=${email}`);
   }
 
-  login(email: string, password: string): Observable<User | null> {
+  login(email: string, password: string): Observable<any | null> {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(users => {
         const found = users.find(u =>
@@ -40,15 +40,17 @@ export class UsersService {
 
         if (!found) return null;
 
-        return new User(
-          found.email,
-          found.password,
-          found.fullName,
-          new Date(found.dateOfBirth),
-          found.gender,
-          found.image,
-          found.role
-        );
+        // Return the raw user object with id field preserved
+        return {
+          id: found.id,
+          email: found.email,
+          password: found.password,
+          fullName: found.fullName,
+          dateOfBirth: found.dateOfBirth,
+          gender: found.gender,
+          image: found.image,
+          role: found.role
+        };
       })
     );
   }

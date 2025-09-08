@@ -42,12 +42,19 @@ usersRouter.post("/register", async (req, res) => {
       });
     }
 
-    // Create new user
-    const newUser = new usersSchema(userData);
+    // Generate user ID
+    const lastUser = await usersSchema.findOne({}).sort({ id: -1 }).exec();
+    let newId = lastUser && lastUser.id ? lastUser.id + 1 : 1;
+    if (isNaN(newId)) {
+      newId = 1;
+    }
+
+    // Create new user with ID
+    const newUser = new usersSchema({ ...userData, id: newId });
     const savedUser = await newUser.save();
 
     const userResponse = await usersSchema.findOne(
-      { _id: savedUser._id },
+      { id: savedUser.id },
       { _id: 0, __v: 0 }
     );
 
@@ -105,9 +112,17 @@ usersRouter.post("/bulk-register", async (req, res) => {
           continue;
         }
 
+        // Generate user ID
+        const lastUser = await usersSchema.findOne({}).sort({ id: -1 }).exec();
+        let newId = lastUser && lastUser.id ? lastUser.id + 1 : 1;
+        if (isNaN(newId)) {
+          newId = 1;
+        }
+
         // Create new user
         const newUser = new usersSchema({
           ...userData,
+          id: newId,
           role: userData.role || 10,
           image: userData.image || (userData.gender === 'male' ? 'assets/images/profile/male.jpg' : 'assets/images/profile/female.jpg')
         });
@@ -117,7 +132,7 @@ usersRouter.post("/bulk-register", async (req, res) => {
         results.successful.push({
           index: i,
           email: userData.email,
-          id: savedUser._id
+          id: savedUser.id
         });
 
       } catch (userError) {
