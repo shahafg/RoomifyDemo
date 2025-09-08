@@ -81,6 +81,14 @@ export class RoomScheduleComponent implements OnInit {
   }
 
   onDateChange() {
+    // Validate the selected date - prevent past dates even if manually entered
+    const today = this.getTodayDate();
+    if (this.selectedDate < today) {
+      alert('Cannot select past dates. Date has been reset to today.');
+      this.selectedDate = today;
+      return;
+    }
+    
     this.loadSchedule();
   }
 
@@ -143,12 +151,16 @@ export class RoomScheduleComponent implements OnInit {
           return (bookingStart < periodEnd && bookingEnd > periodStart);
         }) : null;
 
+      // Check if period is in the past
+      const isPast = this.isPeriodInPast(period);
+
       return {
         period: period,
-        available: !isBooked,
+        available: !isBooked && !isPast,
         booking: overlappingBooking,
         time: period.getStartTime(),
-        endTime: period.getEndTime()
+        endTime: period.getEndTime(),
+        isPast: isPast
       };
     });
   }
@@ -159,6 +171,13 @@ export class RoomScheduleComponent implements OnInit {
   }
 
   onTimeSlotClick(timeSlot: TimeSlot) {
+    // Check if the time slot is in the past (create a temporary period for validation)
+    const tempPeriod = new SchedulePeriod(0, 'temp', timeSlot.time, timeSlot.endTime || timeSlot.time, 'temp');
+    if (this.isPeriodInPast(tempPeriod)) {
+      alert('Cannot book past time slots. Please select a future time.');
+      return;
+    }
+    
     if (timeSlot.available) {
       this.selectedTimeSlot = timeSlot;
       this.showBookingForm = true;
@@ -170,6 +189,13 @@ export class RoomScheduleComponent implements OnInit {
 
   onPeriodTimeSlotClick(periodSlot: any) {
     if (this.isStudent) return;
+    
+    // Check if the period is in the past
+    if (this.isPeriodInPast(periodSlot.period)) {
+      alert('Cannot book past time slots. Please select a future time.');
+      return;
+    }
+    
     if (periodSlot.available) {
       this.selectedTimeSlot = {
         time: periodSlot.time,
@@ -186,8 +212,36 @@ export class RoomScheduleComponent implements OnInit {
 
   openBookingForm(timeSlot?: TimeSlot) {
     if (this.isStudent) return;
+    
+    // Final validation before opening booking form
+    if (!this.validateBookingRequest(timeSlot)) {
+      return;
+    }
+    
     this.selectedTimeSlot = timeSlot || null;
     this.showBookingForm = true;
+  }
+
+  private validateBookingRequest(timeSlot?: TimeSlot): boolean {
+    // Check if selected date is in the past
+    const today = this.getTodayDate();
+    if (this.selectedDate < today) {
+      alert('Cannot book on past dates. Please select today or a future date.');
+      this.selectedDate = today;
+      this.loadSchedule();
+      return false;
+    }
+
+    // Check if time slot is in the past (if provided)
+    if (timeSlot) {
+      const tempPeriod = new SchedulePeriod(0, 'temp', timeSlot.time, timeSlot.endTime || timeSlot.time, 'temp');
+      if (this.isPeriodInPast(tempPeriod)) {
+        alert('Cannot book past time slots. Please select a future time.');
+        return false;
+      }
+    }
+
+    return true;
   }
 
   closeBookingForm() {
@@ -238,6 +292,24 @@ export class RoomScheduleComponent implements OnInit {
   isToday(): boolean {
     const today = new Date().toISOString().split('T')[0];
     return this.selectedDate === today;
+  }
+
+  getTodayDate(): string {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  isPeriodInPast(period: SchedulePeriod): boolean {
+    if (!this.isToday()) {
+      return false; // Future dates are always allowed
+    }
+
+    const now = new Date();
+    const periodStart = new Date(`${this.selectedDate}T${period.getStartTime()}`);
+    
+    // Add 15-minute buffer - can't book periods starting in less than 15 minutes
+    const minimumBookingTime = new Date(now.getTime() + 15 * 60 * 1000);
+    
+    return periodStart.getTime() <= minimumBookingTime.getTime();
   }
 
   switchView(mode: 'day' | 'calendar') {

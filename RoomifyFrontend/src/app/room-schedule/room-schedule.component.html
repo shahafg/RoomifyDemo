@@ -91,7 +91,7 @@
     <div class="date-selector">
       <div class="date-navigation">
         <h4>{{ formatDate(selectedDate) }}</h4>
-        <input type="date" [(ngModel)]="selectedDate" (change)="onDateChange()" class="date-input">
+        <input type="date" [(ngModel)]="selectedDate" (change)="onDateChange()" [min]="getTodayDate()" class="date-input">
       </div>
       <div class="today-indicator" *ngIf="isToday()">
         Today

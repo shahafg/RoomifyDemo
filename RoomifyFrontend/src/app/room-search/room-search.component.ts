@@ -39,10 +39,12 @@ const futureTimeValidator = (control: AbstractControl): ValidationErrors | null 
   }
 
   const now = new Date();
-  const today = new Date().toISOString().split('T')[0];
   const selectedDateTime = new Date(`${bookingDate}T${startTime}`);
+  
+  // Add 15-minute buffer - users can't book something starting in less than 15 minutes
+  const minimumBookingTime = new Date(now.getTime() + 15 * 60 * 1000);
 
-  if (bookingDate === today && selectedDateTime.getTime() <= now.getTime()) {
+  if (selectedDateTime.getTime() <= minimumBookingTime.getTime()) {
     return { 'pastTime': true };
   }
 
@@ -124,21 +126,9 @@ export class RoomSearchComponent implements OnInit {
 
   loadRooms(): void {
     this.roomService.getAllRooms().subscribe({
-      next: (rooms: any[]) => {
-        console.log('Fetched rooms:', rooms);
-        this.allRooms = rooms.map(r => {
-          const typeEnum = this.convertStringToRoomType(r.type);
-          return new Room(
-            r.id,
-            r.name,
-            typeEnum,
-            r.building,
-            r.floor,
-            r.capacity,
-            r.status,
-            r.accessible
-          );
-        });
+      next: (rooms: Room[]) => {
+        console.log('Fetched rooms from service:', rooms);
+        this.allRooms = rooms;
         this.filteredRooms = [...this.allRooms];
         console.log('Processed rooms:', this.allRooms);
       },
@@ -163,15 +153,6 @@ export class RoomSearchComponent implements OnInit {
     });
   }
 
-  convertStringToRoomType(typeString: string): RoomType {
-    const typeMap: { [key: string]: RoomType } = {
-      'Class': RoomType.Class,
-      'ComputerClass': RoomType.ComputerClass,
-      'Lab': RoomType.Lab,
-      'Auditorium': RoomType.Auditorium
-    };
-    return typeMap[typeString] ?? RoomType.Class;
-  }
 
   convertRoomTypeToString(typeEnum: RoomType): string {
     const typeMap: { [key: number]: string } = {
@@ -194,9 +175,12 @@ export class RoomSearchComponent implements OnInit {
 
   applyFilters(): void {
     const { roomType, minCapacity, status, accessible } = this.filterForm.value;
+    console.log('Applying filters, roomType filter:', roomType);
     this.filteredRooms = this.allRooms.filter(room => {
       if (roomType !== '') {
-        const roomTypeEnum = this.convertStringToRoomType(roomType);
+        // Convert the filter string to RoomType enum for comparison
+        const roomTypeEnum = this.convertFilterStringToRoomType(roomType);
+        console.log('Room:', room.getName(), 'has type:', room.getType(), 'filter type:', roomTypeEnum);
         if (room.getType() !== roomTypeEnum) return false;
       }
       if (minCapacity > 0 && room.getCapacity() < minCapacity) return false;
@@ -204,10 +188,25 @@ export class RoomSearchComponent implements OnInit {
       if (accessible !== '' && room.isAccessible() !== (accessible === 'true')) return false;
       return true;
     });
+    console.log('Filtered rooms count:', this.filteredRooms.length);
+  }
+
+  convertFilterStringToRoomType(typeString: string): RoomType {
+    const typeMap: { [key: string]: RoomType } = {
+      'Class': RoomType.Class,
+      'ComputerClass': RoomType.ComputerClass,
+      'Lab': RoomType.Lab,
+      'Auditorium': RoomType.Auditorium
+    };
+    return typeMap[typeString] ?? RoomType.Class;
   }
 
   getRoomType(room: Room): string {
-    return this.convertRoomTypeToString(room.getType());
+    const roomTypeEnum = room.getType();
+    console.log('getRoomType - Room:', room.getName(), 'Type enum:', roomTypeEnum);
+    const result = this.convertRoomTypeToString(roomTypeEnum);
+    console.log('getRoomType - Converted to string:', result);
+    return result;
   }
 
   resetFilters(): void {

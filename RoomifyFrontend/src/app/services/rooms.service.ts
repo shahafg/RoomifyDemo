@@ -12,21 +12,35 @@ export class RoomsService {
 
   constructor(private http: HttpClient) { }
 
+  // Helper method to convert string to RoomType enum
+  private convertStringToRoomType(typeString: string): RoomType {
+    const typeMap: { [key: string]: RoomType } = {
+      'Class': RoomType.Class,
+      'ComputerClass': RoomType.ComputerClass,
+      'Lab': RoomType.Lab,
+      'Auditorium': RoomType.Auditorium
+    };
+    console.log('RoomsService converting:', typeString, 'to:', typeMap[typeString]);
+    return typeMap[typeString] ?? RoomType.Class;
+  }
+
   // Get all rooms
   getAllRooms(): Observable<Room[]> {
     return this.http.get<any[]>(this.roomsUrl).pipe(
       map(rooms =>
-        rooms.map(r => new Room(
-          r.id,
-          r.name,
-          // convert string to enum
-          typeof r.type === 'string' ? RoomType[r.type as keyof typeof RoomType] : r.type,
-          r.building,
-          r.floor,
-          r.capacity,
-          r.status,
-          r.accessible
-        ))
+        rooms.map(r => {
+          console.log('RoomsService processing room:', r.name, 'type:', r.type);
+          return new Room(
+            r.id,
+            r.name,
+            this.convertStringToRoomType(r.type),
+            r.building,
+            r.floor,
+            r.capacity,
+            r.status,
+            r.accessible
+          );
+        })
       )
     );
   }

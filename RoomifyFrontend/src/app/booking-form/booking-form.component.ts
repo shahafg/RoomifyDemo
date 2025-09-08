@@ -52,6 +52,12 @@ export class BookingFormComponent implements OnInit {
   }
 
   private initializeBooking() {
+    // Validate booking date before initializing
+    if (!this.validateBookingDate()) {
+      this.closeForm.emit();
+      return;
+    }
+
     if (this.roomId && this.roomName && this.selectedDate) {
       this.booking = {
         roomId: this.roomId,
@@ -76,6 +82,15 @@ export class BookingFormComponent implements OnInit {
         this.togglePeriodSelection(matchingPeriod);
       }
     }
+  }
+
+  private validateBookingDate(): boolean {
+    const today = new Date().toISOString().split('T')[0];
+    if (this.selectedDate < today) {
+      alert('Cannot create booking for past dates. Please select a current or future date.');
+      return false;
+    }
+    return true;
   }
 
   private loadAvailablePeriods() {
@@ -247,9 +262,23 @@ export class BookingFormComponent implements OnInit {
       return false;
     }
 
+    // Final validation - check if booking date is in the past
+    if (!this.validateBookingDate()) {
+      this.error = 'Cannot create booking for past dates';
+      return false;
+    }
+
     if (this.selectedPeriods.length === 0) {
       this.error = 'Please select at least one period';
       return false;
+    }
+
+    // Validate that no selected periods are in the past
+    for (const period of this.selectedPeriods) {
+      if (this.isPeriodInPast(period)) {
+        this.error = `Cannot book past time slot: ${period.getPeriodName()}`;
+        return false;
+      }
     }
 
     if (!this.booking.purpose.trim()) {
@@ -263,6 +292,21 @@ export class BookingFormComponent implements OnInit {
     }
 
     return true;
+  }
+
+  private isPeriodInPast(period: SchedulePeriod): boolean {
+    const today = new Date().toISOString().split('T')[0];
+    if (this.booking.bookingDate !== today) {
+      return false; // Future dates are allowed
+    }
+
+    const now = new Date();
+    const periodStart = new Date(`${this.booking.bookingDate}T${period.getStartTime()}`);
+    
+    // Add 15-minute buffer
+    const minimumBookingTime = new Date(now.getTime() + 15 * 60 * 1000);
+    
+    return periodStart.getTime() <= minimumBookingTime.getTime();
   }
 
   onClose() {
