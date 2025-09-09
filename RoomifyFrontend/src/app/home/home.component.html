@@ -5,11 +5,11 @@
                 <img src="assets/images/RoomifyLogo.jpg" alt="Roomify Logo" class="logo">
             </div>
             <h1>Welcome to Roomify</h1>
-            <p class="subtitle">Your smart solution for booking rooms and managing academic spaces efficiently.</p>
+            <p class="subtitle">Smartest online solution for booking rooms and managing academic spaces assets efficiently.</p>
             <div class="features">
                 <div class="feature-item">
-                    <h4>📅 Easy Booking</h4>
-                    <p>Reserve rooms with just a few clicks</p>
+                    <h4>📅  Reserve Spaces</h4>
+                    <p>Reserve Spaces with just a few clicks</p>
                 </div>
                 <div class="feature-item">
                     <h4>🏫 Space Management</h4>
@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div class="cta-section">
-                <h3>Ready to get started?</h3>
+                <h3>Let's get started</h3>
                 <div class="auth-buttons">
                     <a routerLink="/profile/login" class="btn btn-primary">Login</a>
                 </div>
@@ -29,25 +29,30 @@
         </section>
     </div>
 
-    <div *ngIf="isLoggedIn">
-        <a class="nav-item nav-link active" routerLink="/messages">Send Message</a>
-        <a class="nav-item nav-link active" routerLink="/view-rooms">View Rooms</a>
-    </div><br><br>
-    <div *ngIf="isLoggedIn && !isStudent">
-        <a class="nav-item nav-link active" routerLink="/create-ticket">Create a Ticket</a>
-        <a *ngIf="isTeacher || isAdmin" class="nav-item nav-link active" routerLink="/room-search">Room Search</a>
-        <a *ngIf="isTeacher || isAdmin" class="nav-item nav-link active" routerLink="/auditorium-schedule">Auditorium Booking</a>
-    </div><br><br>
-    <div *ngIf="isAdmin">
-        <a class="nav-item nav-link active" routerLink="/rooms">Room Management</a>
-        <a class="nav-item nav-link active" routerLink="/register-users">Register Users</a>
-        <a class="nav-item nav-link active" routerLink="/time-schedule">Assign Time Schedule</a>
-        <a class="nav-item nav-link active" routerLink="/classroom-exchange">Classroom Exchange</a>
-        <a class="nav-item nav-link active" routerLink="/maintenance">Maintenance</a>
+    <div *ngIf="isLoggedIn" class="logged-in-sections">
+        <!-- Room Management Section -->
+        <div class="section room-section">
+            <h3 class="section-title">Rooms</h3>
+            <div class="section-buttons">
+                <a class="nav-item nav-link active" routerLink="/view-rooms">View Rooms</a>
+                <a *ngIf="isTeacher || isAdmin" class="nav-item nav-link active" routerLink="/room-search">Room Search</a>
+                <a *ngIf="isTeacher || isAdmin" class="nav-item nav-link active" routerLink="/auditorium-schedule">Auditorium Booking</a>
+                <a *ngIf="isAdmin" class="nav-item nav-link active" routerLink="/rooms">Room Management</a>
+                <a *ngIf="isAdmin" class="nav-item nav-link active" routerLink="/classroom-exchange">Classroom Exchange</a>
+            </div>
+        </div>
 
-    </div><br><br>
-    <div>
-        <a *ngIf="isMaintenancePerson || isAdmin" class="nav-item nav-link active" routerLink="/tickets">Ticket
-            Management</a>
-    </div><br><br>
+        <!-- Administrative Section -->
+        <div class="section admin-section">
+            <h3 class="section-title">Administrative</h3>
+            <div class="section-buttons">
+                <a class="nav-item nav-link active" routerLink="/messages">Send Message</a>
+                <a *ngIf="!isStudent" class="nav-item nav-link active" routerLink="/create-ticket">Create a Ticket</a>
+                <a *ngIf="isMaintenancePerson || isAdmin" class="nav-item nav-link active" routerLink="/tickets">Ticket Management</a>
+                <a *ngIf="isAdmin" class="nav-item nav-link active" routerLink="/maintenance">Maintenance</a>
+                <a *ngIf="isAdmin" class="nav-item nav-link active" routerLink="/register-users">Register Users</a>
+                <a *ngIf="isAdmin" class="nav-item nav-link active" routerLink="/time-schedule">Assign Time Schedule</a>
+            </div>
+        </div>
+    </div>
 </div>

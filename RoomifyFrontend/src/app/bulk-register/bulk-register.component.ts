@@ -172,42 +172,7 @@ interface RegistrationResult {
       </div>
     </div>
   `,
-  styles: [`
-    .container {
-      max-width: 800px;
-    }
-    
-    h2 {
-      margin-bottom: 30px;
-      color: var(--main, #007bff);
-    }
-    
-    pre {
-      font-size: 0.875rem;
-    }
-    
-    .table-responsive {
-      border: 1px solid #dee2e6;
-      border-radius: 0.375rem;
-    }
-    
-    .btn-primary {
-      color: white;
-      background: var(--main, #007bff);
-      border: 2px solid var(--main_dark, #0056b3);
-    }
-    
-    .btn-primary:hover {
-      color: white;
-      border: 2px solid var(--main, #007bff);
-      background: var(--main_light, #0d6efd);
-    }
-    
-    .btn-success {
-      background-color: #198754;
-      border-color: #198754;
-    }
-  `]
+  styleUrl: './bulk-register.component.css'
 })
 export class BulkRegisterComponent {
   selectedFile: File | null = null;

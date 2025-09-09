@@ -260,11 +260,11 @@
 }
 
 .time-slot.booked {
-    background: #f8d7da
+    background: #e9ecef
 }
 
 .time-slot.booked:hover {
-    background: #f5c6cb
+    background: #dee2e6
 }
 
 .time-info {
@@ -452,11 +452,11 @@
 }
 
 .period-slot.booked .subject-label {
-    background: #dc3545
+    background: #6c757d
 }
 
 .period-slot.booked .period-info {
-    background: #f8d7da
+    background: #e9ecef
 }
 
 .period-slot.available .period-info {

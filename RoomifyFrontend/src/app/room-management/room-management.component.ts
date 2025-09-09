@@ -762,6 +762,31 @@ this.statistics.weekBookings = this.bookings.filter(b => {
     }
   }
 
+  changeUserRole(user: User, event: any): void {
+    const newRoleValue = parseInt(event.target.value);
+    const currentRole = user.getRole();
+    
+    // Don't proceed if the role hasn't actually changed
+    if (newRoleValue === currentRole) {
+      return;
+    }
+    
+    const newRoleLabel = this.getUserRoleLabel(newRoleValue);
+    const currentRoleLabel = this.getUserRoleLabel(currentRole);
+    
+    if (confirm(`Change ${user.getFullName()}'s role from ${currentRoleLabel} to ${newRoleLabel}?`)) {
+      user.setRole(newRoleValue);
+      alert(`${user.getFullName()}'s role has been changed to ${newRoleLabel}`);
+      // TODO: Implement backend update
+      
+      // Update filtered users to reflect the change
+      this.filterUsers();
+    } else {
+      // Reset the dropdown to the original value if user cancels
+      event.target.value = currentRole;
+    }
+  }
+
   deleteUser(user: User): void {
     if (confirm(`Are you sure you want to delete user ${user.getFullName()}?\nEmail: ${user.getEmail()}\n\nThis action cannot be undone.`)) {
       this.usersService.deleteUser(user.getEmail()).subscribe({

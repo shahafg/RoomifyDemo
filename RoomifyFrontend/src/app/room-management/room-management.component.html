@@ -609,7 +609,7 @@
                   <th>Date of Birth</th>
                   <th>Gender</th>
                   <th>Role</th>
-                  <th>Actions</th>
+                  <th>Change Role</th>
                 </tr>
               </thead>
               <tbody>
@@ -635,19 +635,21 @@
                     </span>
                   </td>
                   <td>
-                    <button class="btn btn-sm btn-outline-success me-1" 
-                            (click)="promoteUser(user)"
-                            [disabled]="isUserAdmin(user)">
-                      <i class="bi bi-arrow-up"></i> Promote
-                    </button>
-                    <button class="btn btn-sm btn-outline-warning me-1" 
-                            (click)="demoteUser(user)"
-                            [disabled]="isUserStudent(user)">
-                      <i class="bi bi-arrow-down"></i> Demote
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" (click)="deleteUser(user)">
-                      <i class="bi bi-trash">Delete</i>
-                    </button>
+                    <div class="d-flex gap-2 align-items-center">
+                      <select class="form-select form-select-sm" 
+                              [value]="user.getRole()" 
+                              (change)="changeUserRole(user, $event)"
+                              style="min-width: 120px;">
+                        <option [value]="0">Student</option>
+                        <option [value]="1">Representative</option>
+                        <option [value]="2">Maintenance</option>
+                        <option [value]="3">Teacher</option>
+                        <option [value]="4">Admin</option>
+                      </select>
+                      <button class="btn btn-sm btn-outline-danger" (click)="deleteUser(user)" title="Delete User">
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>

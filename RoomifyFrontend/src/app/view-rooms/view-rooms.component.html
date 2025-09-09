@@ -3,27 +3,28 @@
     <table class="rooms-table" border="1">
         <thead>
             <tr>
-                <th *ngIf="isAdmin">ID</th>
                 <th>Name</th>
                 <th>Type</th>
                 <th>Building</th>
                 <th>Floor</th>
                 <th>Capacity</th>
                 <th>Status</th>
-                <th>Accessible</th>
+                <th title="Wheelchair Accessible"><span style="font-size: 1.2em;">♿</span></th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let room of rooms">
-                <td *ngIf="isAdmin">{{ room.getId() }}</td>
                 <td>{{ room.getName() }}</td>
                 <td>{{ getRoomType(room) }}</td>
                 <td>{{ room.getBuilding() }}</td>
                 <td>{{ room.getFloor() }}</td>
                 <td>{{ room.getCapacity() }}</td>
                 <td>{{ room.getStatus() == 1 ? 'Unavailable' : 'Available' }}</td>
-                <td>{{ room.isAccessible() ? 'Yes' : 'No' }}</td>
+                <td class="text-center">
+                    <span *ngIf="room.isAccessible()" style="color: green; font-size: 1.2em;" title="Wheelchair Accessible">✅</span>
+                    <span *ngIf="!room.isAccessible()" style="color: red; font-size: 1.2em;" title="Not Wheelchair Accessible">❌</span>
+                </td>
                 <td>
                     <button 
                         class="schedule-btn"

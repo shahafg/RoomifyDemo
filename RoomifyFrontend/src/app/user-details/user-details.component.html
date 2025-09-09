@@ -1,29 +1,59 @@
 <div class="container mt-4">
-    <h2>User Details</h2>
+    <h2>User Profile</h2>
     
-    <div *ngIf="user">
-        <div class="mb-3">
-            <label for="fullName" class="form-label">Full Name:</label>
-            <p>{{ user.getFullName() }}</p>
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email:</label>
-            <p>{{ user.getEmail() }}</p>
-        </div>
-        <div class="mb-3">
-            <label for="role" class="form-label">Role:</label>
-            <p>{{ userRole }}</p>
-        </div>
-        <div class="mb-3">
-            <label for="dateOfBirth" class="form-label">Date of Birth:</label>
-            <p>{{ user.getDateOfBirth() | date }}</p>
-        </div>
-        <div class="mb-3">
-            <label for="gender" class="form-label">Gender:</label>
-            <p>{{ showGender() }}</p>
-        </div>
-        <div class="mb-3">
-            <img [src]="user.getImage()" class="img-fluid" style="width: 150px; height: 150px; border-radius: 50%;" />
+    <div *ngIf="user" class="profile-card-container">
+        <div class="user-profile-card">
+            <!-- Profile Image Section -->
+            <div class="profile-image-section">
+                <div class="profile-image-container">
+                    <img [src]="user.getImage()" class="profile-image" alt="Profile Picture" />
+                </div>
+                <h3 class="user-name">{{ user.getFullName() }}</h3>
+                <span class="user-role-badge">{{ userRole }}</span>
+            </div>
+            
+            <!-- User Information Cards Grid -->
+            <div class="info-cards-grid">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <span class="icon-symbol">✉</span>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Email Address</label>
+                        <p class="info-value">{{ user.getEmail() }}</p>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-icon">
+                        <span class="icon-symbol">📅</span>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Date of Birth</label>
+                        <p class="info-value">{{ user.getDateOfBirth() | date:'longDate' }}</p>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-icon">
+                        <span class="icon-symbol">👤</span>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Gender</label>
+                        <p class="info-value">{{ showGender() }}</p>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-icon">
+                        <span class="icon-symbol">🏷️</span>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Account Role</label>
+                        <p class="info-value">{{ userRole }}</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

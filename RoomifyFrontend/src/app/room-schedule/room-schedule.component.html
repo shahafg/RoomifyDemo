@@ -68,14 +68,14 @@
     <div class="schedule-header">
       <div class="schedule-title">
         <i class="icon">🕐</i>
-        <h3>{{ roomSchedule.room.name }} Schedule</h3>
+        <h3>Room {{ roomSchedule.room.name }} Schedule</h3>
       </div>
 
       <div class="schedule-controls">
         <div class="view-toggle">
-          <button [class.active]="viewMode === 'day'" (click)="switchView('day')" class="toggle-btn">
+          <!-- <button [class.active]="viewMode === 'day'" (click)="switchView('day')" class="toggle-btn">
             Day View
-          </button>
+          </button> -->
         </div>
       </div>
     </div>
