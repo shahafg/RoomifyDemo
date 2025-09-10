@@ -18,6 +18,7 @@ import { AboutComponent } from './about/about.component';
 import { CreateTicketComponent } from './create-ticket/create-ticket.component';
 import { MaintenanceManagementComponent } from './maintenance-management/maintenance-management.component';
 import { BulkRegisterComponent } from './bulk-register/bulk-register.component';
+import { AuditLogsComponent } from './audit-logs/audit-logs.component';
 
 // Import the guards
 import { AuthGuard } from './guards/auth.guard';
@@ -53,6 +54,7 @@ export const routes: Routes = [
     { path: 'register-users', component: RegisterUsersComponent, canActivate: [AdminGuard] },
     { path: 'maintenance', component: MaintenanceManagementComponent, canActivate: [AdminGuard] },
     { path: 'bulk-register', component: BulkRegisterComponent, canActivate: [AdminGuard] },
+    { path: 'audit-logs', component: AuditLogsComponent, canActivate: [AdminGuard] },
     
     // 404 route
     { path: '404', component: MissingPageComponent },

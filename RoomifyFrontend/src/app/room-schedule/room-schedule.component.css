@@ -2,7 +2,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
-    background: #ffeaea;
+    background: #c3eafa;
     min-height: 100vh
 }
 
@@ -220,7 +220,7 @@
 }
 
 .today-indicator {
-    background: var(--main);
+    background: #196c2d;
     color: #fff;
     padding: .3rem .6rem;
     border-radius: 12px;
@@ -373,7 +373,7 @@
 }
 
 .book-room-btn {
-    background: var(--main);
+    background: #28A745;
     color: #fff;
     border: none;
     padding: 0.75rem 1.5rem;
@@ -388,9 +388,9 @@
 }
 
 .book-room-btn:hover:not(:disabled) {
-    background: #0056b3;
+    background: #196c2d;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3)
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3)
 }
 
 .book-room-btn:disabled {

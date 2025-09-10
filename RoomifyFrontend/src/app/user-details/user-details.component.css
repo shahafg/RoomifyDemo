@@ -16,7 +16,7 @@ h2 {
 
 /* Main Profile Card */
 .user-profile-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #528B87;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 20px;
@@ -91,7 +91,7 @@ h2 {
 
 /* Individual Info Card */
 .info-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: #528B87;
     border-radius: 8px;
     padding: 12px;
     display: flex;
@@ -107,7 +107,7 @@ h2 {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--main), #667eea);
+    background: #528B87;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -126,7 +126,7 @@ h2 {
 .info-label {
     display: block;
     font-weight: 600;
-    color: #6c757d;
+    color: rgba(255, 255, 255, 0.8);
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.3px;
@@ -137,7 +137,7 @@ h2 {
     margin: 0;
     font-size: 0.95rem;
     font-weight: 500;
-    color: #333;
+    color: white;
     line-height: 1.3;
 }
 

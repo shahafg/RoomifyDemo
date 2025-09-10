@@ -2,6 +2,7 @@ const express = require("express");
 const roomsRouter = express.Router();
 const roomSchema = require('../models/roomSchema.js');
 const bookingSchema = require('../models/BookingSchema.js');
+const AuditService = require('../services/auditService.js');
 
 // GET all rooms
 roomsRouter.get("/", async (req, res) => {
@@ -194,6 +195,11 @@ roomsRouter.post("/", async (req, res) => {
         const newRoom = new roomSchema(roomData);
         const savedRoom = await newRoom.save();
         const roomResponse = await roomSchema.findOne({ id: savedRoom.id }, { _id: 0 });
+
+        // Log room creation - using anonymous user for now
+        const user = { email: 'admin', id: null };
+        await AuditService.logRoomAction('CREATE', roomResponse, user, req);
+
         res.status(201).send(roomResponse);
     } catch (error) {
         console.error("Error creating room:", error);
@@ -217,11 +223,26 @@ roomsRouter.put("/:id", async (req, res) => {
             return res.status(404).send({ message: `Room with ID ${roomId} not found` });
         }
         
+        // Store old values for audit
+        const oldValues = {
+            name: existingRoom.name,
+            building: existingRoom.building,
+            floor: existingRoom.floor,
+            capacity: existingRoom.capacity,
+            type: existingRoom.type,
+            status: existingRoom.status
+        };
+
         // Update room
         await roomSchema.updateOne({ id: roomId }, { $set: updateData });
         
         // Return the updated room
         const updatedRoom = await roomSchema.findOne({ id: roomId }, { _id: 0 });
+
+        // Log room update
+        const user = { email: 'admin', id: null };
+        await AuditService.logRoomAction('UPDATE', updatedRoom, user, req, oldValues);
+
         res.status(200).send(updatedRoom);
     } catch (error) {
         console.error(`Error updating room ${req.params.id}:`, error);
@@ -275,8 +296,22 @@ roomsRouter.delete("/:id", async (req, res) => {
             return res.status(404).send({ message: `Room with ID ${roomId} not found` });
         }
         
+        // Store room data for audit before deletion
+        const deletedRoomData = {
+            id: existingRoom.id,
+            name: existingRoom.name,
+            building: existingRoom.building,
+            floor: existingRoom.floor,
+            capacity: existingRoom.capacity,
+            type: existingRoom.type
+        };
+
         // Delete room
         await roomSchema.deleteOne({ id: roomId });
+
+        // Log room deletion
+        const user = { email: 'admin', id: null };
+        await AuditService.logRoomAction('DELETE', deletedRoomData, user, req, deletedRoomData);
         
         res.status(200).send({ message: `Room with ID ${roomId} successfully deleted` });
     } catch (error) {

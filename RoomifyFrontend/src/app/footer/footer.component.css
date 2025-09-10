@@ -91,7 +91,7 @@
     height: 28px;
     border-radius: 50%;
     border: none;
-    background: linear-gradient(135deg, var(--main), #667eea);
+    background: #528B87;
     color: white;
     cursor: pointer;
     display: flex;

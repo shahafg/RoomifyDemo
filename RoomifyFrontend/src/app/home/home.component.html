@@ -5,7 +5,15 @@
                 <img src="assets/images/RoomifyLogo.jpg" alt="Roomify Logo" class="logo">
             </div>
             <h1>Welcome to Roomify</h1>
-            <p class="subtitle">Smartest online solution for booking rooms and managing academic spaces assets efficiently.</p>
+            <p class="subtitle">Smartest online solution for managing academic assets efficiently.</p>
+            <div class="cta-section">
+                <div class="about-button">
+                    <a routerLink="/about" class="btn btn-about">
+                        About 
+                        <span class="info-icon">i</span>
+                    </a>
+                </div>
+            </div>
             <div class="features">
                 <div class="feature-item">
                     <h4>📅  Reserve Spaces</h4>
@@ -52,6 +60,7 @@
                 <a *ngIf="isAdmin" class="nav-item nav-link active" routerLink="/maintenance">Maintenance</a>
                 <a *ngIf="isAdmin" class="nav-item nav-link active" routerLink="/register-users">Register Users</a>
                 <a *ngIf="isAdmin" class="nav-item nav-link active" routerLink="/time-schedule">Assign Time Schedule</a>
+                <a *ngIf="isAdmin" class="nav-item nav-link active" routerLink="/audit-logs">Audit Logs</a>
             </div>
         </div>
     </div>

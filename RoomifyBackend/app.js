@@ -73,6 +73,10 @@ app.use('/auditorium-bookings', auditoriumBookingsRouter);
 const auditoriumTimeSlotsRouter = require('./routes/auditorium-time-slots.route.js');
 app.use('/auditorium-time-slots', auditoriumTimeSlotsRouter);
 
+//use audit-logs route
+const auditLogsRouter = require('./routes/audit-logs.route.js');
+app.use('/audit-logs', auditLogsRouter);
+
 //Start the server
 app.listen(PORT, (err) => {
     if (err) {

@@ -7,7 +7,7 @@ table {
   margin-top: 20px;
 }
 table th {
-  background-color: var(--main);
+  background-color: #528B87;
   color: white;
   padding: 12px;
   text-align: left;
@@ -39,7 +39,7 @@ table th {
 
 /* Schedule Button */
 .schedule-btn {
-  background: var(--main);
+  background: #528B87;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
@@ -54,7 +54,7 @@ table th {
 }
 
 .schedule-btn:hover {
-  background: var(--main_dark);
+  background: #3d6861;
   transform: translateY(-1px);
 }
 

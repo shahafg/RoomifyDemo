@@ -1,6 +1,7 @@
 const express = require("express");
 const usersRouter = express.Router();
 const usersSchema = require('../models/userSchema.js');
+const AuditService = require('../services/auditService.js');
 
 // GET all users
 usersRouter.get("/", async (req, res) => {
@@ -57,6 +58,13 @@ usersRouter.post("/register", async (req, res) => {
       { id: savedUser.id },
       { _id: 0, __v: 0 }
     );
+
+    // Log user registration
+    await AuditService.logUserAction('CREATE', userResponse, req, userResponse.id, null, {
+      email: userResponse.email,
+      fullName: userResponse.fullName,
+      role: userResponse.role
+    });
 
     res.status(201).send(userResponse);
   } catch (error) {
@@ -135,6 +143,17 @@ usersRouter.post("/bulk-register", async (req, res) => {
           id: savedUser.id
         });
 
+        // Log bulk user registration
+        await AuditService.logUserAction('CREATE', {
+          id: savedUser.id,
+          email: userData.email,
+          role: userData.role || 10
+        }, req, savedUser.id, null, {
+          email: userData.email,
+          fullName: userData.fullName,
+          role: userData.role || 10
+        });
+
       } catch (userError) {
         results.failed.push({
           index: i,
@@ -182,11 +201,28 @@ usersRouter.put("/:id", async (req, res) => {
             }
         }
         
+        // Store old values for audit
+        const oldValues = {
+          email: existingUser.email,
+          fullName: existingUser.fullName,
+          role: existingUser.role,
+          gender: existingUser.gender
+        };
+
         // Update user
         await usersSchema.updateOne({ id: userId }, { $set: updateData });
         
         // Return the updated user
         const updatedUser = await usersSchema.findOne({ id: userId }, { _id: 0 });
+
+        // Log user update
+        await AuditService.logUserAction('UPDATE', updatedUser, req, userId, oldValues, {
+          email: updatedUser.email,
+          fullName: updatedUser.fullName,
+          role: updatedUser.role,
+          gender: updatedUser.gender
+        });
+
         res.status(200).send(updatedUser);
     } catch (error) {
         console.error(`Error updating user ${req.params.id}:`, error);
@@ -205,8 +241,19 @@ usersRouter.delete("/:email", async (req, res) => {
             return res.status(404).send({ message: `User with email ${userEmail} not found` });
         }
         
+        // Store user data for audit before deletion
+        const deletedUserData = {
+          id: existingUser.id,
+          email: existingUser.email,
+          fullName: existingUser.fullName,
+          role: existingUser.role
+        };
+
         // Delete user
         await usersSchema.deleteOne({ email: userEmail });
+
+        // Log user deletion
+        await AuditService.logUserAction('DELETE', deletedUserData, req, existingUser.id, deletedUserData, null);
         
         res.status(200).send({ message: `User with email ${userEmail} successfully deleted` });
     } catch (error) {

@@ -1,0 +1,293 @@
+<div class="audit-logs-container">
+  <div class="header">
+    <h2>System Audit Logs</h2>
+    <div class="header-actions">
+      <button 
+        class="btn btn-primary" 
+        [class.active]="currentView === 'logs'"
+        (click)="switchView('logs')">
+        Logs
+      </button>
+      <button 
+        class="btn btn-secondary" 
+        [class.active]="currentView === 'stats'"
+        (click)="switchView('stats')">
+        Statistics
+      </button>
+      <button class="btn btn-export" (click)="exportLogs()" [disabled]="loading">
+        Export CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Filters -->
+  <div class="quick-filters">
+    <button class="btn btn-sm btn-outline" (click)="filterByToday()">Today</button>
+    <button class="btn btn-sm btn-outline" (click)="filterByLastWeek()">Last Week</button>
+    <button class="btn btn-sm btn-outline" (click)="filterByCritical()">Critical</button>
+    <button class="btn btn-sm btn-outline" (click)="filterByFailures()">Failures</button>
+    <button class="btn btn-sm btn-clear" (click)="clearFilters()">Clear All</button>
+  </div>
+
+  <!-- Statistics View -->
+  <div *ngIf="currentView === 'stats'" class="stats-view">
+    <div *ngIf="stats" class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Logs</h3>
+        <div class="stat-value">{{ stats.totalLogs | number }}</div>
+      </div>
+      <div class="stat-card">
+        <h3>Success Rate</h3>
+        <div class="stat-value success-rate">{{ stats.successRate | number:'1.0-0' }}%</div>
+      </div>
+      <div class="stat-card">
+        <h3>Critical Actions</h3>
+        <div class="stat-value critical">{{ stats.criticalActions | number }}</div>
+      </div>
+      <div class="stat-card">
+        <h3>Failed Actions</h3>
+        <div class="stat-value failed">{{ stats.failedActions | number }}</div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <h4>Top Actions</h4>
+        <div class="action-list">
+          <div *ngFor="let action of stats?.topActions" class="action-item">
+            <span class="action-name">{{ action.action }}</span>
+            <span class="action-count">{{ action.count }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h4>Top Entities</h4>
+        <div class="entity-list">
+          <div *ngFor="let entity of stats?.topEntities" class="entity-item">
+            <span class="entity-name">{{ entity.entity }}</span>
+            <span class="entity-count">{{ entity.count }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logs View -->
+  <div *ngIf="currentView === 'logs'">
+    <!-- Filters -->
+    <div class="filters-panel">
+      <div class="filters-row">
+        <div class="filter-group">
+          <label>Action:</label>
+          <select [(ngModel)]="selectedAction" (change)="applyFilters()">
+            <option value="">All Actions</option>
+            <option *ngFor="let action of actions" [value]="action">{{ action }}</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Entity:</label>
+          <select [(ngModel)]="selectedEntity" (change)="applyFilters()">
+            <option value="">All Entities</option>
+            <option *ngFor="let entity of entities" [value]="entity">{{ entity }}</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Severity:</label>
+          <select [(ngModel)]="selectedSeverity" (change)="applyFilters()">
+            <option value="">All Severities</option>
+            <option *ngFor="let severity of severities" [value]="severity">{{ severity }}</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Status:</label>
+          <select [(ngModel)]="selectedSuccess" (change)="applyFilters()">
+            <option value="">All</option>
+            <option value="true">Success</option>
+            <option value="false">Failed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filters-row">
+        <div class="filter-group">
+          <label>User ID:</label>
+          <input type="number" [(ngModel)]="selectedUserId" (blur)="applyFilters()" placeholder="User ID">
+        </div>
+
+        <div class="filter-group">
+          <label>Entity ID:</label>
+          <input type="text" [(ngModel)]="selectedEntityId" (blur)="applyFilters()" placeholder="Entity ID">
+        </div>
+
+        <div class="filter-group">
+          <label>Start Date:</label>
+          <input type="date" [(ngModel)]="startDate" (change)="applyFilters()">
+        </div>
+
+        <div class="filter-group">
+          <label>End Date:</label>
+          <input type="date" [(ngModel)]="endDate" (change)="applyFilters()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading audit logs...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error" class="error-state">
+      <div class="error-message">{{ error }}</div>
+      <button class="btn btn-primary" (click)="loadAuditLogs()">Retry</button>
+    </div>
+
+    <!-- Audit Logs Table -->
+    <div *ngIf="!loading && !error" class="logs-table-container">
+      <table class="logs-table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Action</th>
+            <th>Entity</th>
+            <th>User</th>
+            <th>Details</th>
+            <th>Status</th>
+            <th>Severity</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let log of auditLogs" [class]="getSeverityClass(log.severity)">
+            <td class="timestamp">{{ formatTimestamp(log.timestamp) }}</td>
+            <td>
+              <span class="action-badge" [class]="getActionColor(log.action)">
+                {{ log.action }}
+              </span>
+            </td>
+            <td>
+              <span class="entity-badge">{{ log.entity }}</span>
+              <small *ngIf="log.entityId" class="entity-id">ID: {{ log.entityId }}</small>
+            </td>
+            <td class="user-info">
+              <div *ngIf="log.userEmail; else anonymousUser">{{ log.userEmail }}</div>
+              <ng-template #anonymousUser>
+                <span class="anonymous">Anonymous</span>
+              </ng-template>
+              <small *ngIf="log.userId" class="user-id">ID: {{ log.userId }}</small>
+            </td>
+            <td class="details">{{ log.details }}</td>
+            <td>
+              <span class="status-badge" [class.success]="log.success" [class.failed]="!log.success">
+                {{ log.success ? 'Success' : 'Failed' }}
+              </span>
+              <div *ngIf="!log.success && log.errorMessage" class="error-msg">
+                {{ log.errorMessage }}
+              </div>
+            </td>
+            <td>
+              <span class="severity-badge" [class]="getSeverityClass(log.severity)">
+                {{ log.severity }}
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-info" (click)="showLogDetails(log)">
+                View Details
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Empty State -->
+      <div *ngIf="auditLogs.length === 0" class="empty-state">
+        <p>No audit logs found matching the current filters.</p>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="pagination">
+      <button class="btn btn-sm" (click)="previousPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+      
+      <span class="page-info">
+        Page {{ currentPage }} of {{ totalPages }} ({{ totalLogs | number }} total logs)
+      </span>
+      
+      <button class="btn btn-sm" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Log Details Modal -->
+<div *ngIf="selectedLog" class="modal-overlay" (click)="closeLogDetails()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Audit Log Details</h3>
+      <button class="modal-close" (click)="closeLogDetails()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-row">
+        <label>ID:</label>
+        <span>{{ selectedLog.id }}</span>
+      </div>
+      <div class="detail-row">
+        <label>Timestamp:</label>
+        <span>{{ formatTimestamp(selectedLog.timestamp) }}</span>
+      </div>
+      <div class="detail-row">
+        <label>Action:</label>
+        <span class="action-badge" [class]="getActionColor(selectedLog.action)">
+          {{ selectedLog.action }}
+        </span>
+      </div>
+      <div class="detail-row">
+        <label>Entity:</label>
+        <span>{{ selectedLog.entity }} (ID: {{ selectedLog.entityId || 'N/A' }})</span>
+      </div>
+      <div class="detail-row">
+        <label>User:</label>
+        <span>{{ selectedLog.userEmail || 'Anonymous' }} (ID: {{ selectedLog.userId || 'N/A' }})</span>
+      </div>
+      <div class="detail-row">
+        <label>User Role:</label>
+        <span>{{ selectedLog.userRole }}</span>
+      </div>
+      <div class="detail-row">
+        <label>Details:</label>
+        <span>{{ selectedLog.details }}</span>
+      </div>
+      <div class="detail-row">
+        <label>Status:</label>
+        <span class="status-badge" [class.success]="selectedLog.success" [class.failed]="!selectedLog.success">
+          {{ selectedLog.success ? 'Success' : 'Failed' }}
+        </span>
+      </div>
+      <div *ngIf="!selectedLog.success && selectedLog.errorMessage" class="detail-row">
+        <label>Error:</label>
+        <span class="error-message">{{ selectedLog.errorMessage }}</span>
+      </div>
+      <div class="detail-row">
+        <label>Severity:</label>
+        <span class="severity-badge" [class]="getSeverityClass(selectedLog.severity)">
+          {{ selectedLog.severity }}
+        </span>
+      </div>
+      <div *ngIf="selectedLog.oldValues" class="detail-row">
+        <label>Old Values:</label>
+        <pre class="json-display">{{ formatJson(selectedLog.oldValues) }}</pre>
+      </div>
+      <div *ngIf="selectedLog.newValues" class="detail-row">
+        <label>New Values:</label>
+        <pre class="json-display">{{ formatJson(selectedLog.newValues) }}</pre>
+      </div>
+    </div>
+  </div>
+</div>

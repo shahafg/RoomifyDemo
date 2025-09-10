@@ -2,7 +2,8 @@ const express = require("express");
 const bookingsRouter = express.Router();
 const bookingSchema = require('../models/BookingSchema.js');
 const roomSchema = require('../models/roomSchema.js');
-const maintenanceSchema = require('../models/maintenance_schema.js'); 
+const maintenanceSchema = require('../models/maintenance_schema.js');
+const AuditService = require('../services/auditService.js'); 
 
 // Helper function to check if booking conflicts with maintenance periods
 const checkMaintenanceConflict = async (bookingDate, startTime, endTime) => {
@@ -242,6 +243,11 @@ bookingsRouter.post("/", async (req, res) => {
         }
         
         const bookingResponse = await bookingSchema.findOne({ id: savedBooking.id }, { _id: 0 });
+
+        // Log booking creation - extract user from bookedBy field
+        const user = { email: bookingData.bookedBy, id: null };
+        await AuditService.logBookingAction('CREATE', bookingResponse, user, req);
+
         res.status(201).send({
             message: "Booking created successfully",
             booking: bookingResponse
@@ -337,11 +343,27 @@ bookingsRouter.put("/:id", async (req, res) => {
             }
         }
         
+        // Store old values for audit
+        const oldValues = {
+            roomId: existingBooking.roomId,
+            roomName: existingBooking.roomName,
+            bookingDate: existingBooking.bookingDate,
+            startTime: existingBooking.startTime,
+            endTime: existingBooking.endTime,
+            purpose: existingBooking.purpose,
+            status: existingBooking.status
+        };
+
         // Update booking
         await bookingSchema.updateOne({ id: bookingId }, { $set: updateData });
         
         // Return the updated booking
         const updatedBooking = await bookingSchema.findOne({ id: bookingId }, { _id: 0 });
+
+        // Log booking update
+        const user = { email: existingBooking.bookedBy, id: null };
+        await AuditService.logBookingAction('UPDATE', updatedBooking, user, req, oldValues);
+
         res.status(200).send(updatedBooking);
     } catch (error) {
         console.error(`Error updating booking ${req.params.id}:`, error);
@@ -378,6 +400,10 @@ bookingsRouter.delete("/:id", async (req, res) => {
                 await roomSchema.updateOne({ id: existingBooking.roomId }, { $set: { status: 0 } });
             }
         }
+
+        // Log booking cancellation
+        const user = { email: existingBooking.bookedBy, id: null };
+        await AuditService.logBookingAction('DELETE', existingBooking, user, req);
         
         res.status(200).send({ message: `Booking with ID ${bookingId} has been cancelled` });
     } catch (error) {

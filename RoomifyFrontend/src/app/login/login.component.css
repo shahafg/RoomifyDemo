@@ -11,18 +11,27 @@ a {
 a:hover {
     color: var(--main_dark) !important;
 }
-button {
-    color: white;
-    background: var(--main);
-    border: 2px var(--main_dark) solid;
-}
-button:hover {
-    color: white;
-    border: 2px var(--main) solid;
-    background: var(--main_light);
-}
-button:active {
+.btn-primary {
     color: white !important;
-    border: 2px var(--main_dark) solid !important;
-    background: var(--main_dark) !important;
+    background: #04603A 0% 0% no-repeat padding-box !important;
+    box-shadow: 3px 3px 6px #00000080;
+    border-radius: 40px;
+    opacity: 1;
+    border: none !important;
+}
+.btn-primary:hover {
+    color: white !important;
+    background: #033d29 !important;
+    box-shadow: 3px 3px 6px #00000080;
+    border-radius: 40px;
+    opacity: 1;
+    border: none !important;
+}
+.btn-primary:active {
+    color: white !important;
+    background: #022d1f !important;
+    box-shadow: 3px 3px 6px #00000080 !important;
+    border-radius: 40px !important;
+    opacity: 1 !important;
+    border: none !important;
 }

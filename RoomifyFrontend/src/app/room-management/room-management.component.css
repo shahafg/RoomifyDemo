@@ -4,7 +4,7 @@
 }
 
 .dashboard-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #528B87;
   color: white;
   padding: 2rem 0;
   margin-bottom: 2rem;
@@ -48,7 +48,7 @@
 }
 
 .nav-tabs .nav-link.active {
-  background-color: #667eea;
+  background-color: #528B87;
   color: white;
   border: none;
 }
@@ -306,6 +306,27 @@
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Alerts */
+.alert-info {
+  background-color: #426F6C !important;
+  border-color: #426F6C !important;
+  color: #FFFFFF !important;
+}
+
+/* Accessibility Text Characters */
+.accessibility-text {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.text-success {
+  color: #28a745 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
 }
 
 /* Badges */

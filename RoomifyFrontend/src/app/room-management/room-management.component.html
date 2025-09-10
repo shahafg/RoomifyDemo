@@ -362,9 +362,10 @@
                       {{ room.getStatus() === 0 ? 'Available' : 'Booked' }}
                     </span>
                   </td>
-                  <td>
-                    <i class="bi bi-check-circle text-success" *ngIf="room.isAccessible()"></i>
-                    <i class="bi bi-x-circle text-danger" *ngIf="!room.isAccessible()"></i>
+                  <td class="text-center">
+                    <span class="text-success accessibility-text" *ngIf="room.isAccessible() === true" title="Wheelchair Accessible">✓</span>
+                    <span class="text-danger accessibility-text" *ngIf="room.isAccessible() === false" title="Not Wheelchair Accessible">✗</span>
+                    <span class="text-warning" *ngIf="room.isAccessible() === undefined || room.isAccessible() === null">N/A</span>
                   </td>
                   <td>
                     <button class="btn btn-sm btn-outline-primary me-1" (click)="editRoom(room)">
