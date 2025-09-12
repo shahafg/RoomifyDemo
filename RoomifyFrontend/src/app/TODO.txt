@@ -2,5 +2,8 @@
 3. Classroom Exchange
 4. Improve Statistics
 5. Student is part of a class ("Kitat em")
+4. Improve Statistics
+5. Student is part of a class ("Kitat em")
 Optional:
+6. Encrypt Passwords
 6. Encrypt Passwords

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { UsersService } from '../services/users.service';
 import { AuthService } from '../services/auth.service';
+import { AuditLogService } from '../services/audit-log.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -21,6 +22,7 @@ export class LoginComponent {
     private fb: FormBuilder, 
     private usersService: UsersService, 
     private authService: AuthService,
+    private auditLogService: AuditLogService,
     private router: Router
   ) {
     // Check if already logged in
@@ -44,6 +46,21 @@ export class LoginComponent {
         
         // Update AuthService status
         this.authService.setLoggedIn(true);
+
+        // Create audit log for successful login
+        this.auditLogService.createAuditLog({
+          action: 'LOGIN',
+          entity: 'USER',
+          entityId: user.id?.toString() || '',
+          userId: user.id,
+          userEmail: user.email,
+          userRole: user.role,
+          details: `User ${user.email} logged in successfully`,
+          success: true,
+          severity: 'LOW'
+        }).catch(error => {
+          console.error('Failed to create audit log for login:', error);
+        });
         
         // Check for return URL
         const returnUrl = sessionStorage.getItem('returnUrl') || '/home';
@@ -53,6 +70,18 @@ export class LoginComponent {
           window.location.reload();
         });
       } else {
+        // Create audit log for failed login
+        this.auditLogService.createAuditLog({
+          action: 'LOGIN',
+          entity: 'USER',
+          userEmail: email,
+          details: `Failed login attempt for email: ${email}`,
+          success: false,
+          severity: 'MEDIUM'
+        }).catch(error => {
+          console.error('Failed to create audit log for failed login:', error);
+        });
+
         this.errorMessage = 'Invalid email or password!';
       }
     });

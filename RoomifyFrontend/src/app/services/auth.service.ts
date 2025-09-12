@@ -62,7 +62,7 @@ export class AuthService {
     const user = this.getCurrentUser();
     if (!user) return false;
     
-    // Lower role numbers = higher privileges (admin=4, teacher=3, etc.)
-    return user.role <= minRole;
+    // Higher role numbers = higher privileges (admin=4, teacher=3, etc.)
+    return user.role >= minRole;
   }
 }

@@ -108,7 +108,8 @@ export class AuditLogsComponent implements OnInit {
 
   hasAdminAccess(): boolean {
     const user = this.authService.getCurrentUser();
-    return user && user.role >= 4; // Admin role
+    // Allow access for maintenance personnel, teachers, and admins (roles 2, 3, 4)
+    return user && user.role >= 2;
   }
 
   async loadAuditLogs() {
@@ -269,31 +270,4 @@ export class AuditLogsComponent implements OnInit {
     return JSON.stringify(obj, null, 2);
   }
 
-  // Quick filter methods
-  filterByCritical() {
-    this.selectedSeverity = 'CRITICAL';
-    this.applyFilters();
-  }
-
-  filterByToday() {
-    const today = new Date().toISOString().split('T')[0];
-    this.startDate = today;
-    this.endDate = today;
-    this.applyFilters();
-  }
-
-  filterByLastWeek() {
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 7);
-    
-    this.startDate = startDate.toISOString().split('T')[0];
-    this.endDate = endDate.toISOString().split('T')[0];
-    this.applyFilters();
-  }
-
-  filterByFailures() {
-    this.selectedSuccess = 'false';
-    this.applyFilters();
-  }
 }

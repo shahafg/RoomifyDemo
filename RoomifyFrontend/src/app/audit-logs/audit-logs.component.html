@@ -20,14 +20,6 @@
     </div>
   </div>
 
-  <!-- Quick Filters -->
-  <div class="quick-filters">
-    <button class="btn btn-sm btn-outline" (click)="filterByToday()">Today</button>
-    <button class="btn btn-sm btn-outline" (click)="filterByLastWeek()">Last Week</button>
-    <button class="btn btn-sm btn-outline" (click)="filterByCritical()">Critical</button>
-    <button class="btn btn-sm btn-outline" (click)="filterByFailures()">Failures</button>
-    <button class="btn btn-sm btn-clear" (click)="clearFilters()">Clear All</button>
-  </div>
 
   <!-- Statistics View -->
   <div *ngIf="currentView === 'stats'" class="stats-view">

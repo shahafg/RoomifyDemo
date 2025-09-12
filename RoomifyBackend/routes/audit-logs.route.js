@@ -2,15 +2,15 @@ const express = require("express");
 const auditLogsRouter = express.Router();
 const AuditService = require('../services/auditService');
 
-// Middleware to check if user has admin role (role >= 4)
+// Middleware to check if user has sufficient role (role >= 2: maintenance, teacher, or admin)
 const requireAdminRole = (req, res, next) => {
     // For now, we'll assume user role is passed in headers or body
     // In a real implementation, this would come from authentication middleware
     const userRole = req.headers['user-role'] || req.body.userRole;
     
-    if (!userRole || parseInt(userRole) < 4) {
+    if (!userRole || parseInt(userRole) < 2) {
         return res.status(403).send({ 
-            message: "Access denied. Admin role required to view audit logs." 
+            message: "Access denied. Maintenance personnel, teacher, or admin role required to view audit logs." 
         });
     }
     
@@ -226,8 +226,8 @@ auditLogsRouter.get("/export", requireAdminRole, async (req, res) => {
     }
 });
 
-// Manual audit log creation (for testing purposes - admin only)
-auditLogsRouter.post("/", requireAdminRole, async (req, res) => {
+// Audit log creation (accessible to all authenticated users for logging their actions)
+auditLogsRouter.post("/", async (req, res) => {
     try {
         const {
             action,
