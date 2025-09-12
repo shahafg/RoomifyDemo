@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
 
 export interface Booking {
   id?: number;
@@ -32,7 +33,7 @@ export interface AvailabilityCheck {
 export class BookingsService {
   private bookingsUrl = 'http://localhost:3000/bookings';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   // Get all bookings
   getAllBookings(): Observable<Booking[]> {
@@ -66,9 +67,10 @@ export class BookingsService {
 
   // Create a new booking
   createBooking(booking: Booking): Observable<any> {
-    // Add default bookedBy if not provided (in production, this would come from auth service)
+    // Add current user's full name if not provided
     if (!booking.bookedBy) {
-      booking.bookedBy = 'Current User'; // Replace with actual user from auth service
+      const currentUser = this.authService.getCurrentUser();
+      booking.bookedBy = currentUser?.fullName || 'Unknown User';
     }
     
     return this.http.post<any>(this.bookingsUrl, booking);

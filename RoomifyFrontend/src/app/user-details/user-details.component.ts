@@ -22,6 +22,7 @@ export class UserDetailsComponent {
     if (userData) {
       const parsedUser = JSON.parse(userData);
       this.user = new User(
+        parsedUser.id,
         parsedUser.email,
         parsedUser.password,
         parsedUser.fullName,

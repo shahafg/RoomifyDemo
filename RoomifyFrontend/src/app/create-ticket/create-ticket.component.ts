@@ -48,6 +48,7 @@ export class CreateTicketComponent{
     });
      // Mock user - in a real application, get this from auth service
      this.currentUser = new User(
+      1,
       'user@example.com',
       'password',
       'Regular User',

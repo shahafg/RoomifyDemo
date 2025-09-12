@@ -1,6 +1,7 @@
 import { Role } from '../models/role';
 
 export class User {
+  private id: number;
   private email: string;
   private password: string;
   private fullName: string;
@@ -9,7 +10,8 @@ export class User {
   private image: string | null;
   private role: Role;
 
-  constructor(email: string, password: string, fullName: string, dateOfBirth: Date, gender: 'male' | 'female', image?: string, role: Role = 10) {
+  constructor(id: number, email: string, password: string, fullName: string, dateOfBirth: Date, gender: 'male' | 'female', image?: string, role: Role = 10) {
+    this.id = id;
     this.email = email;
     this.password = password;
     this.fullName = fullName;
@@ -19,6 +21,9 @@ export class User {
     this.role = role;
   }
 
+  getId(): number {
+    return this.id;
+  }
   getEmail(): string {
     return this.email;
   }
@@ -41,6 +46,9 @@ export class User {
     return this.role;
   }
 
+  setId(id: number): void {
+    this.id = id;
+  }
   setEmail(email: string): void {
     this.email = email;
   }

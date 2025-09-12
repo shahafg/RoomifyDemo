@@ -50,6 +50,7 @@ export class TicketsComponent implements OnInit {
   ) {
     // Mock admin user - in a real application, get this from auth service
     this.currentUser = new User(
+      1,
       'admin@example.com',
       'password',
       'Admin User',
@@ -85,9 +86,9 @@ export class TicketsComponent implements OnInit {
     // In a real app, this would come from a user service
     // For now, we'll create mock support users
     this.users = [
-      new User('admin@example.com', 'password', 'Admin User', new Date(1985, 1, 1), 'female', undefined, 4),
-      new User('support1@example.com', 'password', 'Support User 1', new Date(1988, 5, 15), 'male', undefined, 0),
-      new User('support2@example.com', 'password', 'Support User 2', new Date(1990, 8, 22), 'female', undefined, 2)
+      new User(1, 'admin@example.com', 'password', 'Admin User', new Date(1985, 1, 1), 'female', undefined, 4),
+      new User(2, 'support1@example.com', 'password', 'Support User 1', new Date(1988, 5, 15), 'male', undefined, 0),
+      new User(3, 'support2@example.com', 'password', 'Support User 2', new Date(1990, 8, 22), 'female', undefined, 2)
     ];
     
     this.filteredUsers = [...this.users];

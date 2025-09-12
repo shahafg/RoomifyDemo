@@ -219,6 +219,7 @@ export class RoomManagementComponent implements OnInit {
       next: (users: any[]) => {
         console.log('Users received:', users);
         this.users = users.map(u => new User(
+          u.id,
           u.email,
           u.password,
           u.fullName,
@@ -775,12 +776,24 @@ this.statistics.weekBookings = this.bookings.filter(b => {
     const currentRoleLabel = this.getUserRoleLabel(currentRole);
     
     if (confirm(`Change ${user.getFullName()}'s role from ${currentRoleLabel} to ${newRoleLabel}?`)) {
-      user.setRole(newRoleValue);
-      alert(`${user.getFullName()}'s role has been changed to ${newRoleLabel}`);
-      // TODO: Implement backend update
-      
-      // Update filtered users to reflect the change
-      this.filterUsers();
+      // Call backend API to update user role
+      this.usersService.updateUser(user.getId(), { role: newRoleValue }).subscribe({
+        next: (updatedUser: any) => {
+          // Update local user object with new role
+          user.setRole(newRoleValue);
+          alert(`${user.getFullName()}'s role has been changed to ${newRoleLabel}`);
+          
+          // Update filtered users to reflect the change
+          this.filterUsers();
+        },
+        error: (error) => {
+          console.error('Error updating user role:', error);
+          alert('Failed to update user role. Please try again.');
+          
+          // Reset the dropdown to the original value on error
+          event.target.value = currentRole;
+        }
+      });
     } else {
       // Reset the dropdown to the original value if user cancels
       event.target.value = currentRole;

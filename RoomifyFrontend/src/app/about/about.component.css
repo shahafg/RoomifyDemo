@@ -1,7 +1,7 @@
 :host {
     display: block;
     min-height: 100vh;
-    background: linear-gradient(135deg, var(--main) 0%, #764ba2 100%);
+    background: #528B87;
 }
 
 .container {
@@ -29,7 +29,7 @@
         h1 {
             font-size: 3.5rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--main), #764ba2);
+            background: rgb(52, 45, 45);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;

@@ -1,8 +1,6 @@
-1. allow students to view rooms, block students from ordering rooms 
-2. Search room needs to work with Time Schedule
+2. Make sure that studyguide / others not avilable 
 3. Classroom Exchange
-4. Auditorium
-5. Improve Statistics
-
+4. Improve Statistics
+5. Student is part of a class ("Kitat em")
 Optional:
-Encrypt Passwords
+6. Encrypt Passwords

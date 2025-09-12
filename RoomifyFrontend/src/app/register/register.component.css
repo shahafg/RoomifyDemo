@@ -6,16 +6,13 @@ h2 {
 }
 button {
     color: white;
-    background: var(--main);
-    border: 2px var(--main_dark) solid;
+    background: #528B87;
+    border: #528B87;
 }
 button:hover {
+    background: #033d29;
     color: white;
-    border: 2px var(--main) solid;
-    background: var(--main_light);
-}
-button:active {
-    color: white !important;
-    border: 2px var(--main_dark) solid !important;
-    background: var(--main_dark) !important;
+    border: 2px solid #033d29;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(4, 96, 58, 0.4);
 }
