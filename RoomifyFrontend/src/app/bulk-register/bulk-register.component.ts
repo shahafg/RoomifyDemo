@@ -1,4 +1,3 @@
-// bulk-register.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -261,7 +260,7 @@ export class BulkRegisterComponent {
         user.fullName,
         new Date(user.dateOfBirth),
         user.gender,
-        null, // No image file for bulk registration
+        null, // No img for bulk registration
         user.role || 10
       ).subscribe({
         next: () => {

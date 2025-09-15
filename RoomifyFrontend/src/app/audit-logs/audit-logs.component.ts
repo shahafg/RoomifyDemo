@@ -108,8 +108,8 @@ export class AuditLogsComponent implements OnInit {
 
   hasAdminAccess(): boolean {
     const user = this.authService.getCurrentUser();
-    // Allow access for maintenance personnel, teachers, and admins (roles 2, 3, 4)
-    return user && user.role >= 2;
+    // Allow access for maintenance personnel & admins
+    return user && user.role == 2 || user.role == 4;
   }
 
   async loadAuditLogs() {

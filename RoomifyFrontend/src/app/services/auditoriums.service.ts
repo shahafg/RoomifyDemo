@@ -95,7 +95,7 @@ export class AuditoriumsService {
     );
   }
 
-  // Soft delete auditorium (admin only)
+  // Soft delete auditorium
   deleteAuditorium(id: number): Observable<any> {
     return this.http.delete<any>(`${this.auditoriumsUrl}/${id}`);
   }

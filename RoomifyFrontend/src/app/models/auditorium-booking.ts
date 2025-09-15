@@ -123,7 +123,7 @@ export class AuditoriumBooking {
     this._updatedAt = value;
   }
 
-  // Helper methods
+  // Helper methods (date formatting)
   get formattedDate(): string {
     return this._bookingDate.toLocaleDateString();
   }

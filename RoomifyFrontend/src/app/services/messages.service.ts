@@ -8,7 +8,7 @@ import { Message } from '../models/message';
   providedIn: 'root'
 })
 export class MessagesService {
-  private apiUrl = 'api/messages'; // Replace with your API endpoint
+  private apiUrl = 'api/messages'; // Replace with future API endpoint (not part of our main plan)
   private messagesSubject = new BehaviorSubject<Message[]>([]);
   public messages$ = this.messagesSubject.asObservable();
   
@@ -62,20 +62,6 @@ export class MessagesService {
       })
     );
   }
-  
-  // Mark a message as read
-  // markAsRead(messageId: string): Observable<Message> {
-  //   return this.http.patch<Message>(`${this.apiUrl}/${messageId}`, { read: true }).pipe(
-  //     map(updatedMessage => {
-  //       const currentMessages = this.messagesSubject.getValue();
-  //       const updatedMessages = currentMessages.map(msg => 
-  //         msg.getId() === messageId ? { ...msg, read: true } : msg
-  //       );
-  //       this.messagesSubject.next(updatedMessages);
-  //       return updatedMessage;
-  //     })
-  //   );
-  // }
   
   // Delete a message
   deleteMessage(messageId: string): Observable<void> {

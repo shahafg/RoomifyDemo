@@ -48,7 +48,7 @@ export class TicketsComponent implements OnInit {
   constructor(
     private ticketService: TicketService
   ) {
-    // Mock admin user - in a real application, get this from auth service
+    // Mock admin user
     this.currentUser = new User(
       1,
       'admin@example.com',
@@ -83,8 +83,7 @@ export class TicketsComponent implements OnInit {
   }
   
   loadSupportUsers(): void {
-    // In a real app, this would come from a user service
-    // For now, we'll create mock support users
+    // For now, mock support users
     this.users = [
       new User(1, 'admin@example.com', 'password', 'Admin User', new Date(1985, 1, 1), 'female', undefined, 4),
       new User(2, 'support1@example.com', 'password', 'Support User 1', new Date(1988, 5, 15), 'male', undefined, 0),

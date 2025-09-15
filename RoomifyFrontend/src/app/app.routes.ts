@@ -1,4 +1,3 @@
-// src/app/app.routes.ts
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
@@ -49,7 +48,7 @@ export const routes: Routes = [
     { path: 'tickets', component: TicketsComponent, canActivate: [AuthGuard] },
     { path: 'messages', component: MessagesComponent, canActivate: [AuthGuard] },
     
-    // Admin-only routes - NOTE: Only AdminGuard needed (it checks login internally)
+    // Admin-only routes
     { path: 'rooms', component: RoomManagementComponent, canActivate: [AdminGuard] },
     { path: 'register-users', component: RegisterUsersComponent, canActivate: [AdminGuard] },
     { path: 'maintenance', component: MaintenanceManagementComponent, canActivate: [AdminGuard] },

@@ -71,7 +71,7 @@ export class RegisterComponent {
       return;
     }
 
-    // Image validation (optional)
+    // Image validation
     if (this.imageFile && !(this.imageFile instanceof File)) {
       this.errorMessage = 'Please upload a valid image file!';
       return;
@@ -94,6 +94,8 @@ export class RegisterComponent {
           this.router.navigateByUrl('/home');
         },
         error: (err) => {
+                    // failure X
+
           console.error('Registration error:', err);
 
           if (err.status === 0) {

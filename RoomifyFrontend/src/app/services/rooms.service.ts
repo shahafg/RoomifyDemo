@@ -12,7 +12,7 @@ export class RoomsService {
 
   constructor(private http: HttpClient) { }
 
-  // Helper method to convert string to RoomType enum
+  // convert string to RoomType enum
   private convertStringToRoomType(typeString: string): RoomType {
     const typeMap: { [key: string]: RoomType } = {
       'Class': RoomType.Class,

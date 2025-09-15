@@ -21,7 +21,7 @@ export class CreateTicketComponent{
   showCreateForm: boolean = false;
   selectedTicket: Ticket | null = null;
   
-  // For file attachments
+  // file attachments
   attachments: File[] = [];
   
   // Category options
@@ -33,7 +33,7 @@ export class CreateTicketComponent{
     { value: 'other', label: 'Other' }
   ];
   
-  // Mock current user - in a real app, this would come from an auth service
+  // Mock current user
   currentUser : User;
 
   constructor(
@@ -46,7 +46,7 @@ export class CreateTicketComponent{
       description: ['', Validators.required],
       category: ['technical', Validators.required]
     });
-     // Mock user - in a real application, get this from auth service
+     // Mock user 
      this.currentUser = new User(
       1,
       'user@example.com',
@@ -106,7 +106,7 @@ export class CreateTicketComponent{
       this.ticketForm.value.category as TicketCategory,
       this.currentUser,
       undefined,
-      'medium', // Default priority (admin will change it)
+      'medium', // Default priority
       'new',    // Default status
       undefined,
       this.attachments.map(file => ({

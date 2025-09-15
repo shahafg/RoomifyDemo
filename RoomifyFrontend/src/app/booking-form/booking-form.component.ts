@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import { BookingsService, Booking } from '../services/bookings.service';
 import { ScheduleService } from '../services/schedule.service';
 import { SchedulePeriod } from '../models/schedule-period';
@@ -196,12 +197,12 @@ export class BookingFormComponent implements OnInit {
     try {
       // Check availability for each selected period individually
       for (const period of this.selectedPeriods) {
-        const availability = await this.bookingsService.checkAvailability(
+        const availability = await firstValueFrom(this.bookingsService.checkAvailability(
           this.booking.roomId,
           this.booking.bookingDate,
           period.getStartTime(),
           period.getEndTime()
-        ).toPromise();
+        ));
 
         if (availability && !availability.available) {
           this.error = `Period ${period.getPeriodName()} is not available: ${availability.reason || 'Time slot already booked'}`;
@@ -245,7 +246,7 @@ export class BookingFormComponent implements OnInit {
         createdBookings.push(bookingForPeriod);
       }
 
-      // Emit the first booking for compatibility (or you could emit all bookings)
+      // Emit the first booking for compatibility 
       this.bookingCreated.emit(createdBookings[0]);
       this.closeForm.emit();
       this.isSubmitting = false;

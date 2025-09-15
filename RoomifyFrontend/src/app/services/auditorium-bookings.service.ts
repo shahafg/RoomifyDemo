@@ -119,7 +119,7 @@ export class AuditoriumBookingsService {
     return this.http.delete<any>(`${this.bookingsUrl}/${id}`);
   }
 
-  // Private helper method to map API response to AuditoriumBooking model
+  // helper method to map API response to AuditoriumBooking model
   private mapToAuditoriumBooking = (booking: any): AuditoriumBooking => {
     return new AuditoriumBooking(
       booking.id,

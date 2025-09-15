@@ -1,4 +1,3 @@
-/* Header Styling */
 h2 {
     margin-bottom: 15px;
     color: var(--main);
@@ -7,14 +6,12 @@ h2 {
     font-size: 2rem;
 }
 
-/* Main Container */
 .profile-card-container {
     display: flex;
     justify-content: center;
     padding: 10px;
 }
 
-/* Main Profile Card */
 .user-profile-card {
     background: #528B87;
     border-radius: 12px;
@@ -38,7 +35,6 @@ h2 {
     pointer-events: none;
 }
 
-/* Profile Image Section */
 .profile-image-section {
     text-align: center;
     margin-bottom: 20px;
@@ -80,7 +76,6 @@ h2 {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Information Cards Grid */
 .info-cards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

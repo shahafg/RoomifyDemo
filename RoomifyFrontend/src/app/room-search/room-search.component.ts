@@ -14,7 +14,7 @@ interface RoomTypeOption {
   label: string;
 }
 
-// Custom validator to check if end time is after start time
+//  validator end time > start time
 const timeValidator = (control: AbstractControl): ValidationErrors | null => {
   const formGroup = control as FormGroup;
   const startTime = formGroup.get('startTime')?.value;
@@ -26,7 +26,7 @@ const timeValidator = (control: AbstractControl): ValidationErrors | null => {
   return null;
 };
 
-// Custom validator to check if start time is not in the past relative to the selected date
+// validator to check start time is not in the past
 const futureTimeValidator = (control: AbstractControl): ValidationErrors | null => {
   const formGroup = control.parent as FormGroup;
   if (!formGroup) return null;
@@ -51,7 +51,7 @@ const futureTimeValidator = (control: AbstractControl): ValidationErrors | null 
   return null;
 };
 
-// Custom validator to check if booking date is not in the past
+//  validator to check if booking date is not in the past
 const pastDateValidator = (control: AbstractControl): ValidationErrors | null => {
   const bookingDate = control.value;
   if (!bookingDate) {

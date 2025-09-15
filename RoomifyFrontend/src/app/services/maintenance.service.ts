@@ -50,22 +50,22 @@ export class MaintenanceService {
     });
   }
 
-  // Create a new maintenance period (Admin only)
+  // Create a new maintenance period
   createMaintenancePeriod(maintenance: MaintenancePeriod): Observable<any> {
     return this.http.post<any>(this.maintenanceUrl, maintenance);
   }
 
-  // Update an existing maintenance period (Admin only)
+  // Update an existing maintenance period
   updateMaintenancePeriod(id: number, maintenance: Partial<MaintenancePeriod>): Observable<MaintenancePeriod> {
     return this.http.put<MaintenancePeriod>(`${this.maintenanceUrl}/${id}`, maintenance);
   }
 
-  // Deactivate a maintenance period (Admin only)
+  // Deactivate a maintenance period
   deactivateMaintenancePeriod(id: number): Observable<MaintenancePeriod> {
     return this.http.patch<MaintenancePeriod>(`${this.maintenanceUrl}/${id}/deactivate`, {});
   }
 
-  // Delete a maintenance period (Admin only)
+  // Delete a maintenance period 
   deleteMaintenancePeriod(id: number): Observable<any> {
     return this.http.delete<any>(`${this.maintenanceUrl}/${id}`);
   }

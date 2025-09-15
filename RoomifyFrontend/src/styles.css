@@ -40,9 +40,3 @@ router-outlet + * {
 app-footer {
   flex-shrink: 0;
 }
-
-/* .container :first-child {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-} */

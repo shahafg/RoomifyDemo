@@ -300,13 +300,13 @@ this.statistics.weekBookings = this.bookings.filter(b => {
     const sortedRooms = Object.entries(roomBookingCounts)
       .sort((a, b) => b[1] - a[1]); // Sort by booking count (descending)
     
-    // Most booked room (highest count)
+    // Most booked room (highest)
     const mostBooked = sortedRooms[0];
     if (mostBooked) {
       this.statistics.mostBookedRoom = `${mostBooked[0]} (${mostBooked[1]} bookings)`;
     }
     
-    // Least booked room(s) (lowest count)
+    // Least booked room(s) (lowest)
     const minBookings = Math.min(...Object.values(roomBookingCounts));
     const leastBookedRooms = Object.entries(roomBookingCounts)
       .filter(([roomName, count]) => count === minBookings)
@@ -729,7 +729,7 @@ this.statistics.weekBookings = this.bookings.filter(b => {
     if (confirm(`Promote ${user.getFullName()} to ${this.getUserRoleLabel(newRole)}?`)) {
       user.setRole(newRole);
       alert(`${user.getFullName()} has been promoted to ${this.getUserRoleLabel(newRole)}`);
-      // TODO: Implement backend update
+      
     }
   }
 
@@ -759,7 +759,6 @@ this.statistics.weekBookings = this.bookings.filter(b => {
     if (confirm(`Demote ${user.getFullName()} to ${this.getUserRoleLabel(newRole)}?`)) {
       user.setRole(newRole);
       alert(`${user.getFullName()} has been demoted to ${this.getUserRoleLabel(newRole)}`);
-      // TODO: Implement backend update
     }
   }
 

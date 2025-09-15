@@ -39,7 +39,7 @@ export class MaintenanceManagementComponent implements OnInit {
     this.loadMaintenancePeriods();
   }
 
-  // Custom validator to ensure end date is after start date
+  // validator end date > start date
   dateRangeValidator = (form: FormGroup) => {
     const startDate = form.get('startDate')?.value;
     const endDate = form.get('endDate')?.value;
@@ -75,7 +75,7 @@ export class MaintenanceManagementComponent implements OnInit {
       startDate: formValue.startDate,
       endDate: formValue.endDate,
       isActive: true,
-      createdBy: 'Current Admin' // In production, get from auth service
+      createdBy: 'Current Admin' 
     };
 
     if (this.isEditing && this.editingId) {

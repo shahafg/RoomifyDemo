@@ -14,7 +14,7 @@ import { Role } from '../models/role';
 
 export class UserDetailsComponent {
   user: User | null = null;
-  Role = Role; // Expose the enum to the template
+  Role = Role; 
   userRole: string = "";
 
   constructor(private router: Router) {

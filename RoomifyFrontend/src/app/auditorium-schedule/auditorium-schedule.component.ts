@@ -114,7 +114,7 @@ export class AuditoriumScheduleComponent implements OnInit {
       return;
     }
     
-    this.errorMessage = ''; // Clear any existing error
+    this.errorMessage = ''; // Clear existing error
     this.loadAvailability();
   }
 
@@ -201,7 +201,7 @@ export class AuditoriumScheduleComponent implements OnInit {
         this.loadMyBookings();
         this.loading.booking = false;
         
-        // Clear success message after 3 seconds
+        // Clear success msg after 3seconds
         setTimeout(() => {
           this.successMessage = '';
         }, 3000);
@@ -223,7 +223,7 @@ export class AuditoriumScheduleComponent implements OnInit {
         this.loadAvailability();
         this.loadMyBookings();
         
-        // Clear success message after 3 seconds
+        // Clear success msg after 3seconds
         setTimeout(() => {
           this.successMessage = '';
         }, 3000);

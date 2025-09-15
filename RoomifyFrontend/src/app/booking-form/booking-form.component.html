@@ -96,12 +96,6 @@
       <!-- Action Buttons -->
       <div class="form-actions">
         <button class="cancel-btn" (click)="onClose()">Cancel</button>
-        <!-- <button 
-          class="check-availability-btn" 
-          (click)="checkAvailability()"
-          [disabled]="selectedPeriods.length === 0 || loading">
-          Check Availability
-        </button> -->
         <button 
           class="submit-btn" 
           (click)="submitBooking()"
@@ -112,7 +106,7 @@
       </div>
     </div>
 
-    <!-- Loading State -->
+    <!-- Loading -->
     <div class="loading-content" *ngIf="loading">
       <div class="loading-spinner"></div>
       <p>Loading available periods...</p>
